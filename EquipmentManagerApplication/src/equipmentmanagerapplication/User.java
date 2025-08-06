@@ -29,5 +29,8 @@ public abstract class User {
     public ArrayList<String> getBookings(){
         return this.bookingIDs;
     }
+    
+    
+    ////////CHECK NEW ID IS VALID
             
 }
