@@ -21,11 +21,18 @@ public class CliManager {
     
         
     public static void runCli() {
+        int chosenOption;
         
         System.out.println("Welcome to Equipment Manager!");
         login();
         System.out.println("Please enter a number to select an option:");
-        dispValidOptions(MENU_L1_OPTIONS);
+        dispMenu_L1();
+        do { // Prompt for user input until entry is valid
+            chosenOption = getUserIntegerInput();
+        } while(!verifyMenuOption(chosenOption, userManager.getActiveUser().getValidMenuOptions_L1()));
+        
+        
+        
   
     }
     
@@ -43,20 +50,51 @@ public class CliManager {
     }
     
         
-    static void optionVerifier(){
-        
-//
+    static boolean verifyMenuOption(int chosenOption, int[] validOptions){
+
+        for (int optionNum : userManager.getActiveUser().getValidMenuOptions_L1()) { // Check the entered option is allowed for the user type/security level
+            if(chosenOption == optionNum) {
+                return true;
+            }
+        }
+        System.out.println("Invalid input! Please enter a valid number: ");
+        return false;
     }
+       
     
-    static void dispValidOptions(String[] options){
+    static void dispMenu_L1(){
         
         for(int optionNum : userManager.getActiveUser().getValidMenuOptions_L1()){
-            System.out.println("[" + optionNum + "] "+ options[optionNum]);
+            System.out.println("[" + optionNum + "] "+ MENU_L1_OPTIONS[optionNum-1]);
         }
-        
-
-
     }
+    
+    static int getUserIntegerInput(){ // Request selection until user enters an integer
+        Scanner scan = new Scanner(System.in);
+        try {
+            return scan.nextInt(); 
+        } catch(Exception E){
+            System.out.println("Invalid input! Please enter a valid number: ");
+            return getUserIntegerInput();
+        }
+    }
+    
+//                switch(chosenOption){
+//                case 0: // Logout
+//                    System.out.println("------- USER MANAGEMENT ----------//heading");
+//                    break;
+//                case 1: // Item Search
+//                    break;
+//                case 2: // Item Bookings
+//                    break;
+//                case 3:
+//                    break;
+//                case 4:
+//                    break;
+//                //default:
+//                    //invalid
+//
+//            }
     
     
     
