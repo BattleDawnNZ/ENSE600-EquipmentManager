@@ -17,6 +17,10 @@ public class UserManager {
         Manager root = new Manager("root"); // DEBUG!!!
         users = new HashMap<String, User>(); // DEBUG!!!
         users.put("root", root); // DEBUG!!!
+        Employee rootE = new Employee("rootE"); // DEBUG!!!
+        users.put("rootE", rootE);
+        Guest rootG = new Guest("rootG"); // DEBUG!!!
+        users.put("rootG", rootG);
     }
     
     
@@ -44,7 +48,7 @@ public class UserManager {
     
     public boolean login(String userID){
         if(users.containsKey(userID)){
-            this.activeUser = users.get(userID);
+            this.activeUser = users.get(userID); // Save the current user
             return true;
         }
         else{
@@ -52,7 +56,5 @@ public class UserManager {
         }
     }
        
-    
-    
 
 }
