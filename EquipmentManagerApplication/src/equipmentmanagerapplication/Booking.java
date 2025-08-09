@@ -19,6 +19,10 @@ public class Booking implements Serializable {
      */
     private String userID;
     /**
+     * The ID of the piece of equipment being used.
+     */
+    private String itemID;
+    /**
      * The date of the booking.
      */
     private ZonedDateTime bookedDate;
@@ -35,9 +39,10 @@ public class Booking implements Serializable {
      * @param bookedDate the date of the booking
      * @param returnDate the return date of the booking
      */
-    public Booking(String id, String userID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public Booking(String id, String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	this.id = id;
 	this.userID = userID;
+	this.itemID = itemID;
 	this.bookedDate = bookedDate;
 	this.returnDate = returnDate;
     }
