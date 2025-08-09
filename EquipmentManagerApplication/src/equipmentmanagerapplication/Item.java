@@ -19,7 +19,7 @@ public class Item implements Serializable {
      * Indicates the status of an item.
      */
     public static enum Status {
-	broken,
+	working,
 	decommissioned,
 	faulty
     }
@@ -35,7 +35,7 @@ public class Item implements Serializable {
 	 *
 	 * @return The time stamp for when this event happened.
 	 */
-	private ZonedDateTime timeStamp;
+	private ZonedDateTime timestamp;
 
 	/**
 	 *
@@ -45,11 +45,20 @@ public class Item implements Serializable {
 
 	/**
 	 *
-	 * @param timeStamp When this event happened.
 	 * @param description What happened.
 	 */
-	public History(ZonedDateTime timeStamp, String description) {
-	    this.timeStamp = timeStamp;
+	public History(String description) {
+	    this.timestamp = ZonedDateTime.now();
+	    this.description = description;
+	}
+
+	/**
+	 *
+	 * @param timestamp When this event happened.
+	 * @param description What happened.
+	 */
+	public History(ZonedDateTime timestamp, String description) {
+	    this.timestamp = timestamp;
 	    this.description = description;
 	}
 
@@ -57,8 +66,8 @@ public class Item implements Serializable {
 	 *
 	 * @return The time stamp for when this event happened.
 	 */
-	public ZonedDateTime getTimeStamp() {
-	    return timeStamp;
+	public ZonedDateTime getTimestamp() {
+	    return timestamp;
 	}
 
 	/**
@@ -68,19 +77,72 @@ public class Item implements Serializable {
 	public String getDescription() {
 	    return description;
 	}
+
+	public String toString() {
+	    return "" + timestamp + " - " + description;
+	}
     }
     private ArrayList<History> history;
+    private boolean needsCalibration;
     private ZonedDateTime lastCalibration;
 
-    public Item(String id, String name, String description, String location, Status status, String type, ZonedDateTime lastCalibration) {
+    /**
+     *
+     * @param id
+     * @param name
+     * @param location
+     * @param type
+     */
+    public Item(String id, String name, String location, String type) {
 	this.id = id;
 	this.name = name;
-	this.description = description;
-	this.location = location;
-	this.status = status;
+	this.description = "";
+	if (LocationManager.isValidLocation(location)) {
+	    this.location = location;
+	} else {
+	    System.out.println("Error! Location " + location + " is Invalid");
+	}
+	this.status = Status.working;
 	this.type = type;
-	this.history = new ArrayList<History>();
-	this.lastCalibration = lastCalibration;
+	this.history = new ArrayList<>();
+	addHistory("Item created.");
+	this.needsCalibration = false;
+	this.lastCalibration = null;
+    }
+
+    /**
+     *
+     * @return Item ID
+     */
+    public String getID() {
+	return id;
+    }
+
+    /**
+     *
+     * @return Item location
+     */
+    public String getLocation() {
+	return location;
+    }
+
+    /**
+     *
+     * @param newLocation
+     */
+    public void setLocation(String newLocation) {
+	if (LocationManager.isValidLocation(newLocation)) {
+	    location = newLocation;
+	}
+    }
+
+    /**
+     *
+     * @param description
+     */
+    public final void addHistory(String description) {
+	History entry = new History(description);
+	history.add(entry);
     }
 
     /**
@@ -89,6 +151,23 @@ public class Item implements Serializable {
      */
     public History[] getHistory() {
 	return history.toArray(new History[0]);
+    }
+
+    /**
+     * Flags an item as needing calibration
+     */
+    public void flagForCalibration() {
+	needsCalibration = true;
+	addHistory("Needs calibration.");
+    }
+
+    /**
+     * Updates the items last calibration date.
+     */
+    public void calibrate() {
+	needsCalibration = false;
+	lastCalibration = ZonedDateTime.now();
+	addHistory("Calibrated.");
     }
 
     /**
@@ -101,5 +180,16 @@ public class Item implements Serializable {
      */
     public boolean hasType(String partType) {
 	return type.contains(partType);
+    }
+
+    public String toString() {
+	return "ID: " + id
+		+ ", Name: " + name
+		+ ", Description: " + description
+		+ ", Location: " + location
+		+ ", Status: " + status
+		+ ", Type: " + type
+		+ ", Last Calibration: " + lastCalibration
+		+ ", History: " + history;
     }
 }
