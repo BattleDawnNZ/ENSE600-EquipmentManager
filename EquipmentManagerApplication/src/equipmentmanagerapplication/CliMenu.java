@@ -10,18 +10,20 @@ import java.util.ArrayList;
 
 public class CliMenu {
 
-    ArrayList<MenuOption> menu = new ArrayList<>();
+    private ArrayList<MenuOption> menu;
+    private String menuName;
 
-    public static void dispMenu(CliMenu chosenMenu) {
-        for (int i = 0; i < chosenMenu.menu.size(); i++) {
-            System.out.println("[" + (i + 1) + "] " + chosenMenu.menu.get(i).option);
-        }
+    public CliMenu(String menuName) {
+        this.menu = new ArrayList<>();
+        this.menuName = menuName;
     }
 
-    public static void dispMenu(CliMenu chosenMenu, User currentUser) {
-        for (int i = 0; i < chosenMenu.menu.size(); i++) {
-            if (currentUser.securityLevel.compareTo(chosenMenu.menu.get(i).securityLevel) >= 0) {
-                System.out.println("[" + (i + 1) + "] " + chosenMenu.menu.get(i).option);
+    public void dispMenu(User currentUser) {
+        System.out.println("------- " + this.menuName + " -------"); // Show menu title
+        System.out.println("Please enter a number to select an option:");
+        for (int i = 0; i < this.menu.size(); i++) { // Show menu accessible options (for the current users security level)
+            if (currentUser.securityLevel.compareTo(this.menu.get(i).securityLevel) >= 0) {
+                System.out.println("[" + (i + 1) + "] " + this.menu.get(i).option);
             }
         }
     }
@@ -31,7 +33,18 @@ public class CliMenu {
     }
 
     public State getMenuOptionState(int optionNum) {
-        return this.menu.get(optionNum).programState;
+        return this.menu.get(optionNum - 1).programState;
+    }
+
+    public boolean verifyValidMenuOption(User currentUser, int optionNum) {
+        for (int i = 0; i < this.menu.size(); i++) {
+            if (currentUser.securityLevel.compareTo(this.menu.get(i).securityLevel) >= 0) {
+                if (optionNum == i + 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private class MenuOption {
