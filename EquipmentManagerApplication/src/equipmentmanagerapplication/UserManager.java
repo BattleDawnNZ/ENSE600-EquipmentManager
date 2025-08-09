@@ -15,7 +15,7 @@ public class UserManager {
     public UserManager()
     {
         Manager root = new Manager("root"); // DEBUG!!!
-        users = new HashMap<String, User>(); // DEBUG!!!
+        users = new HashMap<>(); // DEBUG!!!
         users.put("root", root); // DEBUG!!!
         Employee rootE = new Employee("rootE"); // DEBUG!!!
         users.put("rootE", rootE);
@@ -54,6 +54,11 @@ public class UserManager {
         else{
             return false;
         }
+    }
+    
+    public boolean logout(){
+            this.activeUser = null; // Save the current user
+            return true;
     }
        
 

@@ -14,7 +14,7 @@ public abstract class User {
     protected SecurityLevels securityLevel;
     protected int[] validMenuOptions_L1;
     
-    protected enum SecurityLevels {GUEST, EMPLOYEE, MANAGER};
+    protected static enum SecurityLevels {GUEST, EMPLOYEE, MANAGER};
     
     public User(String userID, SecurityLevels securityLevel){
         this.userID = userID;
