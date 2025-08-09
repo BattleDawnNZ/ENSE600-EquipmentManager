@@ -30,10 +30,12 @@ public class BookingManager implements Serializable {
      * @param bookedDate The date of the booking.
      * @param returnDate The return date of the booking.
      */
-    public void issueItem(String userID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public void issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	String bookingID = generateBookingID();
-	Booking booking = new Booking(bookingID, userID, bookedDate, returnDate);
-	bookings.put(bookingID, booking);
+	Booking booking = new Booking(bookingID, userID, itemID, bookedDate, returnDate);
+	if (bookings.put(bookingID, booking) != null) {
+	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
+	}
     }
 
     /**
