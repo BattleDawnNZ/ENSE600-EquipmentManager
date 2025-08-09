@@ -29,7 +29,7 @@ public class Item implements Serializable {
     /**
      * Represents an event in an items history.
      */
-    public static class History {
+    public static class History implements Serializable {
 
 	/**
 	 *
