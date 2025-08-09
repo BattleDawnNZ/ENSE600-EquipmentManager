@@ -10,8 +10,28 @@ import java.util.Map;
  */
 public class ItemManager implements Serializable {
 
-    private static HashMap<String, Item> items = new HashMap<>();
-    private static int currentID = 0;
+    /**
+     * Singleton Instance
+     */
+    public static ItemManager instance;
+
+    private ItemManager() {
+	items = new HashMap<>();
+	currentID = 0;
+    }
+
+    /**
+     *
+     * @return The instance of this object.
+     */
+    public static ItemManager getInstance() {
+	if (instance == null) {
+	    instance = new ItemManager();
+	}
+	return instance;
+    }
+    private HashMap<String, Item> items;
+    private int currentID;
 
     /**
      * Adds a new item to the items HashMap.
@@ -23,7 +43,8 @@ public class ItemManager implements Serializable {
     public static void addItem(String name, String location, String type) {
 	String itemID = generateItemID(type);
 	Item item = new Item(itemID, name, location, type);
-	items.put(itemID, item);
+	getInstance().items.put(itemID, item);
+	FileManager.saveItemManager();
     }
 
     /**
@@ -37,8 +58,8 @@ public class ItemManager implements Serializable {
 	    for (String str : type.toUpperCase().split("/")) {
 		newID += str.toCharArray()[0];
 	    }
-	    newID += String.format("%06d", currentID++);
-	} while (items.containsKey(newID));
+	    newID += String.format("%06d", getInstance().currentID++);
+	} while (getInstance().items.containsKey(newID));
 	return newID;
     }
 
@@ -48,7 +69,8 @@ public class ItemManager implements Serializable {
      * @param itemID The ID of the item to be removed.
      */
     public static void removeItem(String itemID) {
-	items.remove(itemID);
+	getInstance().items.remove(itemID);
+	FileManager.saveItemManager();
     }
 
     /**
@@ -67,7 +89,7 @@ public class ItemManager implements Serializable {
      * @return The desired item.
      */
     public static Item getItemFromID(String itemID) {
-	return items.get(itemID);
+	return getInstance().items.get(itemID);
     }
 
     public String toString() {
