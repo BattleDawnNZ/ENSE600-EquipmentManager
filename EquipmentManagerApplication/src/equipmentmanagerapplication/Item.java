@@ -90,4 +90,16 @@ public class Item implements Serializable {
     public History[] getHistory() {
 	return history.toArray(new History[0]);
     }
+
+    /**
+     * Checks whether the item has a particular type.
+     *
+     * i.e. electrical/measurement hasType electrical
+     *
+     * @param partType the partial type string to check
+     * @return true if the partType is contained in the type
+     */
+    public boolean hasType(String partType) {
+	return type.contains(partType);
+    }
 }
