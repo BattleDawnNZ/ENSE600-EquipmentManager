@@ -55,7 +55,7 @@ public class BookingManager implements Serializable {
     public static boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	String bookingID = generateBookingID();
 	Booking booking = new Booking(bookingID, userID, itemID, bookedDate, returnDate);
-	for (Booking other : getInstance().bookings.values()) {
+	for (Booking other : getBookingsForItem(itemID)) {
 	    if (booking.overlaps(other)) {
 		return false;
 	    }
