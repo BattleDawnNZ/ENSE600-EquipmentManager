@@ -1,6 +1,9 @@
 package equipmentmanagerapplication;
 
 import equipmentmanagerapplication.User.SecurityLevels;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;  // Import the Scanner class
 
 /**
@@ -28,12 +31,14 @@ public class CliManager {
     }
 
     static State currentState = State.LOGIN;
+    static State currentAction;
 
     public static void runCli() {
 
         initialiseMenuDefinitions();
 
         State newState;
+        State nextAction;
 
         System.out.println("Welcome to Equipment Manager!");
 
@@ -43,26 +48,32 @@ public class CliManager {
                     login();
                     currentState = State.MENU_L1;
                     break;
+                case LOGOUT:
+                    userManager.logout();
+                    break;
                 case MENU_L1:
-                    newState = processMenu(menu_L1);
+                    newState = processMenu(menu_L1); // Handle option selection and save the next menu (state) to move to
                     currentState = newState;
                     break;
                 case MENU_L2_ManageEquipment:
-                    newState = processMenu(menu_L2_manageEquipment);
-                    currentState = newState;
+                    nextAction = processMenu(menu_L2_manageEquipment); // Handle option selection and save the selected next action (state) to move to
+                    //processAction_manageEquipment(nextAction);
                     break;
                 case MENU_L2_ManageUsers:
-                    newState = processMenu(menu_L2_manageUsers);
-                    currentState = newState;
+                    nextAction = processMenu(menu_L2_manageUsers); // Handle option selection and save the selected next action (state) to move to
+                    //processAction_manageUsers(nextAction);
                     break;
                 case MENU_L2_ItemBookings:
-                    newState = processMenu(menu_L2_itemBookings);
-                    currentState = newState;
+                    nextAction = processMenu(menu_L2_itemBookings); // Handle option selection and save the selected next action (state) to move to
+                    processAction_itemBookings(nextAction);
                     break;
                 case MENU_L2_ItemSearch:
-                    newState = processMenu(menu_L2_itemSearch);
-                    currentState = newState;
+                    nextAction = processMenu(menu_L2_itemSearch); // Handle option selection and save the selected next action (state) to move to
+                    //processAction_itemSearch(nextAction);
                     break;
+                default:
+                    newState = processMenu(menu_L1); // Handle option selection and save the next menu (state) to move to
+                    currentState = newState;
             }
         }
     }
@@ -79,6 +90,12 @@ public class CliManager {
         }
     }
 
+    /**
+     *
+     * @param menu
+     * @return the next state the system should go into based on the selected
+     * option
+     */
     private static State processMenu(CliMenu menu) {
 
         int chosenOption;
@@ -87,24 +104,86 @@ public class CliManager {
         menu.dispMenu(userManager.getActiveUser());
 
         do { // Prompt for user input until entry is valid
-            chosenOption = getUserIntegerInput();
+            chosenOption = getUserInput_integer();
         } while (!menu.verifyValidMenuOption(userManager.getActiveUser(), chosenOption));
 
-        return menu.getMenuOptionState(chosenOption); // Return the next state the system should go into based on the selected option
+        return menu.getMenuOptionState(chosenOption);
 
     }
 
-    static int getUserIntegerInput() { // Request selection until user enters an integer
+    /**
+     * Requests user input until the user enters an integer
+     *
+     * @return an integer entered by the user
+     */
+    static int getUserInput_integer() {
         Scanner scan = new Scanner(System.in);
         try {
             return scan.nextInt();
         } catch (Exception E) {
             System.out.println("Invalid input! Please enter a valid number: ");
-            return getUserIntegerInput();
+            return getUserInput_integer();
         }
     }
 
-    public static void initialiseMenuDefinitions() { // Defines all CLI menu options
+    static String getUserInput_itemID() {
+
+        System.out.println("Please enter the item ID: ");
+
+        Scanner scan = new Scanner(System.in);
+
+        try {
+            String input = scan.nextLine().trim().toUpperCase();
+            if (ItemManager.items.containsKey(input)) {
+                return input;
+            } else {
+                System.out.println("Invalid ID! If unknown, use the search function on the homepage to find it.");
+                return getUserInput_itemID();
+            }
+        } catch (Exception E) {
+            System.out.println("Error! " + E.getMessage());
+            return getUserInput_itemID();
+        }
+    }
+
+    static ZonedDateTime getUserInput_date() {
+
+        System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm:ss' : ");
+
+        Scanner scan = new Scanner(System.in);
+
+        try {
+            String input = scan.next();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            return ZonedDateTime.parse(input, formatter);
+
+        } catch (Exception E) {
+            System.out.println("Invalid input! Please ensure you use the correct format.");
+            return getUserInput_date();
+        }
+    }
+
+    private static void processAction_itemBookings(State nextAction) {
+        switch (currentState) {
+            case ACTION_BookItem:
+                BookingManager.issueItem(UserManager.getActiveUser().getUserID(), getUserInput_itemID(), ZonedDateTime.now(), getUserInput_date());
+                // If the item is already bookied it shouldnt book!!!!
+                break; // Implemenet exit the action??? HOW!!
+            case ACTION_ReturnItem:
+
+                break;
+            case ACTION_ViewBookings:
+
+                break;
+            default:
+                return; // Handle option selection and save the next menu (state) to move to
+        }
+    }
+
+    /**
+     * Defines all Menus
+     */
+    private static void initialiseMenuDefinitions() { // Defines all CLI menu options
 
         // The state variable correcsponds to the state that should be moved into if the option is selected
         menu_L1 = new CliMenu("MAIN MENU");
