@@ -3,7 +3,9 @@ package equipmentmanagerapplication;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages issuing and returning of items.
@@ -15,7 +17,7 @@ public class BookingManager implements Serializable {
     /**
      * Singleton Instance
      */
-    public static BookingManager instance;
+    private static BookingManager instance;
 
     private BookingManager() {
 	bookings = new HashMap<>();
@@ -46,13 +48,20 @@ public class BookingManager implements Serializable {
      * @param bookedDate The date of the booking.
      * @param returnDate The return date of the booking.
      */
-    public static void issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public static boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	String bookingID = generateBookingID();
 	Booking booking = new Booking(bookingID, userID, itemID, bookedDate, returnDate);
+	for (Booking other : getInstance().bookings.values()) {
+	    if (booking.overlaps(other)) {
+		return false;
+	    }
+	}
+	// Should never occur.
 	if (getInstance().bookings.put(bookingID, booking) != null) {
 	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
 	}
 	FileManager.saveBookingManager();
+	return true;
     }
 
     /**
@@ -78,8 +87,38 @@ public class BookingManager implements Serializable {
      *
      * @return An array copy of the bookings.
      */
-    public static Booking[] getBookings() {
-	return getInstance().bookings.values().toArray(new Booking[0]);
+    public static ArrayList<Booking> getBookings() {
+	return (ArrayList<Booking>) getInstance().bookings.values();
+    }
+
+    /**
+     *
+     * @param itemID
+     * @return All bookings for the item.
+     */
+    public static ArrayList<Booking> getBookingsForItem(String itemID) {
+	ArrayList<Booking> validBookings = new ArrayList<>();
+	getInstance().bookings.forEach((k, v) -> {
+	    if (v.getID().equals(itemID)) {
+		validBookings.add(v);
+	    }
+	});
+	return validBookings;
+    }
+
+    /**
+     *
+     * @param userID
+     * @return All bookings for the user.
+     */
+    public static ArrayList<Booking> getBookingsForUser(String userID) {
+	ArrayList<Booking> validBookings = new ArrayList<>();
+	getInstance().bookings.forEach((k, v) -> {
+	    if (v.getUserID().equals(userID)) {
+		validBookings.add(v);
+	    }
+	});
+	return validBookings;
     }
 
     /**
