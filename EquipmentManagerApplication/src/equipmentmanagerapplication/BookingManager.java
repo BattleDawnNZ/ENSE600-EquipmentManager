@@ -35,6 +35,10 @@ public class BookingManager implements Serializable {
 	return instance;
     }
 
+    public static void setInstance(BookingManager newInstance) {
+	instance = newInstance;
+    }
+
     /**
      * Contains All the Bookings. Keyed by Booking ID.
      */

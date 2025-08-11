@@ -28,6 +28,10 @@ public class LocationManager implements Serializable {
 	}
 	return instance;
     }
+
+    public static void setInstance(LocationManager newInstance) {
+	instance = newInstance;
+    }
     private HashSet<String> locations;
 
     /**

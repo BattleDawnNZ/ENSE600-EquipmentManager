@@ -30,6 +30,10 @@ public class ItemManager implements Serializable {
 	}
 	return instance;
     }
+
+    public static void setInstance(ItemManager newInstance) {
+	instance = newInstance;
+    }
     private HashMap<String, Item> items;
     private int currentID;
 

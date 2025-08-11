@@ -16,9 +16,9 @@ public class FileManager {
     private static final String saveDirectory = "data/";
 
     public static void loadAll() {
-	ItemManager.instance = loadItemManager();
-	LocationManager.instance = loadLocationManager();
-	BookingManager.instance = loadBookingManager();
+	ItemManager.setInstance(loadItemManager());
+	LocationManager.setInstance(loadLocationManager());
+	BookingManager.setInstance(loadBookingManager());
     }
 
     public static void saveAll() {
