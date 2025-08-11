@@ -171,14 +171,30 @@ public class Item implements Serializable {
     }
 
     /**
+     * @param partID the partial ID string to check
+     * @return An ArrayList of all items where partID is contained in the id
+     */
+    public boolean hasInID(String partID) {
+	return id.contains(partID);
+    }
+
+    /**
+     * @param partName the partial name string to check
+     * @return An ArrayList of all items where partName is contained in the name
+     */
+    public boolean hasInName(String partName) {
+	return name.contains(partName);
+    }
+
+    /**
      * Checks whether the item has a particular type.
      *
      * i.e. electrical/measurement hasType electrical
      *
      * @param partType the partial type string to check
-     * @return true if the partType is contained in the type
+     * @return An ArrayList of all items where partType is contained in the type
      */
-    public boolean hasType(String partType) {
+    public boolean hasInType(String partType) {
 	return type.contains(partType);
     }
 

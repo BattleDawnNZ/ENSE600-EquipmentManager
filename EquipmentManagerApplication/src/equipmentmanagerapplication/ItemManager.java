@@ -1,6 +1,7 @@
 package equipmentmanagerapplication;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,9 +73,10 @@ public class ItemManager implements Serializable {
      *
      * @param itemID The ID of the item to be removed.
      */
-    public static void removeItem(String itemID) {
-	getInstance().items.remove(itemID);
+    public static boolean removeItem(String itemID) {
+	Item returned = getInstance().items.remove(itemID);
 	FileManager.saveItemManager();
+	return returned != null;
     }
 
     /**
@@ -89,11 +91,49 @@ public class ItemManager implements Serializable {
     /**
      * Returns an item from the items HashMap.
      *
-     * @param itemID The desired items ID.
+     * @param partID The desired items ID.
      * @return The desired item.
      */
-    public static Item getItemFromID(String itemID) {
-	return getInstance().items.get(itemID);
+    public static ArrayList<Item> getItemsFromID(String partID) {
+	ArrayList<Item> validItems = new ArrayList<>();
+	getInstance().items.forEach((k, v) -> {
+	    if (v.hasInID(partID)) {
+		validItems.add(v);
+	    }
+	});
+	return validItems;
+    }
+
+    /**
+     * Returns an item from the items HashMap.
+     *
+     * @param partName The desired items ID.
+     * @return The desired item.
+     */
+    public static ArrayList<Item> getItemsFromName(String partName) {
+	ArrayList<Item> validItems = new ArrayList<>();
+	getInstance().items.forEach((k, v) -> {
+	    if (v.hasInName(partName)) {
+		validItems.add(v);
+	    }
+	});
+	return validItems;
+    }
+
+    /**
+     * Returns an item from the items HashMap.
+     *
+     * @param partType The desired items ID.
+     * @return The desired item.
+     */
+    public static ArrayList<Item> getItemsFromType(String partType) {
+	ArrayList<Item> validItems = new ArrayList<>();
+	getInstance().items.forEach((k, v) -> {
+	    if (v.hasInType(partType)) {
+		validItems.add(v);
+	    }
+	});
+	return validItems;
     }
 
     /**
