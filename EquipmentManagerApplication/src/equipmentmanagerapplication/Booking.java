@@ -79,6 +79,10 @@ public class Booking implements Serializable {
 	return returnDate;
     }
 
+    public boolean overlaps(Booking other) {
+	return !(returnDate.isBefore(other.bookedDate) || bookedDate.isAfter(other.returnDate));
+    }
+
     @Override
     public String toString() {
 	return "ID: " + id + ", UserID: " + userID + ", ItemID: " + itemID + ", Booked Date: " + bookedDate + ", Return Date: " + returnDate + ".";
