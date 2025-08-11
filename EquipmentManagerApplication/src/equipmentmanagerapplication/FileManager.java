@@ -19,6 +19,7 @@ public class FileManager {
 	ItemManager.setInstance(loadItemManager());
 	LocationManager.setInstance(loadLocationManager());
 	BookingManager.setInstance(loadBookingManager());
+	UserManager.setInstance(loadUserManager());
     }
 
     public static void saveAll() {
@@ -49,6 +50,14 @@ public class FileManager {
 
     public static void saveBookingManager() {
 	saveFile(BookingManager.getInstance(), "booking_manager.bin");
+    }
+
+    public static UserManager loadUserManager() {
+	return (UserManager) loadFile("user_manager.bin");
+    }
+
+    public static void saveUserManager() {
+	saveFile(UserManager.getInstance(), "user_manager.bin");
     }
 
     /**
