@@ -13,7 +13,7 @@ public class ItemManager implements Serializable {
     /**
      * Singleton Instance
      */
-    public static ItemManager instance;
+    private static ItemManager instance;
 
     private ItemManager() {
 	items = new HashMap<>();
@@ -90,6 +90,15 @@ public class ItemManager implements Serializable {
      */
     public static Item getItemFromID(String itemID) {
 	return getInstance().items.get(itemID);
+    }
+
+    /**
+     *
+     * @param itemID
+     * @return True if ID is valid.
+     */
+    public static boolean verifyID(String itemID) {
+	return getInstance().items.containsKey(itemID);
     }
 
     public String toString() {
