@@ -89,6 +89,17 @@ public class ItemManager implements Serializable {
     }
 
     /**
+     * Returns an item from the items HashMap. This should only be used if you
+     * have the exact ID, otherwise use getItemsFromID.
+     *
+     * @param itemID The desired items ID.
+     * @return The desired item.
+     */
+    public static Item getItemFromID(String itemID) {
+	return getInstance().items.get(itemID);
+    }
+
+    /**
      * Returns an item from the items HashMap.
      *
      * @param partID The desired items ID.
@@ -107,7 +118,7 @@ public class ItemManager implements Serializable {
     /**
      * Returns an item from the items HashMap.
      *
-     * @param partName The desired items ID.
+     * @param partName The desired items name.
      * @return The desired item.
      */
     public static ArrayList<Item> getItemsFromName(String partName) {
@@ -123,7 +134,7 @@ public class ItemManager implements Serializable {
     /**
      * Returns an item from the items HashMap.
      *
-     * @param partType The desired items ID.
+     * @param partType The desired items type.
      * @return The desired item.
      */
     public static ArrayList<Item> getItemsFromType(String partType) {
