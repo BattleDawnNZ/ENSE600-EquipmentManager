@@ -10,6 +10,14 @@ import java.util.HashSet;
 public class LocationManager implements Serializable {
 
     /**
+     * The name for the save file.
+     */
+    private final String fileName = "location_manager.bin";
+    /**
+     * Contains all the locations.
+     */
+    private HashSet<String> locations;
+    /**
      * Singleton Instance
      */
     public static LocationManager instance;
@@ -29,10 +37,19 @@ public class LocationManager implements Serializable {
 	return instance;
     }
 
-    public static void setInstance(LocationManager newInstance) {
-	instance = newInstance;
+    /**
+     * Loads the location manager from a file.
+     */
+    public void load() {
+	instance = (LocationManager) FileManager.loadFile(fileName);
     }
-    private HashSet<String> locations;
+
+    /**
+     * Saves the location manager to a file
+     */
+    public void save() {
+	FileManager.saveFile(this, fileName);
+    }
 
     /**
      *
@@ -50,7 +67,7 @@ public class LocationManager implements Serializable {
      */
     public static void addLocation(String newLocation) {
 	getInstance().locations.add(newLocation);
-	FileManager.saveLocationManager();
+	getInstance().save();
     }
 
     /**
@@ -60,7 +77,7 @@ public class LocationManager implements Serializable {
      */
     public static void removeLocation(String oldLocation) {
 	getInstance().locations.remove(oldLocation);
-	FileManager.saveLocationManager();
+	getInstance().save();
     }
 
     /**

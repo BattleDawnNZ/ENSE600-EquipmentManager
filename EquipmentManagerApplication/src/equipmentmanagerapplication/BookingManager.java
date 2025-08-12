@@ -12,8 +12,17 @@ import java.util.Set;
  *
  * @author fmw5088
  */
-public class BookingManager implements Serializable {
+public class BookingManager implements Serializable, Saveable {
 
+    /**
+     * The name for the save file.
+     */
+    private final String fileName = "booking_manager.bin";
+    /**
+     * Contains All the Bookings. Keyed by Booking ID.
+     */
+    private HashMap<String, Booking> bookings;
+    private int currentID;
     /**
      * Singleton Instance
      */
@@ -35,15 +44,19 @@ public class BookingManager implements Serializable {
 	return instance;
     }
 
-    public static void setInstance(BookingManager newInstance) {
-	instance = newInstance;
+    /**
+     * Loads the item manager from a file.
+     */
+    public void load() {
+	instance = (BookingManager) FileManager.loadFile(fileName);
     }
 
     /**
-     * Contains All the Bookings. Keyed by Booking ID.
+     * Saves the item manager to a file
      */
-    private HashMap<String, Booking> bookings;
-    private int currentID;
+    public void save() {
+	FileManager.saveFile(this, fileName);
+    }
 
     /**
      * Creates a new booking.
@@ -65,8 +78,8 @@ public class BookingManager implements Serializable {
 	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
 	}
 	ItemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate + " to " + returnDate);
-	FileManager.saveBookingManager();
-	FileManager.saveItemManager();
+	getInstance().save();
+	ItemManager.getInstance().save();
 	return true;
     }
 
@@ -78,8 +91,8 @@ public class BookingManager implements Serializable {
     public static void returnItem(String bookingID) {
 	Booking booking = getInstance().bookings.remove(bookingID);
 	ItemManager.getItemFromID(booking.getItemID()).addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
-	FileManager.saveBookingManager();
-	FileManager.saveItemManager();
+	getInstance().save();
+	ItemManager.getInstance().save();
     }
 
     /**

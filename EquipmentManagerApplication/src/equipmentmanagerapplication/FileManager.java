@@ -15,51 +15,6 @@ public class FileManager {
 
     private static final String saveDirectory = "data/";
 
-    public static void loadAll() {
-	ItemManager.setInstance(loadItemManager());
-	LocationManager.setInstance(loadLocationManager());
-	BookingManager.setInstance(loadBookingManager());
-	UserManager.setInstance(loadUserManager());
-    }
-
-    public static void saveAll() {
-	saveItemManager();
-	saveLocationManager();
-	saveBookingManager();
-    }
-
-    public static ItemManager loadItemManager() {
-	return (ItemManager) loadFile("item_manager.bin");
-    }
-
-    public static void saveItemManager() {
-	saveFile(ItemManager.getInstance(), "item_manager.bin");
-    }
-
-    public static LocationManager loadLocationManager() {
-	return (LocationManager) loadFile("location_manager.bin");
-    }
-
-    public static void saveLocationManager() {
-	saveFile(LocationManager.getInstance(), "location_manager.bin");
-    }
-
-    public static BookingManager loadBookingManager() {
-	return (BookingManager) loadFile("booking_manager.bin");
-    }
-
-    public static void saveBookingManager() {
-	saveFile(BookingManager.getInstance(), "booking_manager.bin");
-    }
-
-    public static UserManager loadUserManager() {
-	return (UserManager) loadFile("user_manager.bin");
-    }
-
-    public static void saveUserManager() {
-	saveFile(UserManager.getInstance(), "user_manager.bin");
-    }
-
     /**
      *
      * @param saveObject

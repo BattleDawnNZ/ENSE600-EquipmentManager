@@ -9,8 +9,18 @@ import java.util.Map;
  *
  * @author fmw5088
  */
-public class ItemManager implements Serializable {
+public class ItemManager implements Serializable, Saveable {
 
+    /**
+     * The name for the save file.
+     */
+    private final String fileName = "item_manager.bin";
+
+    /**
+     * Contains all the items. Keyed by item ID.
+     */
+    private HashMap<String, Item> items;
+    private int currentID;
     /**
      * Singleton Instance
      */
@@ -32,11 +42,19 @@ public class ItemManager implements Serializable {
 	return instance;
     }
 
-    public static void setInstance(ItemManager newInstance) {
-	instance = newInstance;
+    /**
+     * Loads the item manager from a file.
+     */
+    public void load() {
+	instance = (ItemManager) FileManager.loadFile(fileName);
     }
-    private HashMap<String, Item> items;
-    private int currentID;
+
+    /**
+     * Saves the item manager to a file
+     */
+    public void save() {
+	FileManager.saveFile(this, fileName);
+    }
 
     /**
      * Adds a new item to the items HashMap.
@@ -49,7 +67,7 @@ public class ItemManager implements Serializable {
 	String itemID = generateItemID(type);
 	Item item = new Item(itemID, name, location, type);
 	getInstance().items.put(itemID, item);
-	FileManager.saveItemManager();
+	getInstance().save();
     }
 
     /**
@@ -75,7 +93,7 @@ public class ItemManager implements Serializable {
      */
     public static boolean removeItem(String itemID) {
 	Item returned = getInstance().items.remove(itemID);
-	FileManager.saveItemManager();
+	getInstance().save();
 	return returned != null;
     }
 
