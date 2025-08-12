@@ -64,7 +64,9 @@ public class BookingManager implements Serializable {
 	if (getInstance().bookings.put(bookingID, booking) != null) {
 	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
 	}
+	ItemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate + " to " + returnDate);
 	FileManager.saveBookingManager();
+	FileManager.saveItemManager();
 	return true;
     }
 
@@ -74,8 +76,10 @@ public class BookingManager implements Serializable {
      * @param bookingID The booking ID fo the booking to remove.
      */
     public static void returnItem(String bookingID) {
-	getInstance().bookings.remove(bookingID);
+	Booking booking = getInstance().bookings.remove(bookingID);
+	ItemManager.getItemFromID(booking.getItemID()).addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
 	FileManager.saveBookingManager();
+	FileManager.saveItemManager();
     }
 
     /**

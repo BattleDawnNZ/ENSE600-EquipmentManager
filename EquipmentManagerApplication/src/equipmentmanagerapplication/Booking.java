@@ -65,6 +65,14 @@ public class Booking implements Serializable {
 
     /**
      *
+     * @return The ID of the item being booked.
+     */
+    public String getItemID() {
+	return itemID;
+    }
+
+    /**
+     *
      * @return The date of the booking
      */
     public ZonedDateTime getBookedDate() {
