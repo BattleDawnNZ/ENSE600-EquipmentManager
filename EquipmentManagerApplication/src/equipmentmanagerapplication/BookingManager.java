@@ -87,12 +87,22 @@ public class BookingManager implements Serializable, Saveable {
      * Remove a booking.
      *
      * @param bookingID The booking ID fo the booking to remove.
+     * @return True if the booking was successfully completed. i.e. item and
+     * booking both actually existed.
      */
-    public static void returnItem(String bookingID) {
+    public static boolean returnItem(String bookingID) {
 	Booking booking = getInstance().bookings.remove(bookingID);
-	ItemManager.getItemFromID(booking.getItemID()).addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
+	if (booking == null) {
+	    return false;
+	}
+	Item bookedItem = ItemManager.getItemFromID(booking.getItemID());
+	if (bookedItem == null) {
+	    return false;
+	}
+	bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
 	getInstance().save();
 	ItemManager.getInstance().save();
+	return true;
     }
 
     /**
