@@ -149,7 +149,9 @@ public class CliManager {
                     }
                     break;
                 case ACTION_ViewBookings:
+                    System.out.println("!!!!!!");
                     ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
+                    System.out.println(bookings);
                     for (Booking i : bookings) {
                         System.out.println(i.toString());
                     }
@@ -173,12 +175,14 @@ public class CliManager {
             switch (nextAction) {
                 case ACTION_CreateNewUser:
                     System.out.println("Please enter the new users ID number:");
-                    String id = String.valueOf(inputHandler.getUserInput_integer());
+                    String newId = inputHandler.getUserInput_newUserID();
+                    System.out.println("Please enter the users name:");
+                    String name = inputHandler.getUserInput_string();
                     SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get Security Level
-                    if (UserManager.createUser(id, level)) {
+                    if (UserManager.createUser(newId, name, level)) {
                         System.out.println("User created successfully.");
                     } else {
-                        System.out.println("That user is already in the system.");
+                        System.out.println("That user ID is already in the system.");
                     }
                     break;
                 case ACTION_RemoveUser:
@@ -189,10 +193,9 @@ public class CliManager {
                         System.out.println("Failed to remove the user. Check the ID is valid.");
                     }
                     break;
-                case ACTION_ViewBookings:
-                    for (Booking booking : BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID())) {
-                        System.out.println(booking.toString());
-                    }
+                case ACTION_ViewUserDetails:
+                    System.out.println("Please enter the ID number of the user you wish to see details of:");
+                    System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString());
                     break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu
@@ -277,5 +280,6 @@ public class CliManager {
 //        int choice = scanner.nextInt();
 //        return options[choice].state;
 
-
 // Reciew errors handed when x entered on a menu. Think okay though
+//View list of users
+//Change security level of user?

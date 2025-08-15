@@ -6,8 +6,8 @@ package equipmentmanagerapplication;
  */
 public class Manager extends User {
 
-    public Manager(String userID) {
-        super(userID, SecurityLevels.MANAGER);
+    public Manager(String userID, String name) {
+        super(userID, name, SecurityLevels.MANAGER);
     }
 
 }

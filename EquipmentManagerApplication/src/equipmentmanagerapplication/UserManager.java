@@ -20,13 +20,13 @@ public class UserManager implements Serializable, Saveable {
     private static UserManager instance;
 
     private UserManager() {
-        Manager root = new Manager("root"); // DEBUG!!!
+        Manager root = new Manager("111", "Bob"); // DEBUG!!!
         users = new HashMap<>(); // DEBUG!!!
-        users.put("root", root); // DEBUG!!!
-        Employee rootE = new Employee("rootE"); // DEBUG!!!
-        users.put("rootE", rootE);
-        Guest rootG = new Guest("rootG"); // DEBUG!!!
-        users.put("rootG", rootG);
+        users.put("111", root); // DEBUG!!!
+        Employee rootE = new Employee("222", "Fred"); // DEBUG!!!
+        users.put("222", rootE);
+        Guest rootG = new Guest("333", "Robert"); // DEBUG!!!
+        users.put("333", rootG);
     }
 
     /**
@@ -97,21 +97,21 @@ public class UserManager implements Serializable, Saveable {
      * @return true if the user was successfully created (or false if they
      * already exist)
      */
-    public static boolean createUser(String userID, SecurityLevels level) {
+    public static boolean createUser(String userID, String name, SecurityLevels level) {
         if (verifyID(userID)) {
             return false;
         } else {
             switch (level) { // Create new user based on their security level
                 case MANAGER:
-                    Manager newManager = new Manager(userID);
+                    Manager newManager = new Manager(userID, name);
                     getInstance().users.put(userID, newManager);
                     break;
                 case EMPLOYEE:
-                    Employee newEmployee = new Employee(userID);
+                    Employee newEmployee = new Employee(userID, name);
                     getInstance().users.put(userID, newEmployee);
                     break;
                 case GUEST:
-                    Guest newGuest = new Guest(userID);
+                    Guest newGuest = new Guest(userID, name);
                     getInstance().users.put(userID, newGuest);
                     break;
             }

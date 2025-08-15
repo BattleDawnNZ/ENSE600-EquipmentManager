@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public abstract class User implements Serializable {
 
     private String userID; // Cannot be changed once initialised
+    private String name;
     private ArrayList<String> bookingIDs;
     protected SecurityLevels securityLevel;
 
@@ -17,8 +18,9 @@ public abstract class User implements Serializable {
         GUEST, EMPLOYEE, MANAGER
     };
 
-    public User(String userID, SecurityLevels securityLevel) {
+    public User(String userID, String name, SecurityLevels securityLevel) {
         this.userID = userID;
+        this.name = name;
         this.bookingIDs = new ArrayList<String>();
         this.securityLevel = securityLevel;
     }
@@ -37,6 +39,11 @@ public abstract class User implements Serializable {
      */
     public ArrayList<String> getBookings() {
         return this.bookingIDs;
+    }
+
+    @Override
+    public String toString() {
+        return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ", Bookings: " + bookingIDs.toString() + ".";
     }
 
     ////////CHECK NEW ID IS VALID

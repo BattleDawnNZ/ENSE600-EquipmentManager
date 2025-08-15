@@ -47,6 +47,16 @@ public class InputHandler {
         }
     }
 
+    public String getUserInput_string() throws AbortActionException {
+        String entry = getUserEntry();
+        if (entry.chars().allMatch(Character::isLetter)) {
+            return entry.toUpperCase();
+        } else {
+            System.out.println("Invalid input! All characters must be letters. Please enter a valid string: ");
+            return getUserInput_string();
+        }
+    }
+
     public String getUserInput_itemID() throws AbortActionException {
 
         System.out.println("Please enter the item ID: ");
@@ -70,7 +80,24 @@ public class InputHandler {
             } else {
                 System.out.println("User not found! Please enter a valid ID number: ");
             }
-            return entry;
+            return getUserInput_userID();
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input! All valid ID numbers are numeric: ");
+            return getUserInput_userID();
+        }
+    }
+
+    public String getUserInput_newUserID() throws AbortActionException {
+
+        String entry = getUserEntry();
+        try {
+            int id = Integer.parseInt(entry); // Check the input is valid (a number)
+            if (!UserManager.verifyID(entry)) { // Check that id exists
+                return entry;
+            } else {
+                System.out.println("User ID already in the system! Please enter a valid, new ID number: ");
+                return getUserInput_newUserID();
+            }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input! All valid ID numbers are numeric: ");
             return getUserInput_userID();
