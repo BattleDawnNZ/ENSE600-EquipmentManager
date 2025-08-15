@@ -3,6 +3,7 @@ package equipmentmanagerapplication;
 import equipmentmanagerapplication.User.SecurityLevels;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -22,13 +23,12 @@ public class InputHandler {
             } else {
                 return input;
             }
-        } catch (NoSuchElementException e) { // No line found
-            System.out.println("Error! " + e.getMessage() + ". Please retry (or enter 'x' to exit the action)");
-            return getUserEntry();
-        } catch (IllegalStateException e) { // Scanner closed
+        } catch (NoSuchElementException | IllegalStateException e) { // No line found
             System.out.println("Error! " + e.getMessage() + ". Please retry (or enter 'x' to exit the action)");
             return getUserEntry();
         }
+        // Scanner closed
+
     }
 
     /**
@@ -56,55 +56,50 @@ public class InputHandler {
             return entry;
         } else {
             System.out.println("Invalid ID! If unknown, use the search function on the homepage to find it.");
-            return getUserInput_itemID();
+            return getUserInput_itemID(); // Reprompt for valid user input.
         }
     }
 
-    public String getUserInput_userID() {
+    public String getUserInput_userID() throws AbortActionException {
 
-        System.out.println("Please enter the user ID: ");
-
-        Scanner scan = new Scanner(System.in);
+        String entry = getUserEntry();
         try {
-            String id = String.valueOf(scan.nextInt());
-            if (UserManager.verifyID(id)) {
-                return id;
+            int id = Integer.parseInt(entry); // Check the input is valid (a number)
+            if (UserManager.verifyID(entry)) { // Check that id exists
+                return entry;
             } else {
-                System.out.println("Invalid input! Please enter a valid ID number: ");
+                System.out.println("User not found! Please enter a valid ID number: ");
             }
-        } catch (Exception E) {
-            System.out.println("Invalid input! Please enter a number: ");
+            return entry;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input! All valid ID numbers are numeric: ");
             return getUserInput_userID();
         }
-        return getUserInput_userID();
     }
 
-    public ZonedDateTime getUserInput_date() {
+    public ZonedDateTime getUserInput_date() throws AbortActionException {
 
         System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm:ss' : ");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-        Scanner scan = new Scanner(System.in);
+        String entry = getUserEntry();
 
         try {
-            String input = scan.next();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-            return ZonedDateTime.parse(input, formatter);
-
-        } catch (Exception E) {
+            return ZonedDateTime.parse(entry, formatter);
+        } catch (DateTimeParseException e) {
             System.out.println("Invalid input! Please ensure you use the correct format.");
             return getUserInput_date();
         }
     }
 
-    public SecurityLevels getUserInput_securityLevel() {
-        Scanner scan = new Scanner(System.in);
+    public SecurityLevels getUserInput_securityLevel() throws AbortActionException {
         System.out.println("Please enter the new users security level (MANAGER, EMPLOYEE, GUEST): ");
-        String chosenLevel;
+
+        String entry = getUserEntry().trim().toUpperCase();
         try {
-            String input = scan.nextLine().trim().toUpperCase();
-            return SecurityLevels.valueOf(input);
+            return SecurityLevels.valueOf(entry);
         } catch (Exception E) {
-            System.out.println("Invalid input!");
+            System.out.println("Invalid input! Ensure you enter a valid level");
             return getUserInput_securityLevel();
         }
     }

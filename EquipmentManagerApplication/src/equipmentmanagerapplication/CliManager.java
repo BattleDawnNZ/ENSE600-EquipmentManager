@@ -87,14 +87,18 @@ public class CliManager {
     }
 
     static void login() {
+        try {
+            System.out.println("To begin please enter your ID number:");
 
-        System.out.println("To begin please enter your ID number:");
-
-        if (UserManager.login(inputHandler.getUserInput_userID())) {
-            System.out.println("Login successful!");
-        } else {
-            System.out.println("Sorry, your ID is not recognised. Please try again.");
-            login();
+            if (UserManager.login(inputHandler.getUserInput_userID())) {
+                System.out.println("Login successful!");
+            } else {
+                System.out.println("Sorry, your ID is not recognised. Please try again.");
+                login();
+            }
+        } catch (AbortActionException e) {
+            System.out.println("Program Quit");
+            currentState = State.EXIT_PROGRAM; // If x is entered for the initial login page, end the program
         }
     }
 
@@ -178,7 +182,7 @@ public class CliManager {
                     }
                     break;
                 case ACTION_RemoveUser:
-                    System.out.println("Please enter the ID number of th user you wish to remove from the system:");
+                    System.out.println("Please enter the ID number of the user you wish to remove from the system:");
                     if (UserManager.removeUser(inputHandler.getUserInput_userID())) {
                         System.out.println("User removed successfully.");
                     } else {
@@ -272,3 +276,6 @@ public class CliManager {
 //        Scanner scanner = new Scanner(System.in);
 //        int choice = scanner.nextInt();
 //        return options[choice].state;
+
+
+// Reciew errors handed when x entered on a menu. Think okay though
