@@ -14,6 +14,8 @@ public class CliManager {
 
     static Scanner scan = new Scanner(System.in);
 
+    Exception ExitActionException;
+
     private static CliMenu menu_L1;
     private static CliMenu menu_L2_manageEquipment;
     private static CliMenu menu_L2_manageUsers;
@@ -21,7 +23,7 @@ public class CliManager {
     private static CliMenu menu_L2_itemSearch;
 
     public enum State {
-        LOGIN, LOGOUT, MENU_L1,
+        LOGIN, EXIT_PROGRAM, LOGOUT, MENU_L1,
         MENU_L2_ManageEquipment, MENU_L2_ManageUsers, MENU_L2_ItemBookings, MENU_L2_ItemSearch,
         ACTION_AddServiceNote, ACTION_FlagCalibration, ACTION_AddItem, ACTION_DeleteItem, ACTION_MoveItemLocation, ACTION_AddNewLocation,
         ACTION_CreateNewUser, ACTION_RemoveUser, ACTION_ViewUserDetails,
@@ -36,10 +38,17 @@ public class CliManager {
 
         initialiseMenuDefinitions();
 
+        System.out.println("------- Welcome to Equipment Manager! -------");
+        System.out.println("Enter 'x' at any time to exit out of an action. \nReturn to the main menu at any time to exit the program.");
+
+        runCliLoop();
+
+    }
+
+    static void runCliLoop() {
+
         State newState;
         State nextAction;
-
-        System.out.println("Welcome to Equipment Manager!");
 
         while (true) {
             switch (currentState) {
@@ -47,6 +56,8 @@ public class CliManager {
                     login();
                     currentState = State.MENU_L1;
                     break;
+                case EXIT_PROGRAM:
+                    return;
                 case LOGOUT:
                     UserManager.logout();
                     break;
@@ -60,7 +71,7 @@ public class CliManager {
                     break;
                 case MENU_L2_ManageUsers:
                     nextAction = processMenu(menu_L2_manageUsers); // Handle option selection and save the selected next action (state) to move to
-                    //processAction_manageUsers(nextAction);
+                    processAction_manageUsers(nextAction);
                     break;
                 case MENU_L2_ItemBookings:
                     nextAction = processMenu(menu_L2_itemBookings); // Handle option selection and save the selected next action (state) to move to
@@ -103,82 +114,11 @@ public class CliManager {
         menu.dispMenu(UserManager.getActiveUser());
 
         do { // Prompt for user input until entry is valid
-            chosenOption = getUserInput_integer();
+            chosenOption = InputHandler.getUserInput_integer();
         } while (!menu.verifyValidMenuOption(UserManager.getActiveUser(), chosenOption));
 
         return menu.getMenuOptionState(chosenOption);
 
-    }
-
-    /**
-     * Requests user input until the user enters an integer
-     *
-     * @return an integer entered by the user
-     */
-    static int getUserInput_integer() {
-        Scanner scan = new Scanner(System.in);
-        try {
-            return scan.nextInt();
-        } catch (Exception E) {
-            System.out.println("Invalid input! Please enter a valid number: ");
-            return getUserInput_integer();
-        }
-    }
-
-    static String getUserInput_itemID() {
-
-        System.out.println("Please enter the item ID: ");
-
-        Scanner scan = new Scanner(System.in);
-
-        try {
-            String input = scan.nextLine().trim().toUpperCase();
-            if (ItemManager.verifyID(input)) {
-                return input;
-            } else {
-                System.out.println("Invalid ID! If unknown, use the search function on the homepage to find it.");
-                return getUserInput_itemID();
-            }
-        } catch (Exception E) {
-            System.out.println("Error! " + E.getMessage());
-            return getUserInput_itemID();
-        }
-    }
-
-    static String getUserInput_userID() {
-
-        System.out.println("Please enter the user ID: ");
-
-        Scanner scan = new Scanner(System.in);
-        try {
-            String id = String.valueOf(scan.nextInt());
-            if (UserManager.verifyID(id)) {
-                return id;
-            } else {
-                System.out.println("Invalid input! Please enter a valid ID number: ");
-            }
-        } catch (Exception E) {
-            System.out.println("Invalid input! Please enter a number: ");
-            return getUserInput_userID();
-        }
-        return getUserInput_userID();
-    }
-
-    static ZonedDateTime getUserInput_date() {
-
-        System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm:ss' : ");
-
-        Scanner scan = new Scanner(System.in);
-
-        try {
-            String input = scan.next();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-            return ZonedDateTime.parse(input, formatter);
-
-        } catch (Exception E) {
-            System.out.println("Invalid input! Please ensure you use the correct format.");
-            return getUserInput_date();
-        }
     }
 
     /**
@@ -187,17 +127,19 @@ public class CliManager {
      * @param nextAction
      */
     private static void processAction_itemBookings(State nextAction) {
-        switch (currentState) {
+        switch (nextAction) {
             case ACTION_BookItem:
-                if (BookingManager.issueItem(UserManager.getActiveUser().getUserID(), getUserInput_itemID(), ZonedDateTime.now(), getUserInput_date())) {
+                if (BookingManager.issueItem(UserManager.getActiveUser().getUserID(), InputHandler.getUserInput_itemID(), ZonedDateTime.now(), InputHandler.getUserInput_date())) {
                     System.out.println("Item booked successfully.");
                 } else { // Item is already booked.
                     System.out.println("You cannot book this item. It is currently booked.");
                 }
                 break; // Implemenet exit the action??? HOW!!
             case ACTION_ReturnItem:
-                if (BookingManager.returnItem(getUserInput_itemID())) {
-                    //Rturned successfultyy... else did not
+                if (BookingManager.returnItem(InputHandler.getUserInput_itemID())) {
+                    System.out.println("Item returned successfully.");
+                } else {
+                    System.out.println("Failed to return the item. Check the item and booking ID are correct.");
                 }
                 break;
             case ACTION_ViewBookings:
@@ -218,21 +160,36 @@ public class CliManager {
      * @param nextAction
      */
     private static void processAction_manageUsers(State nextAction) {
-        switch (currentState) {
-            case ACTION_CreateNewUser:
-                System.out.println("Please enter the new users ID number:");
-                UserManager.createUser(String.valueOf(getUserInput_integer()), getUserInput_securityLevel());
-                // GET SECURITY LEVEL
-                break;
-            case ACTION_RemoveUser:
-                System.out.println("Please enter the ID number of th user you wish to remove from the system:");
-                //UserManager.removeUser(getUserInput_userID);
-                break;
-            case ACTION_ViewBookings:
-
-                break;
-            default:
-                return; // Handle option selection and save the next menu (state) to move to
+        try {
+            switch (nextAction) {
+                case ACTION_CreateNewUser:
+                    System.out.println("Please enter the new users ID number:");
+                    String id = String.valueOf(InputHandler.getUserInput_integer());
+                    SecurityLevels level = InputHandler.getUserInput_securityLevel(); // Get Security Level
+                    if (UserManager.createUser(id, level)) {
+                        System.out.println("User created successfully.");
+                    } else {
+                        System.out.println("That user is already in the system.");
+                    }
+                    break;
+                case ACTION_RemoveUser:
+                    System.out.println("Please enter the ID number of th user you wish to remove from the system:");
+                    if (UserManager.removeUser(InputHandler.getUserInput_userID())) {
+                        System.out.println("User removed successfully.");
+                    } else {
+                        System.out.println("Failed to remove the user. Check the ID is valid.");
+                    }
+                    break;
+                case ACTION_ViewBookings:
+                    for (Booking booking : BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID())) {
+                        System.out.println(booking.toString());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (AbortActionException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -243,6 +200,7 @@ public class CliManager {
 
         // The state variable correcsponds to the state that should be moved into if the option is selected
         menu_L1 = new CliMenu("MAIN MENU");
+        menu_L1.addMenuOption("Exit Program", State.EXIT_PROGRAM, SecurityLevels.GUEST);
         menu_L1.addMenuOption("Logout", State.LOGOUT, SecurityLevels.GUEST);
         menu_L1.addMenuOption("Item Search", State.MENU_L2_ItemSearch, SecurityLevels.GUEST);
         menu_L1.addMenuOption("Item Bookings", State.MENU_L2_ItemBookings, SecurityLevels.EMPLOYEE);
@@ -277,8 +235,16 @@ public class CliManager {
 
     }
 
-}
+    // Custom exception used to completely abort an action
+    class AbortActionException extends Exception {
 
+        public AbortActionException() {
+            super("Action aborted.");
+        }
+    }
+
+}
+/// Search item should be history show
 // !!!! Add New Item: Shows item ID
 //                    USER MANAGER CHHECK ACTION???
 //

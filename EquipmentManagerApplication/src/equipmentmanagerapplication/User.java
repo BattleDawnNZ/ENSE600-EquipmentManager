@@ -1,12 +1,13 @@
 package equipmentmanagerapplication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author ppj1707
  */
-public abstract class User {
+public abstract class User implements Serializable {
 
     private String userID; // Cannot be changed once initialised
     private ArrayList<String> bookingIDs;

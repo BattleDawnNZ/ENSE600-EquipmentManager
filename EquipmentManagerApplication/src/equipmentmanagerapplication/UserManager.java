@@ -12,7 +12,7 @@ public class UserManager implements Serializable, Saveable {
 
     private HashMap<String, User> users; // Store all users
     private User activeUser; // Stores the active user object
-    private final String fileName = "location_manager.bin"; // The name for the save file.
+    private final String fileName = "user_manager.bin"; // The name for the save file.
 
     /**
      * Singleton Instance
@@ -49,7 +49,7 @@ public class UserManager implements Serializable, Saveable {
      */
     @Override
     public void load() {
-        FileManager.loadFile(fileName);
+        instance = (UserManager) FileManager.loadFile(fileName);
     }
 
     /**
