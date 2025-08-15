@@ -120,7 +120,7 @@ public class CliManager {
             } while (!menu.verifyValidMenuOption(UserManager.getActiveUser(), chosenOption));
 
             return menu.getMenuOptionState(chosenOption);
-        } catch (AbortActionException e) {
+        } catch (AbortActionException e) { // User has aborted the active action
             System.out.println(e.getMessage());
             return processMenu(menu);
         }
@@ -157,16 +157,16 @@ public class CliManager {
                     }
                     break;
                 default:
-                    return; // Handle option selection and save the next menu (state) to move to
+                    currentState = State.MENU_L1; // Return to main menu
+                    break;
             }
-        } catch (AbortActionException e) {
+        } catch (AbortActionException e) { // User has aborted the active action
             System.out.println(e.getMessage());
         }
     }
 
-    //, , ACTION_ViewUserDetails,
     /**
-     * Processes a chosen action to do with item bookings
+     * Processes a chosen action to do with user management
      *
      * @param nextAction
      */
@@ -175,10 +175,10 @@ public class CliManager {
             switch (nextAction) {
                 case ACTION_CreateNewUser:
                     System.out.println("Please enter the new users ID number:");
-                    String newId = inputHandler.getUserInput_newUserID();
+                    String newId = inputHandler.getUserInput_newUserID(); // Get new ID
                     System.out.println("Please enter the users name:");
-                    String name = inputHandler.getUserInput_string();
-                    SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get Security Level
+                    String name = inputHandler.getUserInput_string(); // Get users name
+                    SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get security level
                     if (UserManager.createUser(newId, name, level)) {
                         System.out.println("User created successfully.");
                     } else {
@@ -195,13 +195,13 @@ public class CliManager {
                     break;
                 case ACTION_ViewUserDetails:
                     System.out.println("Please enter the ID number of the user you wish to see details of:");
-                    System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString());
+                    System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString()); // Get users id and display their details
                     break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu
                     break;
             }
-        } catch (AbortActionException e) {
+        } catch (AbortActionException e) { // User has aborted the active action
             System.out.println(e.getMessage());
         }
     }

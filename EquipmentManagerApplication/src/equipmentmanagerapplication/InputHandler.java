@@ -13,6 +13,11 @@ import java.util.Scanner;
  */
 public class InputHandler {
 
+    /**
+     *
+     * @return the line typed into the console
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     private String getUserEntry() throws AbortActionException {
         Scanner scan = new Scanner(System.in);
 
@@ -35,7 +40,8 @@ public class InputHandler {
      * Requests user input until the user enters an integer
      *
      * @return an integer entered by the user
-     * @throws equipmentmanagerapplication.AbortActionException
+     * @throws equipmentmanagerapplication.AbortActionException (if the user
+     * enters 'x' or 'X')
      */
     public int getUserInput_integer() throws AbortActionException {
         String entry = getUserEntry();
@@ -47,6 +53,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a string that is alphabetic
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public String getUserInput_string() throws AbortActionException {
         String entry = getUserEntry();
         if (entry.chars().allMatch(Character::isLetter)) {
@@ -57,6 +68,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a valid item ID that exists
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public String getUserInput_itemID() throws AbortActionException {
 
         System.out.println("Please enter the item ID: ");
@@ -70,6 +86,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a valid user ID that exists
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public String getUserInput_userID() throws AbortActionException {
 
         String entry = getUserEntry();
@@ -87,6 +108,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a valid new ID (an integer number)
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public String getUserInput_newUserID() throws AbortActionException {
 
         String entry = getUserEntry();
@@ -104,6 +130,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a zoned date-time object
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public ZonedDateTime getUserInput_date() throws AbortActionException {
 
         System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm:ss' : ");
@@ -119,6 +150,11 @@ public class InputHandler {
         }
     }
 
+    /**
+     *
+     * @return a valid option from the SecurityLevel enum
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
     public SecurityLevels getUserInput_securityLevel() throws AbortActionException {
         System.out.println("Please enter the new users security level (MANAGER, EMPLOYEE, GUEST): ");
 
