@@ -58,7 +58,7 @@ public class InputHandler {
      * @return a string that is alphabetic
      * @throws AbortActionException (if the user enters 'x' or 'X')
      */
-    public String getUserInput_string() throws AbortActionException {
+    public String getUserInput_alphabeticString() throws AbortActionException {
         String entry = getUserEntry();
         if (entry.chars().allMatch(Character::isLetter)) {
             return entry.toUpperCase();
@@ -66,6 +66,15 @@ public class InputHandler {
             System.out.println("Invalid input! All characters must be letters. Please enter a valid string: ");
             return getUserInput_string();
         }
+    }
+
+    /**
+     *
+     * @return any input in the console
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
+    public String getUserInput_string() throws AbortActionException {
+        return getUserEntry();
     }
 
     /**
@@ -164,6 +173,22 @@ public class InputHandler {
         } catch (Exception E) {
             System.out.println("Invalid input! Ensure you enter a valid level");
             return getUserInput_securityLevel();
+        }
+    }
+
+    /**
+     *
+     * @return a valid location (as a string)
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
+    public String getUserInput_location() throws AbortActionException {
+
+        String entry = getUserEntry().trim().toUpperCase();
+        if (LocationManager.isValidLocation(entry)) {
+            return entry;
+        } else {
+            System.out.println("Invalid Location! Choose from the options, or exit this action (x) and create a new location.");
+            return getUserInput_location(); // Reprompt for valid user input.
         }
     }
 

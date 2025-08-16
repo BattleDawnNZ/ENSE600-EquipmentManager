@@ -65,7 +65,7 @@ public class CliManager {
                     break;
                 case MENU_L2_ManageEquipment:
                     nextAction = processMenu(menu_L2_manageEquipment); // Handle option selection and save the selected next action (state) to move to
-                    //processAction_manageEquipment(nextAction);
+                    processAction_manageEquipment(nextAction);
                     break;
                 case MENU_L2_ManageUsers:
                     nextAction = processMenu(menu_L2_manageUsers); // Handle option selection and save the selected next action (state) to move to
@@ -177,7 +177,7 @@ public class CliManager {
                     System.out.println("Please enter the new users ID number:");
                     String newId = inputHandler.getUserInput_newUserID(); // Get new ID
                     System.out.println("Please enter the users name:");
-                    String name = inputHandler.getUserInput_string(); // Get users name
+                    String name = inputHandler.getUserInput_alphabeticString(); // Get users name
                     SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get security level
                     if (UserManager.createUser(newId, name, level)) {
                         System.out.println("User created successfully.");
@@ -196,6 +196,74 @@ public class CliManager {
                 case ACTION_ViewUserDetails:
                     System.out.println("Please enter the ID number of the user you wish to see details of:");
                     System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString()); // Get users id and display their details
+                    break;
+                default:
+                    currentState = State.MENU_L1; // Return to main menu
+                    break;
+            }
+        } catch (AbortActionException e) { // User has aborted the active action
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Processes a chosen action to do with equipment management
+     *
+     * @param nextAction
+     */
+    private static void processAction_manageEquipment(State nextAction) {
+        try {
+            switch (nextAction) {
+                case ACTION_AddServiceNote:
+                    System.out.println("Please enter the item ID number:");
+                    String id = inputHandler.getUserInput_itemID(); // Get item ID
+                    System.out.println("Please enter the service note:");
+                    String note = inputHandler.getUserInput_string(); // Get the service note
+                    ItemManager.getItemFromID(id).addHistory(note); // Add service note
+                    System.out.println("Service note added successfully.");
+                    break;
+                case ACTION_FlagCalibration:
+                    System.out.println("Please enter the item ID number of the item to flag: ");
+                    ItemManager.getItemFromID(inputHandler.getUserInput_itemID()).flagForCalibration();
+                    System.out.println("Item flagged for calibration successfully.");
+                    break;
+                case ACTION_AddItem:
+                    System.out.println("Please enter the new items name (eg, 'R9000 Universal Laser Cutter') :");
+                    String newItemName = inputHandler.getUserInput_string();
+                    System.out.println(LocationManager.getAllAvailableLocations()); // Print available locations
+                    System.out.println("Please enter the new items location (see valid locations above):");
+                    String newItemLocation = inputHandler.getUserInput_location();
+                    System.out.println("Please enter the new items type (eg, electrical/measurement/multimeters):"); // !!!
+                    String newItemType = inputHandler.getUserInput_alphabeticString();
+                    if (ItemManager.addItem(newItemName, newItemLocation, newItemType)) { // OR ITEM ALREADY EXISTS?? CHECK
+                        System.out.println("Item added successfully.");
+                    } else {
+                        System.out.println("Failed to create the item. Check the details are correct."); // OR ITEM ALREADY EXISTS
+                    }
+                    break;
+                case ACTION_DeleteItem:
+                    System.out.println("Please enter the item ID number of the item to delete: ");
+                    if (ItemManager.removeItem(inputHandler.getUserInput_itemID())) {
+                        System.out.println("Item deleted successfully.");
+                    } else {
+                        System.out.println("Error removing that item. Check the details are correct.");
+                    }
+                    break;
+                case ACTION_MoveItemLocation:
+                    System.out.println("Please enter the item ID number of the item you are moving: ");
+                    String moveItemID = inputHandler.getUserInput_itemID();
+                    System.out.println("The item is currently at " + ItemManager.getItemFromID(moveItemID).getLocation() + ". Enter its new location:");
+                    String moveItemLocation = inputHandler.getUserInput_location();
+                    LocationManager.moveItem(moveItemID, moveItemLocation);
+                    System.out.println("Item location adjusted.");
+                    break;
+                case ACTION_AddNewLocation:
+                    System.out.println("Please enter the name of the locatoin you wish to add:");
+                    if (LocationManager.addLocation(inputHandler.getUserInput_string())) {
+                        System.out.println("Location added successfully.");
+                    } else {
+                        System.out.println("Failed to create location. It already exists.");
+                    }
                     break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu
@@ -283,3 +351,5 @@ public class CliManager {
 // Reciew errors handed when x entered on a menu. Think okay though
 //View list of users
 //Change security level of user?
+
+// No type' error checking
