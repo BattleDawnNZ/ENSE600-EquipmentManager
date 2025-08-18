@@ -103,7 +103,7 @@ public class ItemManager implements Serializable, Saveable {
      * @param item The item to be removed.
      */
     public static void removeItem(Item item) {
-	removeItem(item.getID());
+	removeItem(item.getId());
     }
 
     /**

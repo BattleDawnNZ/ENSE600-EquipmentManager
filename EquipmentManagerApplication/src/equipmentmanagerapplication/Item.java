@@ -110,8 +110,24 @@ public class Item implements Serializable {
      *
      * @return Item ID
      */
-    public String getID() {
+    public String getId() {
 	return id;
+    }
+
+    /**
+     *
+     * @return Item name
+     */
+    public String getName() {
+	return name;
+    }
+
+    /**
+     *
+     * @return Item Description
+     */
+    public String getDescription() {
+	return description;
     }
 
     /**
@@ -135,6 +151,55 @@ public class Item implements Serializable {
 
     /**
      *
+     * @return Item Status
+     */
+    public Status getStatus() {
+	return status;
+    }
+
+    /**
+     *
+     * @return Item Type
+     */
+    public String getType() {
+	return type;
+    }
+
+    /**
+     * Flags an item as needing calibration
+     */
+    public void flagForCalibration() {
+	needsCalibration = true;
+	addHistory("Needs calibration.");
+    }
+
+    /**
+     *
+     * @return needsCalibration flag
+     */
+    public boolean getNeedsCalibration() {
+	return needsCalibration;
+    }
+
+    /**
+     * Updates the items last calibration date.
+     */
+    public void calibrate() {
+	needsCalibration = false;
+	lastCalibration = ZonedDateTime.now();
+	addHistory("Calibrated.");
+    }
+
+    /**
+     *
+     * @return LastCalibration as a ZonedDateTime object
+     */
+    public ZonedDateTime getLastCalibration() {
+	return lastCalibration;
+    }
+
+    /**
+     *
      * @param description
      */
     public final void addHistory(String description) {
@@ -148,23 +213,6 @@ public class Item implements Serializable {
      */
     public History[] getHistory() {
 	return history.toArray(new History[0]);
-    }
-
-    /**
-     * Flags an item as needing calibration
-     */
-    public void flagForCalibration() {
-	needsCalibration = true;
-	addHistory("Needs calibration.");
-    }
-
-    /**
-     * Updates the items last calibration date.
-     */
-    public void calibrate() {
-	needsCalibration = false;
-	lastCalibration = ZonedDateTime.now();
-	addHistory("Calibrated.");
     }
 
     /**
