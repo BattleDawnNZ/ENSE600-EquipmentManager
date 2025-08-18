@@ -2,6 +2,7 @@ package equipmentmanagerapplication;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Stores booking data.
@@ -30,6 +31,8 @@ public class Booking implements Serializable {
      * The return date of the booking.
      */
     private ZonedDateTime returnDate;
+
+    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     /**
      * Creates a new booking with the specified details.
@@ -65,6 +68,15 @@ public class Booking implements Serializable {
 
     /**
      *
+     * @param userID The User ID in Question
+     * @return True if the user owns the booking.
+     */
+    public boolean isOwnedBy(String userID) {
+	return this.userID.equals(userID);
+    }
+
+    /**
+     *
      * @return The ID of the item being booked.
      */
     public String getItemID() {
@@ -93,6 +105,6 @@ public class Booking implements Serializable {
 
     @Override
     public String toString() {
-	return "ID: " + id + ", UserID: " + userID + ", ItemID: " + itemID + ", Booked Date: " + bookedDate + ", Return Date: " + returnDate + ".";
+	return "ID: " + id + ", UserID: " + userID + ", ItemID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
     }
 }
