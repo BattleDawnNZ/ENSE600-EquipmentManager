@@ -107,6 +107,20 @@ public class BookingManager implements Serializable, Saveable {
 
     /**
      *
+     * @param bookingID The bookings ID
+     * @param userID The User to check ownership
+     * @return true if the booking exists and is owned by the User.
+     */
+    public static boolean verifyBookingOwner(String bookingID, String userID) {
+	Booking booking = getBooking(bookingID);
+	if (booking != null && booking.isOwnedBy(userID)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     *
      * @param bookingID The booking ID of the booking requested.
      * @return the booking with the corresponding booking ID.
      */

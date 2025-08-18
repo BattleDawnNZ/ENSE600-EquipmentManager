@@ -68,6 +68,15 @@ public class Booking implements Serializable {
 
     /**
      *
+     * @param userID The User ID in Question
+     * @return True if the user owns the booking.
+     */
+    public boolean isOwnedBy(String userID) {
+	return this.userID.equals(userID);
+    }
+
+    /**
+     *
      * @return The ID of the item being booked.
      */
     public String getItemID() {
