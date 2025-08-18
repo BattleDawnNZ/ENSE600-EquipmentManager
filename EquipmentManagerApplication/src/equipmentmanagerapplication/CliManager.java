@@ -143,7 +143,7 @@ public class CliManager {
                     } else { // Item is already booked.
                         System.out.println("You cannot book this item. It is currently booked.");
                     }
-                    break; // Implemenet exit the action??? HOW!!
+                    break; // Implement exit the action??? HOW!!
                 case ACTION_ReturnItem:
                     System.out.println("Your active bookings:");
                     ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
@@ -273,6 +273,47 @@ public class CliManager {
                     } else {
                         System.out.println("Failed to create location. It already exists.");
                     }
+                    break;
+                default:
+                    currentState = State.MENU_L1; // Return to main menu
+                    break;
+            }
+        } catch (AbortActionException e) { // User has aborted the active action
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Processes a chosen action to do with user management
+     *
+     * @param nextAction
+     */
+    private static void processAction_itemSearch(State nextAction) {
+        try {
+            switch (nextAction) {
+                case ACTION_CreateNewUser:
+                    System.out.println("Please enter the new users ID number:");
+                    String newId = inputHandler.getUserInput_newUserID(); // Get new ID
+                    System.out.println("Please enter the users name:");
+                    String name = inputHandler.getUserInput_alphabeticString(); // Get users name
+                    SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get security level
+                    if (UserManager.createUser(newId, name, level)) {
+                        System.out.println("User created successfully.");
+                    } else {
+                        System.out.println("That user ID is already in the system.");
+                    }
+                    break;
+                case ACTION_RemoveUser:
+                    System.out.println("Please enter the ID number of the user you wish to remove from the system:");
+                    if (UserManager.removeUser(inputHandler.getUserInput_userID())) {
+                        System.out.println("User removed successfully.");
+                    } else {
+                        System.out.println("Failed to remove the user. Check the ID is valid.");
+                    }
+                    break;
+                case ACTION_ViewUserDetails:
+                    System.out.println("Please enter the ID number of the user you wish to see details of:");
+                    System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString()); // Get users id and display their details
                     break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu

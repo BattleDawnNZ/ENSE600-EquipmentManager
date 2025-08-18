@@ -208,7 +208,7 @@ public class InputHandler {
     public String getUserInput_bookingID() throws AbortActionException {
 
         String entry = getUserEntry();
-        if (BookingManager.verifyBookingOwner(entry, UserManager.getActiveUser())) {
+        if (BookingManager.verifyBookingOwner(entry, UserManager.getActiveUser().getUserID())) {
             return entry;
         } else {
             System.out.println("Invalid Booking ID! Check your entry. You can only return items issued to you.");
