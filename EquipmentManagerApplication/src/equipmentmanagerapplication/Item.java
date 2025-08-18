@@ -144,8 +144,9 @@ public class Item implements Serializable {
      */
     public void setLocation(String newLocation) {
 	if (LocationManager.isValidLocation(newLocation)) {
-	    addHistory("Moved from " + location + " to " + newLocation + ".");
+	    String oldLocation = location;
 	    location = newLocation;
+	    addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
 	}
     }
 
@@ -205,6 +206,7 @@ public class Item implements Serializable {
     public final void addHistory(String description) {
 	History entry = new History(description);
 	history.add(entry);
+	ItemManager.getInstance().save();
     }
 
     /**
