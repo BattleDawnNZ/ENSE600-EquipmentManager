@@ -116,7 +116,7 @@ public class BookingManager implements Serializable, Saveable {
 
     /**
      *
-     * @return An array copy of the bookings.
+     * @return An ArrayList of the bookings.
      */
     public static ArrayList<Booking> getBookings() {
 	return (ArrayList<Booking>) getInstance().bookings.values();

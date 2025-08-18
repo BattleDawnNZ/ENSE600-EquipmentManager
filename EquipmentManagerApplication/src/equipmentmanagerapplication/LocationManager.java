@@ -1,6 +1,7 @@
 package equipmentmanagerapplication;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -57,17 +58,19 @@ public class LocationManager implements Serializable {
      * @return True if location exists
      */
     public static boolean isValidLocation(String location) {
-	return getInstance().locations.contains(location);
+	return getInstance().locations.contains(location.toUpperCase());
     }
 
     /**
      * Adds a new location code
      *
      * @param newLocation The new location code to add.
+     * @return True if new location did not already exist.
      */
-    public static void addLocation(String newLocation) {
-	getInstance().locations.add(newLocation);
+    public static boolean addLocation(String newLocation) {
+	boolean result = getInstance().locations.add(newLocation.toUpperCase());
 	getInstance().save();
+	return result;
     }
 
     /**
@@ -76,7 +79,7 @@ public class LocationManager implements Serializable {
      * @param oldLocation The location code to remove.
      */
     public static void removeLocation(String oldLocation) {
-	getInstance().locations.remove(oldLocation);
+	getInstance().locations.remove(oldLocation.toUpperCase());
 	getInstance().save();
     }
 
@@ -87,6 +90,14 @@ public class LocationManager implements Serializable {
      * @param newLocation The location to move the item to.
      */
     public static void moveItem(String itemID, String newLocation) {
-	ItemManager.getItemFromID(itemID).setLocation(newLocation);
+	ItemManager.getItemFromID(itemID).setLocation(newLocation.toUpperCase());
+    }
+
+    /**
+     *
+     * @return An ArrayList of all locations
+     */
+    public static ArrayList<String> getLocations() {
+	return new ArrayList<>(getInstance().locations);
     }
 }
