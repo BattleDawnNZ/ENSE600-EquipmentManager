@@ -77,7 +77,7 @@ public class CliManager {
                     break;
                 case MENU_L2_ItemSearch:
                     nextAction = processMenu(menu_L2_itemSearch); // Handle option selection and save the selected next action (state) to move to
-                    //processAction_itemSearch(nextAction);
+                    processAction_itemSearch(nextAction);
                     break;
                 default:
                     newState = processMenu(menu_L1); // Handle option selection and save the next menu (state) to move to
@@ -145,8 +145,8 @@ public class CliManager {
                     }
                     break; // Implement exit the action??? HOW!!
                 case ACTION_ReturnItem:
-                    System.out.println("Your active bookings:");
                     ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
+                    System.out.println("You have " + bookings.size() + " active bookings.");
                     for (Booking i : bookings) {
                         System.out.println(i.toString());
                     }
@@ -160,6 +160,7 @@ public class CliManager {
                     break;
                 case ACTION_ViewBookings:
                     ArrayList<Booking> bookingList = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
+                    System.out.println("You have " + bookingList.size() + " active bookings.");
                     for (Booking i : bookingList) {
                         System.out.println(i.toString());
                     }
@@ -289,31 +290,35 @@ public class CliManager {
      * @param nextAction
      */
     private static void processAction_itemSearch(State nextAction) {
+        ArrayList<Item> itemList;
         try {
             switch (nextAction) {
-                case ACTION_CreateNewUser:
-                    System.out.println("Please enter the new users ID number:");
-                    String newId = inputHandler.getUserInput_newUserID(); // Get new ID
-                    System.out.println("Please enter the users name:");
-                    String name = inputHandler.getUserInput_alphabeticString(); // Get users name
-                    SecurityLevels level = inputHandler.getUserInput_securityLevel(); // Get security level
-                    if (UserManager.createUser(newId, name, level)) {
-                        System.out.println("User created successfully.");
-                    } else {
-                        System.out.println("That user ID is already in the system.");
+                case ACTION_SearchItemByCode:
+                    System.out.println("Please enter item ID number or partial ID:");
+                    String id = inputHandler.getUserInput_string(); // Get item ID
+                    itemList = ItemManager.getItemsFromID(id);
+                    System.out.println("Items found: " + itemList.size());
+                    for (Item item : itemList) {
+                        System.out.println(item.toString());
                     }
                     break;
-                case ACTION_RemoveUser:
-                    System.out.println("Please enter the ID number of the user you wish to remove from the system:");
-                    if (UserManager.removeUser(inputHandler.getUserInput_userID())) {
-                        System.out.println("User removed successfully.");
-                    } else {
-                        System.out.println("Failed to remove the user. Check the ID is valid.");
+                case ACTION_SearchItemByName:
+                    System.out.println("Please enter item name number or partial name:");
+                    String name = inputHandler.getUserInput_string(); // Get item ID
+                    itemList = ItemManager.getItemsFromName(name);
+                    System.out.println("Items found: " + itemList.size());
+                    for (Item item : itemList) {
+                        System.out.println(item.toString());
                     }
                     break;
-                case ACTION_ViewUserDetails:
-                    System.out.println("Please enter the ID number of the user you wish to see details of:");
-                    System.out.println(UserManager.getUserFromID(inputHandler.getUserInput_userID()).toString()); // Get users id and display their details
+                case ACTION_SearchItemByType:
+                    System.out.println("Please enter item type or a any type keyword (eg, 'electrical'):");
+                    String type = inputHandler.getUserInput_string(); // Get item ID
+                    itemList = ItemManager.getItemsFromType(type);
+                    System.out.println("Items found: " + itemList.size());
+                    for (Item item : itemList) {
+                        System.out.println(item.toString());
+                    }
                     break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu
