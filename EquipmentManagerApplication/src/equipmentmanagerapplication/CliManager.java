@@ -135,24 +135,32 @@ public class CliManager {
         try {
             switch (nextAction) {
                 case ACTION_BookItem:
-                    if (BookingManager.issueItem(UserManager.getActiveUser().getUserID(), inputHandler.getUserInput_itemID(), ZonedDateTime.now(), inputHandler.getUserInput_date())) {
+                    System.out.println("Please enter the item ID of the item you wish to book:");
+                    String bookItemID = inputHandler.getUserInput_itemID();
+                    ZonedDateTime bookReturnDate = inputHandler.getUserInput_date();
+                    if (BookingManager.issueItem(UserManager.getActiveUser().getUserID(), bookItemID, ZonedDateTime.now(), bookReturnDate)) {
                         System.out.println("Item booked successfully.");
                     } else { // Item is already booked.
                         System.out.println("You cannot book this item. It is currently booked.");
                     }
                     break; // Implemenet exit the action??? HOW!!
                 case ACTION_ReturnItem:
-                    if (BookingManager.returnItem(inputHandler.getUserInput_itemID())) {
+                    System.out.println("Your active bookings:");
+                    ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
+                    for (Booking i : bookings) {
+                        System.out.println(i.toString());
+                    }
+                    System.out.println("Please enter the booking ID for the item you are returning:");
+
+                    if (BookingManager.returnItem(inputHandler.getUserInput_bookingID())) {
                         System.out.println("Item returned successfully.");
                     } else {
                         System.out.println("Failed to return the item. Check the item and booking ID are correct.");
                     }
                     break;
                 case ACTION_ViewBookings:
-                    System.out.println("!!!!!!");
-                    ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
-                    System.out.println(bookings);
-                    for (Booking i : bookings) {
+                    ArrayList<Booking> bookingList = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
+                    for (Booking i : bookingList) {
                         System.out.println(i.toString());
                     }
                     break;
@@ -353,5 +361,5 @@ public class CliManager {
 // Reciew errors handed when x entered on a menu. Think okay though
 //View list of users
 //Change security level of user?
-
 // No type' error checking
+// View all locations

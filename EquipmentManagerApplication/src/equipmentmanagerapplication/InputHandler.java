@@ -1,6 +1,8 @@
 package equipmentmanagerapplication;
 
 import equipmentmanagerapplication.User.SecurityLevels;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -60,7 +62,7 @@ public class InputHandler {
      */
     public String getUserInput_alphabeticString() throws AbortActionException {
         String entry = getUserEntry();
-        if (entry.chars().allMatch(Character::isLetter)) {
+        if (entry.chars().allMatch(c -> Character.isLetter(c) || c == ' ')) {
             return entry.toUpperCase();
         } else {
             System.out.println("Invalid input! All characters must be letters. Please enter a valid string: ");
@@ -144,13 +146,20 @@ public class InputHandler {
      */
     public ZonedDateTime getUserInput_date() throws AbortActionException {
 
-        System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm:ss' : ");
+        System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm' : ");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-        String entry = getUserEntry();
+        String entry = getUserEntry() + ":00";
 
         try {
-            return ZonedDateTime.parse(entry, formatter);
+            ZonedDateTime returnDate = LocalDateTime.parse(entry, formatter).atZone(ZoneId.systemDefault());
+
+            if (ZonedDateTime.now().isBefore(returnDate)) {
+                return returnDate;
+            } else {
+                System.out.println("Invalid input! That time is in the past.");
+                return getUserInput_date();
+            }
         } catch (DateTimeParseException e) {
             System.out.println("Invalid input! Please ensure you use the correct format.");
             return getUserInput_date();
@@ -187,6 +196,23 @@ public class InputHandler {
         } else {
             System.out.println("Invalid Location! Choose from the options, or exit this action (x) and create a new location.");
             return getUserInput_location(); // Reprompt for valid user input.
+        }
+    }
+
+    /**
+     *
+     * @return a valid booking ID (as a string) if the booking belongs to the
+     * user
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
+    public String getUserInput_bookingID() throws AbortActionException {
+
+        String entry = getUserEntry();
+        if (BookingManager.verifyBookingOwner(entry, UserManager.getActiveUser())) {
+            return entry;
+        } else {
+            System.out.println("Invalid Booking ID! Check your entry. You can only return items issued to you.");
+            return getUserInput_bookingID(); // Reprompt for valid user input.
         }
     }
 
