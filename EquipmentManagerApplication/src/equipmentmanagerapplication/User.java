@@ -1,14 +1,16 @@
 package equipmentmanagerapplication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author ppj1707
  */
-public abstract class User {
+public abstract class User implements Serializable {
 
     private String userID; // Cannot be changed once initialised
+    private String name;
     private ArrayList<String> bookingIDs;
     protected SecurityLevels securityLevel;
 
@@ -16,8 +18,9 @@ public abstract class User {
         GUEST, EMPLOYEE, MANAGER
     };
 
-    public User(String userID, SecurityLevels securityLevel) {
+    public User(String userID, String name, SecurityLevels securityLevel) {
         this.userID = userID;
+        this.name = name;
         this.bookingIDs = new ArrayList<String>();
         this.securityLevel = securityLevel;
     }
@@ -36,6 +39,11 @@ public abstract class User {
      */
     public ArrayList<String> getBookings() {
         return this.bookingIDs;
+    }
+
+    @Override
+    public String toString() {
+        return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ", Bookings: " + bookingIDs.toString() + ".";
     }
 
     ////////CHECK NEW ID IS VALID

@@ -6,8 +6,8 @@ package equipmentmanagerapplication;
  */
 public class Guest extends User {
 
-    public Guest(String userID) {
-        super(userID, SecurityLevels.GUEST);
+    public Guest(String userID, String name) {
+        super(userID, name, SecurityLevels.GUEST);
     }
 
 }

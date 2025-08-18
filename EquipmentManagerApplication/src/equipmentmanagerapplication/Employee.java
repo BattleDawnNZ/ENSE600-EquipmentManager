@@ -6,8 +6,8 @@ package equipmentmanagerapplication;
  */
 public class Employee extends User {
 
-    public Employee(String userID) {
-        super(userID, SecurityLevels.EMPLOYEE);
+    public Employee(String userID, String name) {
+        super(userID, name, SecurityLevels.EMPLOYEE);
     }
 
 }
