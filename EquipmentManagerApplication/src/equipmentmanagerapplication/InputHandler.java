@@ -84,8 +84,6 @@ public class InputHandler {
      */
     public String getUserInput_itemID() throws AbortActionException {
 
-        System.out.println("Please enter the item ID: ");
-
         String entry = getUserEntry().trim().toUpperCase();
         if (ItemManager.verifyID(entry)) {
             return entry;

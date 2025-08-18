@@ -234,7 +234,7 @@ public class CliManager {
                     System.out.println("Please enter the new items location (see valid locations above):");
                     String newItemLocation = inputHandler.getUserInput_location();
                     System.out.println("Please enter the new items type (eg, electrical/measurement/multimeters):"); // !!!
-                    String newItemType = inputHandler.getUserInput_alphabeticString();
+                    String newItemType = inputHandler.getUserInput_string();
                     if (ItemManager.addItem(newItemName, newItemLocation, newItemType)) { // OR ITEM ALREADY EXISTS?? CHECK
                         System.out.println("Item added successfully.");
                     } else {
@@ -252,6 +252,7 @@ public class CliManager {
                 case ACTION_MoveItemLocation:
                     System.out.println("Please enter the item ID number of the item you are moving: ");
                     String moveItemID = inputHandler.getUserInput_itemID();
+                    System.out.println("Locations: " + LocationManager.getLocations()); // Print available locations
                     System.out.println("The item is currently at " + ItemManager.getItemFromID(moveItemID).getLocation() + ". Enter its new location:");
                     String moveItemLocation = inputHandler.getUserInput_location();
                     LocationManager.moveItem(moveItemID, moveItemLocation);
