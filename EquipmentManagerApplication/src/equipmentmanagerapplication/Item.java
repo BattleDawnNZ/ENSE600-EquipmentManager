@@ -97,11 +97,11 @@ public class Item implements Serializable {
 	this.id = id;
 	this.name = name;
 	this.description = "";
-	setLocation(location);
+	this.location = location;
 	this.status = Status.working;
 	this.type = type;
 	this.history = new ArrayList<>();
-	addHistory("Item created.");
+	addHistory("Item created at location " + location + ".");
 	this.needsCalibration = false;
 	this.lastCalibration = null;
     }
@@ -142,7 +142,7 @@ public class Item implements Serializable {
      *
      * @param newLocation
      */
-    public final void setLocation(String newLocation) {
+    public void setLocation(String newLocation) {
 	if (LocationManager.isValidLocation(newLocation)) {
 	    addHistory("Moved from " + location + " to " + newLocation + ".");
 	    location = newLocation;

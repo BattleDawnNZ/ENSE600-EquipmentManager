@@ -63,11 +63,15 @@ public class ItemManager implements Serializable, Saveable {
      * @param location The items location
      * @param type The items type.
      */
-    public static void addItem(String name, String location, String type) {
+    public static boolean addItem(String name, String location, String type) {
+	if (!LocationManager.isValidLocation(location)) {
+	    return false;
+	}
 	String itemID = generateItemID(type);
 	Item item = new Item(itemID, name, location, type);
 	getInstance().items.put(itemID, item);
 	getInstance().save();
+	return true;
     }
 
     /**
