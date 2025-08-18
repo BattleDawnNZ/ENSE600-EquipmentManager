@@ -105,6 +105,6 @@ public class Booking implements Serializable {
 
     @Override
     public String toString() {
-	return "ID: " + id + ", UserID: " + userID + ", ItemID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
+	return "Booking ID: " + id + ", User ID: " + userID + ", Item ID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
     }
 }
