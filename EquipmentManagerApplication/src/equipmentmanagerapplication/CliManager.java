@@ -230,7 +230,7 @@ public class CliManager {
                 case ACTION_AddItem:
                     System.out.println("Please enter the new items name (eg, 'R9000 Universal Laser Cutter') :");
                     String newItemName = inputHandler.getUserInput_string();
-                    System.out.println(LocationManager.getAllAvailableLocations()); // Print available locations
+                    System.out.println("Locations: " + LocationManager.getLocations()); // Print available locations
                     System.out.println("Please enter the new items location (see valid locations above):");
                     String newItemLocation = inputHandler.getUserInput_location();
                     System.out.println("Please enter the new items type (eg, electrical/measurement/multimeters):"); // !!!
@@ -292,6 +292,7 @@ public class CliManager {
         menu_L2_manageEquipment.addMenuOption("Return to Homescreen ->", State.MENU_L1, SecurityLevels.GUEST);
         menu_L2_manageEquipment.addMenuOption("Add Service Note", State.ACTION_AddServiceNote, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Flag Item for Calibraton", State.ACTION_FlagCalibration, SecurityLevels.MANAGER);
+        menu_L2_manageEquipment.addMenuOption("Add Item", State.ACTION_AddItem, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Delete Item", State.ACTION_DeleteItem, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Move Item Location", State.ACTION_MoveItemLocation, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Add new Location", State.ACTION_AddNewLocation, SecurityLevels.MANAGER);
