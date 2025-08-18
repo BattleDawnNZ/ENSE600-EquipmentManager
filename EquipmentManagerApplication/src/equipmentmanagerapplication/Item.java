@@ -2,6 +2,7 @@ package equipmentmanagerapplication;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -14,77 +15,13 @@ public class Item implements Serializable {
     private String name;
     private String description;
     private String location;
-
-    /**
-     * Indicates the status of an item.
-     */
-    public static enum Status {
-	working,
-	decommissioned,
-	faulty
-    }
     private Status status;
     private String type;
-
-    /**
-     * Represents an event in an items history.
-     */
-    public static class History implements Serializable {
-
-	/**
-	 *
-	 * @return The time stamp for when this event happened.
-	 */
-	private ZonedDateTime timestamp;
-
-	/**
-	 *
-	 * @return The description of the event.
-	 */
-	private String description;
-
-	/**
-	 *
-	 * @param description What happened.
-	 */
-	public History(String description) {
-	    this.timestamp = ZonedDateTime.now();
-	    this.description = description;
-	}
-
-	/**
-	 *
-	 * @param timestamp When this event happened.
-	 * @param description What happened.
-	 */
-	public History(ZonedDateTime timestamp, String description) {
-	    this.timestamp = timestamp;
-	    this.description = description;
-	}
-
-	/**
-	 *
-	 * @return The time stamp for when this event happened.
-	 */
-	public ZonedDateTime getTimestamp() {
-	    return timestamp;
-	}
-
-	/**
-	 *
-	 * @return The description of the event.
-	 */
-	public String getDescription() {
-	    return description;
-	}
-
-	public String toString() {
-	    return "" + timestamp + " - " + description;
-	}
-    }
     private ArrayList<History> history;
     private boolean needsCalibration;
     private ZonedDateTime lastCalibration;
+
+    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     /**
      *
@@ -222,7 +159,7 @@ public class Item implements Serializable {
      * @return An ArrayList of all items where partID is contained in the id
      */
     public boolean hasInID(String partID) {
-	return id.contains(partID);
+	return id.toLowerCase().contains(partID.toLowerCase());
     }
 
     /**
@@ -230,7 +167,7 @@ public class Item implements Serializable {
      * @return An ArrayList of all items where partName is contained in the name
      */
     public boolean hasInName(String partName) {
-	return name.contains(partName);
+	return name.toLowerCase().contains(partName.toLowerCase());
     }
 
     /**
@@ -242,17 +179,83 @@ public class Item implements Serializable {
      * @return An ArrayList of all items where partType is contained in the type
      */
     public boolean hasInType(String partType) {
-	return type.contains(partType);
+	return type.toLowerCase().contains(partType.toLowerCase());
     }
 
     public String toString() {
-	return "ID: " + id
+	return "Item ID: " + id
 		+ ", Name: " + name
 		+ ", Description: " + description
 		+ ", Location: " + location
 		+ ", Status: " + status
 		+ ", Type: " + type
-		+ ", Last Calibration: " + lastCalibration
+		+ ", Last Calibration: " + lastCalibration.format(formatter)
 		+ ", History: " + history;
+    }
+
+    /**
+     * Indicates the status of an item.
+     */
+    public static enum Status {
+	working,
+	decommissioned,
+	faulty
+    }
+
+    /**
+     * Represents an event in an items history.
+     */
+    public static class History implements Serializable {
+
+	/**
+	 *
+	 * @return The time stamp for when this event happened.
+	 */
+	private ZonedDateTime timestamp;
+
+	/**
+	 *
+	 * @return The description of the event.
+	 */
+	private String description;
+
+	/**
+	 *
+	 * @param description What happened.
+	 */
+	public History(String description) {
+	    this.timestamp = ZonedDateTime.now();
+	    this.description = description;
+	}
+
+	/**
+	 *
+	 * @param timestamp When this event happened.
+	 * @param description What happened.
+	 */
+	public History(ZonedDateTime timestamp, String description) {
+	    this.timestamp = timestamp;
+	    this.description = description;
+	}
+
+	/**
+	 *
+	 * @return The time stamp for when this event happened.
+	 */
+	public ZonedDateTime getTimestamp() {
+	    return timestamp;
+	}
+
+	/**
+	 *
+	 * @return The description of the event.
+	 */
+	public String getDescription() {
+	    return description;
+	}
+
+	public String toString() {
+	    return "" + timestamp.format(formatter) + " - " + description;
+	}
     }
 }
