@@ -97,11 +97,7 @@ public class Item implements Serializable {
 	this.id = id;
 	this.name = name;
 	this.description = "";
-	if (LocationManager.isValidLocation(location)) {
-	    this.location = location;
-	} else {
-	    System.out.println("Error! Location " + location + " is Invalid");
-	}
+	setLocation(location);
 	this.status = Status.working;
 	this.type = type;
 	this.history = new ArrayList<>();
@@ -130,8 +126,9 @@ public class Item implements Serializable {
      *
      * @param newLocation
      */
-    public void setLocation(String newLocation) {
+    public final void setLocation(String newLocation) {
 	if (LocationManager.isValidLocation(newLocation)) {
+	    addHistory("Moved from " + location + " to " + newLocation + ".");
 	    location = newLocation;
 	}
     }
