@@ -122,12 +122,16 @@ public class ItemManager implements Serializable, Saveable {
     }
 
     /**
-     * Returns an item from the items HashMap.
+     * Returns an ArrayList of items that partial match the partID from the
+     * items HashMap. (if blank all items will be returned)
      *
      * @param partID The desired items ID.
      * @return The desired item.
      */
     public static ArrayList<Item> getItemsFromID(String partID) {
+	if (partID.isBlank()) {
+	    return new ArrayList<>(getInstance().items.values());
+	}
 	ArrayList<Item> validItems = new ArrayList<>();
 	getInstance().items.forEach((k, v) -> {
 	    if (v.hasInID(partID)) {
@@ -138,12 +142,16 @@ public class ItemManager implements Serializable, Saveable {
     }
 
     /**
-     * Returns an item from the items HashMap.
+     * Returns an ArrayList of items that partial match the partName from the
+     * items HashMap. (if blank all items will be returned)
      *
      * @param partName The desired items name.
      * @return The desired item.
      */
     public static ArrayList<Item> getItemsFromName(String partName) {
+	if (partName.isBlank()) {
+	    return new ArrayList<>(getInstance().items.values());
+	}
 	ArrayList<Item> validItems = new ArrayList<>();
 	getInstance().items.forEach((k, v) -> {
 	    if (v.hasInName(partName)) {
@@ -154,12 +162,16 @@ public class ItemManager implements Serializable, Saveable {
     }
 
     /**
-     * Returns an item from the items HashMap.
+     * Returns an ArrayList of items that partial match the partType from the
+     * items HashMap. (if blank all items will be returned)
      *
      * @param partType The desired items type.
      * @return The desired item.
      */
     public static ArrayList<Item> getItemsFromType(String partType) {
+	if (partType.isBlank()) {
+	    return new ArrayList<>(getInstance().items.values());
+	}
 	ArrayList<Item> validItems = new ArrayList<>();
 	getInstance().items.forEach((k, v) -> {
 	    if (v.hasInType(partType)) {
