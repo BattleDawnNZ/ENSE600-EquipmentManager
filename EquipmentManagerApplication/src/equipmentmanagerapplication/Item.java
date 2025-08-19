@@ -189,7 +189,7 @@ public class Item implements Serializable {
 		+ ", Location: " + location
 		+ ", Status: " + status
 		+ ", Type: " + type
-		+ ", Last Calibration: " + lastCalibration.format(formatter)
+		+ ", Last Calibration: " + ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter))
 		+ ", History: " + history;
     }
 
