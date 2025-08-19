@@ -52,12 +52,14 @@ public class CliManager {
             switch (currentState) {
                 case LOGIN:
                     login();
-                    currentState = State.MENU_L1;
                     break;
                 case EXIT_PROGRAM:
+                    System.out.println("Program Quit");
                     return;
                 case LOGOUT:
                     UserManager.logout();
+                    System.out.println("You have logged out.");
+                    currentState = State.LOGIN;
                     break;
                 case MENU_L1:
                     newState = processMenu(menu_L1); // Handle option selection and save the next menu (state) to move to
@@ -88,16 +90,16 @@ public class CliManager {
 
     static void login() {
         try {
-            System.out.println("To begin please enter your ID number:");
+            System.out.println("To begin please enter your ID number (or enter x to quit the program):");
 
             if (UserManager.login(inputHandler.getUserInput_userID())) {
                 System.out.println("Login successful!");
+                currentState = State.MENU_L1;
             } else {
                 System.out.println("Sorry, your ID is not recognised. Please try again.");
                 login();
             }
         } catch (AbortActionException e) {
-            System.out.println("Program Quit");
             currentState = State.EXIT_PROGRAM; // If x is entered for the initial login page, end the program
         }
     }
@@ -290,7 +292,7 @@ public class CliManager {
      * @param nextAction
      */
     private static void processAction_itemSearch(State nextAction) {
-        ArrayList<Item> itemList;
+        ArrayList<Item> itemList = new ArrayList<>();
         try {
             switch (nextAction) {
                 case ACTION_SearchItemByCode:
@@ -304,8 +306,8 @@ public class CliManager {
                     break;
                 case ACTION_SearchItemByName:
                     System.out.println("Please enter item name number or partial name:");
-                    String name = inputHandler.getUserInput_string(); // Get item ID
-                    itemList = ItemManager.getItemsFromName(name);
+                    String name = inputHandler.getUserInput_string(); // Get item name
+                    itemList = ItemManager.getItemsFromName(name); // GETS DESTROYYED??
                     System.out.println("Items found: " + itemList.size());
                     for (Item item : itemList) {
                         System.out.println(item.toString());
@@ -313,7 +315,7 @@ public class CliManager {
                     break;
                 case ACTION_SearchItemByType:
                     System.out.println("Please enter item type or a any type keyword (eg, 'electrical'):");
-                    String type = inputHandler.getUserInput_string(); // Get item ID
+                    String type = inputHandler.getUserInput_string(); // Get item type
                     itemList = ItemManager.getItemsFromType(type);
                     System.out.println("Items found: " + itemList.size());
                     for (Item item : itemList) {
