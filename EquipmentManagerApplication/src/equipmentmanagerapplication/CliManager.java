@@ -2,9 +2,7 @@ package equipmentmanagerapplication;
 
 import equipmentmanagerapplication.User.SecurityLevels;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Scanner;  // Import the Scanner class
 
 /**
  *
@@ -12,7 +10,7 @@ import java.util.Scanner;  // Import the Scanner class
  */
 public class CliManager {
 
-    private static InputHandler inputHandler = new InputHandler();
+    private static final InputHandler inputHandler = new InputHandler();
 
     private static CliMenu menu_L1;
     private static CliMenu menu_L2_manageEquipment;
@@ -23,14 +21,13 @@ public class CliManager {
     public enum State {
         LOGIN, EXIT_PROGRAM, LOGOUT, MENU_L1,
         MENU_L2_ManageEquipment, MENU_L2_ManageUsers, MENU_L2_ItemBookings, MENU_L2_ItemSearch,
-        ACTION_AddServiceNote, ACTION_FlagCalibration, ACTION_AddItem, ACTION_DeleteItem, ACTION_MoveItemLocation, ACTION_AddNewLocation,
+        ACTION_AddServiceNote, ACTION_FlagCalibration, ACTION_AddItem, ACTION_DeleteItem, ACTION_MoveItemLocation, ACTION_AddNewLocation, ACTION_CalibrateItem,
         ACTION_CreateNewUser, ACTION_RemoveUser, ACTION_ViewUserDetails,
         ACTION_BookItem, ACTION_ReturnItem, ACTION_ViewBookings,
         ACTION_SearchItemByCode, ACTION_SearchItemByName, ACTION_SearchItemByType
     }
 
     static State currentState = State.LOGIN;
-    static State currentAction;
 
     public static void runCli() {
 
@@ -88,6 +85,9 @@ public class CliManager {
         }
     }
 
+    /**
+     * Handle user login
+     */
     static void login() {
         try {
             System.out.println("To begin please enter your ID number (or enter x to quit the program):");
@@ -145,7 +145,7 @@ public class CliManager {
                     } else { // Item is already booked.
                         System.out.println("You cannot book this item. It is currently booked.");
                     }
-                    break; // Implement exit the action??? HOW!!
+                    break;
                 case ACTION_ReturnItem:
                     ArrayList<Booking> bookings = BookingManager.getBookingsForUser(UserManager.getActiveUser().getUserID());
                     System.out.println("You have " + bookings.size() + " active bookings.");
@@ -246,10 +246,11 @@ public class CliManager {
                     String newItemLocation = inputHandler.getUserInput_location();
                     System.out.println("Please enter the new items type (eg, electrical/measurement/multimeters):"); // !!!
                     String newItemType = inputHandler.getUserInput_string();
-                    if (ItemManager.addItem(newItemName, newItemLocation, newItemType)) { // OR ITEM ALREADY EXISTS?? CHECK
-                        System.out.println("Item added successfully.");
+                    String newItemID = ItemManager.addItem(newItemName, newItemLocation, newItemType);
+                    if (newItemID == null) { // 
+                        System.out.println("Failed to create the item. Check the location is valid.");
                     } else {
-                        System.out.println("Failed to create the item. Check the details are correct."); // OR ITEM ALREADY EXISTS
+                        System.out.println("Item added successfully. Item ID: " + newItemID);
                     }
                     break;
                 case ACTION_DeleteItem:
@@ -277,6 +278,15 @@ public class CliManager {
                         System.out.println("Failed to create location. It already exists.");
                     }
                     break;
+
+                case ACTION_CalibrateItem:
+                    System.out.println("Enter the item ID to record its calibration:");
+                    if (LocationManager.addLocation(inputHandler.getUserInput_itemID())) {
+                        System.out.println("Calibration recorded.");
+                    } else {
+                        System.out.println("Failed to record calibration.");
+                    }
+                    break;
                 default:
                     currentState = State.MENU_L1; // Return to main menu
                     break;
@@ -292,7 +302,7 @@ public class CliManager {
      * @param nextAction
      */
     private static void processAction_itemSearch(State nextAction) {
-        ArrayList<Item> itemList = new ArrayList<>();
+        ArrayList<Item> itemList;
         try {
             switch (nextAction) {
                 case ACTION_SearchItemByCode:
@@ -307,7 +317,7 @@ public class CliManager {
                 case ACTION_SearchItemByName:
                     System.out.println("Please enter item name number or partial name:");
                     String name = inputHandler.getUserInput_string(); // Get item name
-                    itemList = ItemManager.getItemsFromName(name); // GETS DESTROYYED??
+                    itemList = ItemManager.getItemsFromName(name);
                     System.out.println("Items found: " + itemList.size());
                     for (Item item : itemList) {
                         System.out.println(item.toString());
@@ -353,6 +363,7 @@ public class CliManager {
         menu_L2_manageEquipment.addMenuOption("Delete Item", State.ACTION_DeleteItem, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Move Item Location", State.ACTION_MoveItemLocation, SecurityLevels.MANAGER);
         menu_L2_manageEquipment.addMenuOption("Add new Location", State.ACTION_AddNewLocation, SecurityLevels.MANAGER);
+        menu_L2_manageEquipment.addMenuOption("Calibrate Item", State.ACTION_CalibrateItem, SecurityLevels.MANAGER);
 
         menu_L2_manageUsers = new CliMenu("MANAGE USERS MENU");
         menu_L2_manageUsers.addMenuOption("Return to Homescreen ->", State.MENU_L1, SecurityLevels.GUEST);
@@ -411,3 +422,4 @@ public class CliManager {
 //Change security level of user?
 // No type' error checking
 // View all locations
+// remove lovation
