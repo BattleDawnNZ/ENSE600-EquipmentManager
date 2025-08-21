@@ -7,7 +7,7 @@ package grp.twentytwo.equipmentmanager;
 public class Manager extends User {
 
     public Manager(String userID, String name) {
-        super(userID, name, SecurityLevels.MANAGER);
+	super(userID, name, SecurityLevels.MANAGER);
     }
 
 }

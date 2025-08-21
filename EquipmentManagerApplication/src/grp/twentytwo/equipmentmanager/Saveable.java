@@ -1,10 +1,12 @@
 package grp.twentytwo.equipmentmanager;
 
+import java.io.Serializable;
+
 /**
  *
  * @author cwitt
  */
-public interface Saveable {
+public interface Saveable extends Serializable {
 
     public void save();
 

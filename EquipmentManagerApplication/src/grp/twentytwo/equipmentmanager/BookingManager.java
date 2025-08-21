@@ -1,18 +1,16 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Manages issuing and returning of items.
  *
  * @author fmw5088
  */
-public class BookingManager implements Serializable, Saveable {
+public class BookingManager implements Saveable {
 
     private ItemManager itemManager;
     /**

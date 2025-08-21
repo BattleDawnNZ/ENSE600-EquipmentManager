@@ -1,7 +1,6 @@
 package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  *

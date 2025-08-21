@@ -1,6 +1,5 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,7 @@ import java.util.Map;
  *
  * @author fmw5088
  */
-public class ItemManager implements Serializable, Saveable {
+public class ItemManager implements Saveable {
 
     private LocationManager locationManager;
     /**

@@ -31,6 +31,7 @@ public class EquipmentManagerApplication {
 
 	CliManager cliManager = new CliManager(itemManager, userManager, bookingManager, locationManager, maintenanceManager);
 	cliManager.runCli();
+
 	// Save all managers to files
 	itemManager.save();
 	bookingManager.save();

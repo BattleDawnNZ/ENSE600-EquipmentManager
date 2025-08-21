@@ -1,14 +1,13 @@
 package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
-import java.io.Serializable;
 import java.util.HashMap; // Import the HashSet class
 
 /**
  *
  * @author ppj1707
  */
-public class UserManager implements Serializable, Saveable {
+public class UserManager implements Saveable {
 
     private HashMap<String, User> users; // Store all users
     private User activeUser; // Stores the active user object
