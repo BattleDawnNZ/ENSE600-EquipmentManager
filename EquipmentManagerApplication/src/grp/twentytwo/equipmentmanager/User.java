@@ -16,7 +16,7 @@ public abstract class User implements Serializable {
 	GUEST, EMPLOYEE, MANAGER
     };
 
-    public User(String userID, String name, SecurityLevels securityLevel) {
+    User(String userID, String name, SecurityLevels securityLevel) {
 	this.userID = userID;
 	this.name = name;
 	this.securityLevel = securityLevel;
