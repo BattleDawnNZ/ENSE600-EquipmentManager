@@ -1,6 +1,13 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanagerapplication;
 
-import equipmentmanagerapplication.User.SecurityLevels;
+import grp.twentytwo.equipmentmanager.UserManager;
+import grp.twentytwo.equipmentmanager.ItemManager;
+import grp.twentytwo.equipmentmanager.Booking;
+import grp.twentytwo.equipmentmanager.LocationManager;
+import grp.twentytwo.equipmentmanager.BookingManager;
+import grp.twentytwo.equipmentmanager.MaintenanceManager;
+import grp.twentytwo.equipmentmanager.Item;
+import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
@@ -245,12 +252,12 @@ public class CliManager {
 		    String id = inputHandler.getUserInput_itemID(); // Get item ID
 		    System.out.println("Please enter the service note:");
 		    String note = inputHandler.getUserInput_string(); // Get the service note
-		    itemManager.getItemFromID(id).addHistory(note); // Add service note
+		    maintenanceManager.addServiceNote(id, note);
 		    System.out.println("Service note added successfully.");
 		    break;
 		case ACTION_FlagCalibration:
 		    System.out.println("Please enter the item ID number of the item to flag: ");
-		    itemManager.getItemFromID(inputHandler.getUserInput_itemID()).flagForCalibration();
+		    maintenanceManager.flagItemForCalibration(inputHandler.getUserInput_itemID());
 		    System.out.println("Item flagged for calibration successfully.");
 		    break;
 		case ACTION_AddItem:
@@ -286,7 +293,7 @@ public class CliManager {
 		    System.out.println("Item location adjusted.");
 		    break;
 		case ACTION_AddNewLocation:
-		    System.out.println("Please enter the name of the locatoin you wish to add:");
+		    System.out.println("Please enter the name of the location you wish to add:");
 		    if (locationManager.addLocation(inputHandler.getUserInput_string())) {
 			System.out.println("Location added successfully.");
 		    } else {
@@ -433,8 +440,11 @@ public class CliManager {
 //        return options[choice].state;
 
 // Reciew errors handed when x entered on a menu. Think okay though
-//View list of users
-//Change security level of user?
+// View list of users
+// Change security level of user?
 // No type' error checking
 // View all locations
 // remove lovation
+// Set Item Status
+// View Calibration Flag
+// Set Item Descriptions

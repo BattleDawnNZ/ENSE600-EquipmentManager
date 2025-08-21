@@ -1,6 +1,6 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
-import equipmentmanagerapplication.User.SecurityLevels;
+import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.io.Serializable;
 import java.util.HashMap; // Import the HashSet class
 

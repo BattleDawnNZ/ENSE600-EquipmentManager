@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 /**
  *

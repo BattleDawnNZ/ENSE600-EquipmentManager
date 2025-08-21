@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -42,7 +42,7 @@ public class Booking implements Serializable {
      * @param bookedDate the date of the booking
      * @param returnDate the return date of the booking
      */
-    public Booking(String id, String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    Booking(String id, String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	this.id = id;
 	this.userID = userID;
 	this.itemID = itemID;

@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 import java.io.File;
 import java.io.FileInputStream;

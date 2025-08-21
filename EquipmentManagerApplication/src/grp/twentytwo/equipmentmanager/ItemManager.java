@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -101,8 +101,8 @@ public class ItemManager implements Serializable, Saveable {
      *
      * @param item The item to be removed.
      */
-    public void removeItem(Item item) {
-	removeItem(item.getId());
+    public boolean removeItem(Item item) {
+	return removeItem(item.getId());
     }
 
     /**

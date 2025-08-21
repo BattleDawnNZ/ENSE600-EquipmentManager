@@ -1,6 +1,11 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanagerapplication;
 
-import equipmentmanagerapplication.User.SecurityLevels;
+import grp.twentytwo.equipmentmanager.UserManager;
+import grp.twentytwo.equipmentmanager.ItemManager;
+import grp.twentytwo.equipmentmanager.LocationManager;
+import grp.twentytwo.equipmentmanager.BookingManager;
+import grp.twentytwo.equipmentmanager.MaintenanceManager;
+import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -56,7 +61,7 @@ public class InputHandler {
      * Requests user input until the user enters an integer
      *
      * @return an integer entered by the user
-     * @throws equipmentmanagerapplication.AbortActionException (if the user
+     * @throws grp.twentytwo.equipmentmanagerapplication.AbortActionException (if the user
      * enters 'x' or 'X')
      */
     public int getUserInput_integer() throws AbortActionException {

@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public abstract class User implements Serializable {
     private String name;
     protected SecurityLevels securityLevel;
 
-    protected static enum SecurityLevels {
+    public static enum SecurityLevels {
 	GUEST, EMPLOYEE, MANAGER
     };
 
@@ -23,8 +23,8 @@ public abstract class User implements Serializable {
 	this.securityLevel = securityLevel;
     }
 
-    public int getSecurityLevel() {
-	return this.securityLevel.ordinal();
+    public SecurityLevels getSecurityLevel() {
+	return this.securityLevel;
     }
 
     public String getUserID() {

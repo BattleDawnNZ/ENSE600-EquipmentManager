@@ -1,4 +1,10 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanagerapplication;
+
+import grp.twentytwo.equipmentmanager.BookingManager;
+import grp.twentytwo.equipmentmanager.ItemManager;
+import grp.twentytwo.equipmentmanager.LocationManager;
+import grp.twentytwo.equipmentmanager.MaintenanceManager;
+import grp.twentytwo.equipmentmanager.UserManager;
 
 /**
  *

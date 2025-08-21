@@ -1,4 +1,4 @@
-package equipmentmanagerapplication;
+package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -30,7 +30,7 @@ public class Item implements Serializable {
      * @param location
      * @param type
      */
-    public Item(String id, String name, String location, String type) {
+    Item(String id, String name, String location, String type) {
 	this.id = id;
 	this.name = name;
 	this.description = "";
@@ -104,7 +104,7 @@ public class Item implements Serializable {
     /**
      * Flags an item as needing calibration
      */
-    public void flagForCalibration() {
+    void flagForCalibration() {
 	needsCalibration = true;
 	addHistory("Needs calibration.");
     }
@@ -120,7 +120,7 @@ public class Item implements Serializable {
     /**
      * Updates the items last calibration date.
      */
-    public void calibrate() {
+    void calibrate() {
 	needsCalibration = false;
 	lastCalibration = ZonedDateTime.now();
 	addHistory("Calibrated.");
@@ -220,7 +220,7 @@ public class Item implements Serializable {
 	 *
 	 * @param description What happened.
 	 */
-	public History(String description) {
+	History(String description) {
 	    this.timestamp = ZonedDateTime.now();
 	    this.description = description;
 	}
@@ -230,7 +230,7 @@ public class Item implements Serializable {
 	 * @param timestamp When this event happened.
 	 * @param description What happened.
 	 */
-	public History(ZonedDateTime timestamp, String description) {
+	History(ZonedDateTime timestamp, String description) {
 	    this.timestamp = timestamp;
 	    this.description = description;
 	}
