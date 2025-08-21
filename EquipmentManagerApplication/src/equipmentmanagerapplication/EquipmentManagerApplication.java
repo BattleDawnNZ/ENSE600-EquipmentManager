@@ -10,29 +10,26 @@ public class EquipmentManagerApplication {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        loadAll();
-        CliManager.runCli();
-        saveAll();
-    }
+	UserManager userManager = new UserManager();
+	ItemManager itemManager = new ItemManager();
+	BookingManager bookingManager = new BookingManager(itemManager);
+	LocationManager locationManager = new LocationManager(itemManager);
+	MaintenanceManager maintenanceManager = new MaintenanceManager(itemManager);
+	itemManager.setLocationManager(locationManager);
 
-    /**
-     * Saves all managers to files.
-     */
-    public static void saveAll() {
-        ItemManager.getInstance().save();
-        BookingManager.getInstance().save();
-        LocationManager.getInstance().save();
-        UserManager.getInstance().save();
-    }
+	// Load all manager data from file
+	itemManager.load();
+	bookingManager.load();
+	locationManager.load();
+	userManager.load();
 
-    /**
-     * Loads all managers from files.
-     */
-    public static void loadAll() {
-        ItemManager.getInstance().load();
-        BookingManager.getInstance().load();
-        LocationManager.getInstance().load();
-        UserManager.getInstance().load();
+	CliManager cliManager = new CliManager(itemManager, userManager, bookingManager, locationManager, maintenanceManager);
+	cliManager.runCli();
+	// Save all managers to files
+	itemManager.save();
+	bookingManager.save();
+	locationManager.save();
+	userManager.save();
     }
 
 }

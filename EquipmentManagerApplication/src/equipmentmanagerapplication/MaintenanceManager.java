@@ -6,20 +6,28 @@ package equipmentmanagerapplication;
  */
 public class MaintenanceManager {
 
-    /**
-     *
-     * @param itemID
-     */
-    public static void calibrateItem(String itemID) {
-	ItemManager.getItemFromID(itemID).calibrate();
+    private ItemManager itemManager;
+
+    public MaintenanceManager(ItemManager itemManager) {
+	this.itemManager = itemManager;
     }
 
     /**
      *
      * @param itemID
      */
-    public static void flagItemForCalibration(String itemID) {
-	ItemManager.getItemFromID(itemID).flagForCalibration();
+    public void calibrateItem(String itemID) {
+	itemManager.getItemFromID(itemID).calibrate();
+	itemManager.save();
+    }
+
+    /**
+     *
+     * @param itemID
+     */
+    public void flagItemForCalibration(String itemID) {
+	itemManager.getItemFromID(itemID).flagForCalibration();
+	itemManager.save();
     }
 
     /**
@@ -27,7 +35,7 @@ public class MaintenanceManager {
      * @param itemID
      * @param serviceNote
      */
-    public static void addServiceNote(String itemID, String serviceNote) {
-	ItemManager.getItemFromID(itemID).addHistory(serviceNote);
+    public void addServiceNote(String itemID, String serviceNote) {
+	itemManager.getItemFromID(itemID).addHistory(serviceNote);
     }
 }

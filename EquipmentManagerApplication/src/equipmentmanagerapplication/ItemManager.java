@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class ItemManager implements Serializable, Saveable {
 
+    private LocationManager locationManager;
     /**
      * The name for the save file.
      */
@@ -21,32 +22,25 @@ public class ItemManager implements Serializable, Saveable {
      */
     private HashMap<String, Item> items;
     private int currentID;
-    /**
-     * Singleton Instance
-     */
-    private static ItemManager instance;
 
-    private ItemManager() {
+    public ItemManager() {
 	items = new HashMap<>();
 	currentID = 0;
     }
 
-    /**
-     *
-     * @return The instance of this object.
-     */
-    public static ItemManager getInstance() {
-	if (instance == null) {
-	    instance = new ItemManager();
-	}
-	return instance;
+    public void setLocationManager(LocationManager locationManager) {
+	this.locationManager = locationManager;
     }
 
     /**
      * Loads the item manager from a file.
      */
     public void load() {
-	instance = (ItemManager) FileManager.loadFile(fileName);
+	ItemManager im = (ItemManager) FileManager.loadFile(fileName);
+	if (im != null) {
+	    items = im.items;
+	    currentID = im.currentID;
+	}
     }
 
     /**
@@ -64,14 +58,14 @@ public class ItemManager implements Serializable, Saveable {
      * @param type The items type.
      * @return The Item ID of the Item Added.
      */
-    public static String addItem(String name, String location, String type) {
-	if (!LocationManager.isValidLocation(location)) {
+    public String addItem(String name, String location, String type) {
+	if (!locationManager.isValidLocation(location)) {
 	    return null;
 	}
 	String itemID = generateItemID(type);
 	Item item = new Item(itemID, name, location, type);
-	getInstance().items.put(itemID, item);
-	getInstance().save();
+	items.put(itemID, item);
+	save();
 	return itemID;
     }
 
@@ -79,15 +73,15 @@ public class ItemManager implements Serializable, Saveable {
      *
      * @return A unique item ID.
      */
-    public static String generateItemID(String type) {
+    public String generateItemID(String type) {
 	String newID;
 	do {
 	    newID = "";
 	    for (String str : type.toUpperCase().split("/")) {
 		newID += str.toCharArray()[0];
 	    }
-	    newID += String.format("%06d", getInstance().currentID++);
-	} while (getInstance().items.containsKey(newID));
+	    newID += String.format("%06d", currentID++);
+	} while (items.containsKey(newID));
 	return newID;
     }
 
@@ -96,9 +90,9 @@ public class ItemManager implements Serializable, Saveable {
      *
      * @param itemID The ID of the item to be removed.
      */
-    public static boolean removeItem(String itemID) {
-	Item returned = getInstance().items.remove(itemID);
-	getInstance().save();
+    public boolean removeItem(String itemID) {
+	Item returned = items.remove(itemID);
+	save();
 	return returned != null;
     }
 
@@ -107,7 +101,7 @@ public class ItemManager implements Serializable, Saveable {
      *
      * @param item The item to be removed.
      */
-    public static void removeItem(Item item) {
+    public void removeItem(Item item) {
 	removeItem(item.getId());
     }
 
@@ -118,8 +112,8 @@ public class ItemManager implements Serializable, Saveable {
      * @param itemID The desired items ID.
      * @return The desired item.
      */
-    public static Item getItemFromID(String itemID) {
-	return getInstance().items.get(itemID);
+    public Item getItemFromID(String itemID) {
+	return items.get(itemID);
     }
 
     /**
@@ -129,12 +123,12 @@ public class ItemManager implements Serializable, Saveable {
      * @param partID The desired items ID.
      * @return The desired item.
      */
-    public static ArrayList<Item> getItemsFromID(String partID) {
+    public ArrayList<Item> getItemsFromID(String partID) {
 	if (partID.isBlank()) {
-	    return new ArrayList<>(getInstance().items.values());
+	    return new ArrayList<>(items.values());
 	}
 	ArrayList<Item> validItems = new ArrayList<>();
-	getInstance().items.forEach((k, v) -> {
+	items.forEach((k, v) -> {
 	    if (v.hasInID(partID)) {
 		validItems.add(v);
 	    }
@@ -149,12 +143,12 @@ public class ItemManager implements Serializable, Saveable {
      * @param partName The desired items name.
      * @return The desired item.
      */
-    public static ArrayList<Item> getItemsFromName(String partName) {
+    public ArrayList<Item> getItemsFromName(String partName) {
 	if (partName.isBlank()) {
-	    return new ArrayList<>(getInstance().items.values());
+	    return new ArrayList<>(items.values());
 	}
 	ArrayList<Item> validItems = new ArrayList<>();
-	getInstance().items.forEach((k, v) -> {
+	items.forEach((k, v) -> {
 	    if (v.hasInName(partName)) {
 		validItems.add(v);
 	    }
@@ -169,12 +163,12 @@ public class ItemManager implements Serializable, Saveable {
      * @param partType The desired items type.
      * @return The desired item.
      */
-    public static ArrayList<Item> getItemsFromType(String partType) {
+    public ArrayList<Item> getItemsFromType(String partType) {
 	if (partType.isBlank()) {
-	    return new ArrayList<>(getInstance().items.values());
+	    return new ArrayList<>(items.values());
 	}
 	ArrayList<Item> validItems = new ArrayList<>();
-	getInstance().items.forEach((k, v) -> {
+	items.forEach((k, v) -> {
 	    if (v.hasInType(partType)) {
 		validItems.add(v);
 	    }
@@ -187,8 +181,8 @@ public class ItemManager implements Serializable, Saveable {
      * @param itemID
      * @return True if ID is valid.
      */
-    public static boolean verifyID(String itemID) {
-	return getInstance().items.containsKey(itemID);
+    public boolean verifyID(String itemID) {
+	return items.containsKey(itemID);
     }
 
     public String toString() {

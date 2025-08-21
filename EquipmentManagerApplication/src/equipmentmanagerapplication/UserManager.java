@@ -14,34 +14,14 @@ public class UserManager implements Serializable, Saveable {
     private User activeUser; // Stores the active user object
     private final String fileName = "user_manager.bin"; // The name for the save file.
 
-    /**
-     * Singleton Instance
-     */
-    private static UserManager instance;
-
-    private UserManager() {
-        Manager root = new Manager("111", "Bob"); // DEBUG!!!
-        users = new HashMap<>(); // DEBUG!!!
-        users.put("111", root); // DEBUG!!!
-        Employee rootE = new Employee("222", "Fred"); // DEBUG!!!
-        users.put("222", rootE);
-        Guest rootG = new Guest("333", "Robert"); // DEBUG!!!
-        users.put("333", rootG);
-    }
-
-    /**
-     *
-     * @return The instance of this object.
-     */
-    public static UserManager getInstance() {
-        if (instance == null) {
-            instance = new UserManager();
-        }
-        return instance;
-    }
-
-    public static void setInstance(UserManager newInstance) {
-        instance = newInstance; // Used by the file manager (as a new object instance is created when loading a file)
+    public UserManager() {
+	Manager root = new Manager("111", "Bob"); // DEBUG!!!
+	users = new HashMap<>(); // DEBUG!!!
+	users.put("111", root); // DEBUG!!!
+	Employee rootE = new Employee("222", "Fred"); // DEBUG!!!
+	users.put("222", rootE);
+	Guest rootG = new Guest("333", "Robert"); // DEBUG!!!
+	users.put("333", rootG);
     }
 
     /**
@@ -49,7 +29,10 @@ public class UserManager implements Serializable, Saveable {
      */
     @Override
     public void load() {
-        instance = (UserManager) FileManager.loadFile(fileName);
+	UserManager um = (UserManager) FileManager.loadFile(fileName);
+	if (um != null) {
+	    this.users = um.users;
+	}
     }
 
     /**
@@ -57,15 +40,15 @@ public class UserManager implements Serializable, Saveable {
      */
     @Override
     public void save() {
-        FileManager.saveFile(this, fileName);
+	FileManager.saveFile(this, fileName);
     }
 
     /**
      *
      * @return the User object for the active user
      */
-    public static User getActiveUser() {
-        return getInstance().activeUser;
+    public User getActiveUser() {
+	return activeUser;
     }
 
     /**
@@ -73,8 +56,8 @@ public class UserManager implements Serializable, Saveable {
      * @param id
      * @return whether the user ID is registered in the system
      */
-    public static boolean verifyID(String id) {
-        return getInstance().users.containsKey(id);
+    public boolean verifyID(String id) {
+	return users.containsKey(id);
     }
 
     /**
@@ -82,12 +65,12 @@ public class UserManager implements Serializable, Saveable {
      * @param userID
      * @return a User object (if the id string exists) else, null
      */
-    public static User getUserFromID(String userID) {
-        if (getInstance().users.containsKey(userID)) {
-            return getInstance().users.get(userID);
-        } else {
-            return null;
-        }
+    public User getUserFromID(String userID) {
+	if (users.containsKey(userID)) {
+	    return users.get(userID);
+	} else {
+	    return null;
+	}
     }
 
     /**
@@ -97,27 +80,27 @@ public class UserManager implements Serializable, Saveable {
      * @return true if the user was successfully created (or false if they
      * already exist)
      */
-    public static boolean createUser(String userID, String name, SecurityLevels level) {
-        if (verifyID(userID)) {
-            return false;
-        } else {
-            switch (level) { // Create new user based on their security level
-                case MANAGER:
-                    Manager newManager = new Manager(userID, name);
-                    getInstance().users.put(userID, newManager);
-                    break;
-                case EMPLOYEE:
-                    Employee newEmployee = new Employee(userID, name);
-                    getInstance().users.put(userID, newEmployee);
-                    break;
-                case GUEST:
-                    Guest newGuest = new Guest(userID, name);
-                    getInstance().users.put(userID, newGuest);
-                    break;
-            }
-            UserManager.getInstance().save();
-            return true;
-        }
+    public boolean createUser(String userID, String name, SecurityLevels level) {
+	if (verifyID(userID)) {
+	    return false;
+	} else {
+	    switch (level) { // Create new user based on their security level
+		case MANAGER:
+		    Manager newManager = new Manager(userID, name);
+		    users.put(userID, newManager);
+		    break;
+		case EMPLOYEE:
+		    Employee newEmployee = new Employee(userID, name);
+		    users.put(userID, newEmployee);
+		    break;
+		case GUEST:
+		    Guest newGuest = new Guest(userID, name);
+		    users.put(userID, newGuest);
+		    break;
+	    }
+	    save();
+	    return true;
+	}
     }
 
     /**
@@ -126,13 +109,13 @@ public class UserManager implements Serializable, Saveable {
      * @return true if the user was removed successfully (or false if they
      * already do not exist)
      */
-    public static boolean removeUser(String userID) {
-        if (getInstance().users.remove(userID) != null) {
-            UserManager.getInstance().save();
-            return true;
-        } else {
-            return false;
-        }
+    public boolean removeUser(String userID) {
+	if (users.remove(userID) != null) {
+	    save();
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
@@ -142,13 +125,13 @@ public class UserManager implements Serializable, Saveable {
      * @return whether the login was successful (false if the user id was not
      * found in the system)
      */
-    public static boolean login(String userID) {
-        if (getInstance().users.containsKey(userID)) {
-            getInstance().activeUser = getInstance().users.get(userID); // Save the current user
-            return true;
-        } else {
-            return false;
-        }
+    public boolean login(String userID) {
+	if (users.containsKey(userID)) {
+	    activeUser = users.get(userID); // Save the current user
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
@@ -156,8 +139,8 @@ public class UserManager implements Serializable, Saveable {
      *
      * @return if the logout was successful
      */
-    public static boolean logout() {
-        getInstance().activeUser = null; // Save the current user
-        return true;
+    public boolean logout() {
+	activeUser = null; // Save the current user
+	return true;
     }
 }

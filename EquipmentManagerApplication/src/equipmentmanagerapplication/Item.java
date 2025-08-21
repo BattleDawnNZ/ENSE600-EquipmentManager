@@ -79,12 +79,10 @@ public class Item implements Serializable {
      *
      * @param newLocation
      */
-    public void setLocation(String newLocation) {
-	if (LocationManager.isValidLocation(newLocation)) {
-	    String oldLocation = location;
-	    location = newLocation;
-	    addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
-	}
+    void setLocation(String newLocation) {
+	String oldLocation = location;
+	location = newLocation;
+	addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
     }
 
     /**
@@ -140,10 +138,9 @@ public class Item implements Serializable {
      *
      * @param description
      */
-    public final void addHistory(String description) {
+    void addHistory(String description) {
 	History entry = new History(description);
 	history.add(entry);
-	ItemManager.getInstance().save();
     }
 
     /**

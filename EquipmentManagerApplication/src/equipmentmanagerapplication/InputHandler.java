@@ -15,26 +15,40 @@ import java.util.Scanner;
  */
 public class InputHandler {
 
+    private ItemManager itemManager;
+    private UserManager userManager;
+    private BookingManager bookingManager;
+    private LocationManager locationManager;
+    private MaintenanceManager maintenanceManager;
+
+    public InputHandler(ItemManager itemManager, UserManager userManager, BookingManager bookingManager, LocationManager locationManager, MaintenanceManager maintenanceManager) {
+	this.itemManager = itemManager;
+	this.userManager = userManager;
+	this.bookingManager = bookingManager;
+	this.locationManager = locationManager;
+	this.maintenanceManager = maintenanceManager;
+    }
+
     /**
      *
      * @return the line typed into the console
      * @throws AbortActionException (if the user enters 'x' or 'X')
      */
     private String getUserEntry() throws AbortActionException {
-        Scanner scan = new Scanner(System.in);
+	Scanner scan = new Scanner(System.in);
 
-        try {
-            String input = scan.nextLine();
-            if (input.equalsIgnoreCase("x")) {
-                throw (new AbortActionException());
-            } else {
-                return input;
-            }
-        } catch (NoSuchElementException | IllegalStateException e) { // No line found
-            System.out.println("Error! " + e.getMessage() + ". Please retry (or enter 'x' to exit the action)");
-            return getUserEntry();
-        }
-        // Scanner closed
+	try {
+	    String input = scan.nextLine();
+	    if (input.equalsIgnoreCase("x")) {
+		throw (new AbortActionException());
+	    } else {
+		return input;
+	    }
+	} catch (NoSuchElementException | IllegalStateException e) { // No line found
+	    System.out.println("Error! " + e.getMessage() + ". Please retry (or enter 'x' to exit the action)");
+	    return getUserEntry();
+	}
+	// Scanner closed
 
     }
 
@@ -46,13 +60,13 @@ public class InputHandler {
      * enters 'x' or 'X')
      */
     public int getUserInput_integer() throws AbortActionException {
-        String entry = getUserEntry();
-        try {
-            return Integer.parseInt(entry);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter a valid number: ");
-            return getUserInput_integer();
-        }
+	String entry = getUserEntry();
+	try {
+	    return Integer.parseInt(entry);
+	} catch (NumberFormatException e) {
+	    System.out.println("Invalid input! Please enter a valid number: ");
+	    return getUserInput_integer();
+	}
     }
 
     /**
@@ -61,13 +75,13 @@ public class InputHandler {
      * @throws AbortActionException (if the user enters 'x' or 'X')
      */
     public String getUserInput_alphabeticString() throws AbortActionException {
-        String entry = getUserEntry();
-        if (entry.chars().allMatch(c -> Character.isLetter(c) || c == ' ')) {
-            return entry.toUpperCase();
-        } else {
-            System.out.println("Invalid input! All characters must be letters. Please enter a valid string: ");
-            return getUserInput_string();
-        }
+	String entry = getUserEntry();
+	if (entry.chars().allMatch(c -> Character.isLetter(c) || c == ' ')) {
+	    return entry.toUpperCase();
+	} else {
+	    System.out.println("Invalid input! All characters must be letters. Please enter a valid string: ");
+	    return getUserInput_string();
+	}
     }
 
     /**
@@ -76,7 +90,7 @@ public class InputHandler {
      * @throws AbortActionException (if the user enters 'x' or 'X')
      */
     public String getUserInput_string() throws AbortActionException {
-        return getUserEntry();
+	return getUserEntry();
     }
 
     /**
@@ -86,13 +100,13 @@ public class InputHandler {
      */
     public String getUserInput_itemID() throws AbortActionException {
 
-        String entry = getUserEntry().trim().toUpperCase();
-        if (ItemManager.verifyID(entry)) {
-            return entry;
-        } else {
-            System.out.println("Invalid ID! If unknown, use the search function on the homepage to find it.");
-            return getUserInput_itemID(); // Reprompt for valid user input.
-        }
+	String entry = getUserEntry().trim().toUpperCase();
+	if (itemManager.verifyID(entry)) {
+	    return entry;
+	} else {
+	    System.out.println("Invalid ID! If unknown, use the search function on the homepage to find it.");
+	    return getUserInput_itemID(); // Reprompt for valid user input.
+	}
     }
 
     /**
@@ -102,19 +116,19 @@ public class InputHandler {
      */
     public String getUserInput_userID() throws AbortActionException {
 
-        String entry = getUserEntry();
-        try {
-            int id = Integer.parseInt(entry); // Check the input is valid (a number)
-            if (UserManager.verifyID(entry)) { // Check that id exists
-                return entry;
-            } else {
-                System.out.println("User not found! Please enter a valid ID number: ");
-            }
-            return getUserInput_userID();
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! All valid ID numbers are numeric: ");
-            return getUserInput_userID();
-        }
+	String entry = getUserEntry();
+	try {
+	    int id = Integer.parseInt(entry); // Check the input is valid (a number)
+	    if (userManager.verifyID(entry)) { // Check that id exists
+		return entry;
+	    } else {
+		System.out.println("User not found! Please enter a valid ID number: ");
+	    }
+	    return getUserInput_userID();
+	} catch (NumberFormatException e) {
+	    System.out.println("Invalid input! All valid ID numbers are numeric: ");
+	    return getUserInput_userID();
+	}
     }
 
     /**
@@ -124,19 +138,19 @@ public class InputHandler {
      */
     public String getUserInput_newUserID() throws AbortActionException {
 
-        String entry = getUserEntry();
-        try {
-            int id = Integer.parseInt(entry); // Check the input is valid (a number)
-            if (!UserManager.verifyID(entry)) { // Check that id exists
-                return entry;
-            } else {
-                System.out.println("User ID already in the system! Please enter a valid, new ID number: ");
-                return getUserInput_newUserID();
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! All valid ID numbers are numeric: ");
-            return getUserInput_userID();
-        }
+	String entry = getUserEntry();
+	try {
+	    int id = Integer.parseInt(entry); // Check the input is valid (a number)
+	    if (!userManager.verifyID(entry)) { // Check that id exists
+		return entry;
+	    } else {
+		System.out.println("User ID already in the system! Please enter a valid, new ID number: ");
+		return getUserInput_newUserID();
+	    }
+	} catch (NumberFormatException e) {
+	    System.out.println("Invalid input! All valid ID numbers are numeric: ");
+	    return getUserInput_userID();
+	}
     }
 
     /**
@@ -146,24 +160,24 @@ public class InputHandler {
      */
     public ZonedDateTime getUserInput_date() throws AbortActionException {
 
-        System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm' : ");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	System.out.println("Please enter the date you will return the item in the format 'dd-MM-yyyy HH:mm' : ");
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-        String entry = getUserEntry() + ":00";
+	String entry = getUserEntry() + ":00";
 
-        try {
-            ZonedDateTime returnDate = LocalDateTime.parse(entry, formatter).atZone(ZoneId.systemDefault());
+	try {
+	    ZonedDateTime returnDate = LocalDateTime.parse(entry, formatter).atZone(ZoneId.systemDefault());
 
-            if (ZonedDateTime.now().isBefore(returnDate)) {
-                return returnDate;
-            } else {
-                System.out.println("Invalid input! That time is in the past.");
-                return getUserInput_date();
-            }
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid input! Please ensure you use the correct format.");
-            return getUserInput_date();
-        }
+	    if (ZonedDateTime.now().isBefore(returnDate)) {
+		return returnDate;
+	    } else {
+		System.out.println("Invalid input! That time is in the past.");
+		return getUserInput_date();
+	    }
+	} catch (DateTimeParseException e) {
+	    System.out.println("Invalid input! Please ensure you use the correct format.");
+	    return getUserInput_date();
+	}
     }
 
     /**
@@ -172,15 +186,15 @@ public class InputHandler {
      * @throws AbortActionException (if the user enters 'x' or 'X')
      */
     public SecurityLevels getUserInput_securityLevel() throws AbortActionException {
-        System.out.println("Please enter the new users security level (MANAGER, EMPLOYEE, GUEST): ");
+	System.out.println("Please enter the new users security level (MANAGER, EMPLOYEE, GUEST): ");
 
-        String entry = getUserEntry().trim().toUpperCase();
-        try {
-            return SecurityLevels.valueOf(entry);
-        } catch (Exception E) {
-            System.out.println("Invalid input! Ensure you enter a valid level");
-            return getUserInput_securityLevel();
-        }
+	String entry = getUserEntry().trim().toUpperCase();
+	try {
+	    return SecurityLevels.valueOf(entry);
+	} catch (Exception E) {
+	    System.out.println("Invalid input! Ensure you enter a valid level");
+	    return getUserInput_securityLevel();
+	}
     }
 
     /**
@@ -190,13 +204,13 @@ public class InputHandler {
      */
     public String getUserInput_location() throws AbortActionException {
 
-        String entry = getUserEntry().trim().toUpperCase();
-        if (LocationManager.isValidLocation(entry)) {
-            return entry;
-        } else {
-            System.out.println("Invalid Location! Choose from the options, or exit this action (x) and create a new location.");
-            return getUserInput_location(); // Reprompt for valid user input.
-        }
+	String entry = getUserEntry().trim().toUpperCase();
+	if (locationManager.isValidLocation(entry)) {
+	    return entry;
+	} else {
+	    System.out.println("Invalid Location! Choose from the options, or exit this action (x) and create a new location.");
+	    return getUserInput_location(); // Reprompt for valid user input.
+	}
     }
 
     /**
@@ -207,13 +221,13 @@ public class InputHandler {
      */
     public String getUserInput_bookingID() throws AbortActionException {
 
-        String entry = getUserEntry();
-        if (BookingManager.verifyBookingOwner(entry, UserManager.getActiveUser().getUserID())) {
-            return entry;
-        } else {
-            System.out.println("Invalid Booking ID! Check your entry. You can only return items issued to you.");
-            return getUserInput_bookingID(); // Reprompt for valid user input.
-        }
+	String entry = getUserEntry();
+	if (bookingManager.verifyBookingOwner(entry, userManager.getActiveUser().getUserID())) {
+	    return entry;
+	} else {
+	    System.out.println("Invalid Booking ID! Check your entry. You can only return items issued to you.");
+	    return getUserInput_bookingID(); // Reprompt for valid user input.
+	}
     }
 
 }

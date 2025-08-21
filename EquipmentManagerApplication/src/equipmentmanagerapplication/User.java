@@ -11,40 +11,28 @@ public abstract class User implements Serializable {
 
     private String userID; // Cannot be changed once initialised
     private String name;
-    private ArrayList<String> bookingIDs;
     protected SecurityLevels securityLevel;
 
     protected static enum SecurityLevels {
-        GUEST, EMPLOYEE, MANAGER
+	GUEST, EMPLOYEE, MANAGER
     };
 
     public User(String userID, String name, SecurityLevels securityLevel) {
-        this.userID = userID;
-        this.name = name;
-        this.bookingIDs = new ArrayList<String>();
-        this.securityLevel = securityLevel;
+	this.userID = userID;
+	this.name = name;
+	this.securityLevel = securityLevel;
     }
 
     public int getSecurityLevel() {
-        return this.securityLevel.ordinal();
+	return this.securityLevel.ordinal();
     }
 
     public String getUserID() {
-        return this.userID;
-    }
-
-    /**
-     *
-     * @return an array of active booking IDs
-     */
-    public ArrayList<String> getBookings() {
-        return this.bookingIDs;
+	return this.userID;
     }
 
     @Override
     public String toString() {
-        return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ", Bookings: " + bookingIDs.toString() + ".";
+	return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ".";
     }
-
-    ////////CHECK NEW ID IS VALID
 }

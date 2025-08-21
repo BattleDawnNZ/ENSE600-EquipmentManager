@@ -14,6 +14,7 @@ import java.util.Set;
  */
 public class BookingManager implements Serializable, Saveable {
 
+    private ItemManager itemManager;
     /**
      * The name for the save file.
      */
@@ -23,32 +24,22 @@ public class BookingManager implements Serializable, Saveable {
      */
     private HashMap<String, Booking> bookings;
     private int currentID;
-    /**
-     * Singleton Instance
-     */
-    private static BookingManager instance;
 
-    private BookingManager() {
+    public BookingManager(ItemManager itemManager) {
+	this.itemManager = itemManager;
 	bookings = new HashMap<>();
 	currentID = 0;
-    }
-
-    /**
-     *
-     * @return The instance of this object.
-     */
-    public static BookingManager getInstance() {
-	if (instance == null) {
-	    instance = new BookingManager();
-	}
-	return instance;
     }
 
     /**
      * Loads the item manager from a file.
      */
     public void load() {
-	instance = (BookingManager) FileManager.loadFile(fileName);
+	BookingManager bm = (BookingManager) FileManager.loadFile(fileName);
+	if (bm != null) {
+	    bookings = bm.bookings;
+	    currentID = bm.currentID;
+	}
     }
 
     /**
@@ -65,7 +56,7 @@ public class BookingManager implements Serializable, Saveable {
      * @param bookedDate The date of the booking.
      * @param returnDate The return date of the booking.
      */
-    public static boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	String bookingID = generateBookingID();
 	Booking booking = new Booking(bookingID, userID, itemID, bookedDate, returnDate);
 	for (Booking other : getBookingsForItem(itemID)) {
@@ -74,12 +65,12 @@ public class BookingManager implements Serializable, Saveable {
 	    }
 	}
 	// Should never occur.
-	if (getInstance().bookings.put(bookingID, booking) != null) {
+	if (bookings.put(bookingID, booking) != null) {
 	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
 	}
-	ItemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate + " to " + returnDate);
-	getInstance().save();
-	ItemManager.getInstance().save();
+	itemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate + " to " + returnDate);
+	save();
+	itemManager.save();
 	return true;
     }
 
@@ -90,18 +81,18 @@ public class BookingManager implements Serializable, Saveable {
      * @return True if the booking was successfully completed. i.e. item and
      * booking both actually existed.
      */
-    public static boolean returnItem(String bookingID) {
-	Booking booking = getInstance().bookings.remove(bookingID);
+    public boolean returnItem(String bookingID) {
+	Booking booking = bookings.remove(bookingID);
 	if (booking == null) {
 	    return false;
 	}
-	Item bookedItem = ItemManager.getItemFromID(booking.getItemID());
+	Item bookedItem = itemManager.getItemFromID(booking.getItemID());
 	if (bookedItem == null) {
 	    return false;
 	}
 	bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
-	getInstance().save();
-	ItemManager.getInstance().save();
+	save();
+	itemManager.save();
 	return true;
     }
 
@@ -111,7 +102,7 @@ public class BookingManager implements Serializable, Saveable {
      * @param userID The User to check ownership
      * @return true if the booking exists and is owned by the User.
      */
-    public static boolean verifyBookingOwner(String bookingID, String userID) {
+    public boolean verifyBookingOwner(String bookingID, String userID) {
 	Booking booking = getBooking(bookingID);
 	if (booking != null && booking.isOwnedBy(userID)) {
 	    return true;
@@ -124,16 +115,16 @@ public class BookingManager implements Serializable, Saveable {
      * @param bookingID The booking ID of the booking requested.
      * @return the booking with the corresponding booking ID.
      */
-    public static Booking getBooking(String bookingID) {
-	return getInstance().bookings.get(bookingID);
+    public Booking getBooking(String bookingID) {
+	return bookings.get(bookingID);
     }
 
     /**
      *
      * @return An ArrayList of the bookings.
      */
-    public static ArrayList<Booking> getBookings() {
-	return (ArrayList<Booking>) getInstance().bookings.values();
+    public ArrayList<Booking> getBookings() {
+	return (ArrayList<Booking>) bookings.values();
     }
 
     /**
@@ -141,9 +132,9 @@ public class BookingManager implements Serializable, Saveable {
      * @param itemID
      * @return All bookings for the item.
      */
-    public static ArrayList<Booking> getBookingsForItem(String itemID) {
+    public ArrayList<Booking> getBookingsForItem(String itemID) {
 	ArrayList<Booking> validBookings = new ArrayList<>();
-	getInstance().bookings.forEach((k, v) -> {
+	bookings.forEach((k, v) -> {
 	    if (v.getID().equals(itemID)) {
 		validBookings.add(v);
 	    }
@@ -156,9 +147,9 @@ public class BookingManager implements Serializable, Saveable {
      * @param userID
      * @return All bookings for the user.
      */
-    public static ArrayList<Booking> getBookingsForUser(String userID) {
+    public ArrayList<Booking> getBookingsForUser(String userID) {
 	ArrayList<Booking> validBookings = new ArrayList<>();
-	getInstance().bookings.forEach((k, v) -> {
+	bookings.forEach((k, v) -> {
 	    if (v.getUserID().equals(userID)) {
 		validBookings.add(v);
 	    }
@@ -170,11 +161,11 @@ public class BookingManager implements Serializable, Saveable {
      *
      * @return A unique booking ID.
      */
-    private static String generateBookingID() {
-	while (getInstance().bookings.containsKey(Integer.toString(getInstance().currentID))) {
-	    getInstance().currentID++;
+    private String generateBookingID() {
+	while (bookings.containsKey(Integer.toString(currentID))) {
+	    currentID++;
 	}
-	return Integer.toString(getInstance().currentID++);
+	return Integer.toString(currentID++);
     }
 
     @Override

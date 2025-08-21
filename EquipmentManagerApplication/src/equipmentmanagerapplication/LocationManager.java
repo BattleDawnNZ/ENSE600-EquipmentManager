@@ -8,8 +8,9 @@ import java.util.HashSet;
  *
  * @author fmw5088
  */
-public class LocationManager implements Serializable {
+public class LocationManager implements Serializable, Saveable {
 
+    private ItemManager itemManager;
     /**
      * The name for the save file.
      */
@@ -18,31 +19,20 @@ public class LocationManager implements Serializable {
      * Contains all the locations.
      */
     private HashSet<String> locations;
-    /**
-     * Singleton Instance
-     */
-    public static LocationManager instance;
 
-    private LocationManager() {
+    public LocationManager(ItemManager itemManager) {
+	this.itemManager = itemManager;
 	locations = new HashSet<>();
-    }
-
-    /**
-     *
-     * @return The instance of this object.
-     */
-    public static LocationManager getInstance() {
-	if (instance == null) {
-	    instance = new LocationManager();
-	}
-	return instance;
     }
 
     /**
      * Loads the location manager from a file.
      */
     public void load() {
-	instance = (LocationManager) FileManager.loadFile(fileName);
+	LocationManager lm = (LocationManager) FileManager.loadFile(fileName);
+	if (lm != null) {
+	    locations = lm.locations;
+	}
     }
 
     /**
@@ -57,8 +47,8 @@ public class LocationManager implements Serializable {
      * @param location The location to check
      * @return True if location exists
      */
-    public static boolean isValidLocation(String location) {
-	return getInstance().locations.contains(location.toUpperCase());
+    public boolean isValidLocation(String location) {
+	return locations.contains(location.toUpperCase());
     }
 
     /**
@@ -67,9 +57,9 @@ public class LocationManager implements Serializable {
      * @param newLocation The new location code to add.
      * @return True if new location did not already exist.
      */
-    public static boolean addLocation(String newLocation) {
-	boolean result = getInstance().locations.add(newLocation.toUpperCase());
-	getInstance().save();
+    public boolean addLocation(String newLocation) {
+	boolean result = locations.add(newLocation.toUpperCase());
+	save();
 	return result;
     }
 
@@ -78,9 +68,9 @@ public class LocationManager implements Serializable {
      *
      * @param oldLocation The location code to remove.
      */
-    public static void removeLocation(String oldLocation) {
-	getInstance().locations.remove(oldLocation.toUpperCase());
-	getInstance().save();
+    public void removeLocation(String oldLocation) {
+	locations.remove(oldLocation.toUpperCase());
+	save();
     }
 
     /**
@@ -89,15 +79,16 @@ public class LocationManager implements Serializable {
      * @param itemID The items ID.
      * @param newLocation The location to move the item to.
      */
-    public static void moveItem(String itemID, String newLocation) {
-	ItemManager.getItemFromID(itemID).setLocation(newLocation.toUpperCase());
+    public void moveItem(String itemID, String newLocation) {
+	itemManager.getItemFromID(itemID).setLocation(newLocation.toUpperCase());
+	itemManager.save();
     }
 
     /**
      *
      * @return An ArrayList of all locations
      */
-    public static ArrayList<String> getLocations() {
-	return new ArrayList<>(getInstance().locations);
+    public ArrayList<String> getLocations() {
+	return new ArrayList<>(locations);
     }
 }
