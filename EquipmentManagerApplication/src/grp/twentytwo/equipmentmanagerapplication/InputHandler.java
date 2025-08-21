@@ -5,6 +5,7 @@ import grp.twentytwo.equipmentmanager.ItemManager;
 import grp.twentytwo.equipmentmanager.LocationManager;
 import grp.twentytwo.equipmentmanager.BookingManager;
 import grp.twentytwo.equipmentmanager.MaintenanceManager;
+import grp.twentytwo.equipmentmanager.User;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -61,16 +62,42 @@ public class InputHandler {
      * Requests user input until the user enters an integer
      *
      * @return an integer entered by the user
-     * @throws grp.twentytwo.equipmentmanagerapplication.AbortActionException (if the user
-     * enters 'x' or 'X')
+     * @throws AbortActionException (if the user enters 'x' or 'X')
      */
     public int getUserInput_integer() throws AbortActionException {
+	System.out.println("Before entry");
 	String entry = getUserEntry();
+	System.out.println("After entry");
 	try {
+	    System.out.println("Try Parse");
 	    return Integer.parseInt(entry);
 	} catch (NumberFormatException e) {
 	    System.out.println("Invalid input! Please enter a valid number: ");
 	    return getUserInput_integer();
+	}
+    }
+
+    /**
+     *
+     * @param menu the menu to process
+     * @param user the current user
+     * @return a valid menu option that exists
+     * @throws AbortActionException (if the user enters 'x' or 'X')
+     */
+    public int getUserInput_menuOption(CliMenu menu, User user) throws AbortActionException {
+
+	String entry = getUserEntry();
+	try {
+	    int optionNum = Integer.parseInt(entry); // Check the input is valid (a number)
+	    if (menu.verifyValidMenuOption(user, optionNum)) { // Check that the option is valid
+		return optionNum;
+	    } else {
+		System.out.println("Menu option not found! Please enter a valid menu option: ");
+	    }
+	    return getUserInput_menuOption(menu, user);
+	} catch (NumberFormatException e) {
+	    System.out.println("Invalid input! All valid menu options are numeric: ");
+	    return getUserInput_menuOption(menu, user);
 	}
     }
 

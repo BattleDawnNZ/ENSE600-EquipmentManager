@@ -35,6 +35,7 @@ public class ItemManager implements Serializable, Saveable {
     /**
      * Loads the item manager from a file.
      */
+    @Override
     public void load() {
 	ItemManager im = (ItemManager) FileManager.loadFile(fileName);
 	if (im != null) {
@@ -46,6 +47,7 @@ public class ItemManager implements Serializable, Saveable {
     /**
      * Saves the item manager to a file
      */
+    @Override
     public void save() {
 	FileManager.saveFile(this, fileName);
     }
@@ -71,6 +73,7 @@ public class ItemManager implements Serializable, Saveable {
 
     /**
      *
+     * @param type the items type.
      * @return A unique item ID.
      */
     public String generateItemID(String type) {
@@ -89,6 +92,7 @@ public class ItemManager implements Serializable, Saveable {
      * Removes an item from the items HashMap.
      *
      * @param itemID The ID of the item to be removed.
+     * @return true if the item existed.
      */
     public boolean removeItem(String itemID) {
 	Item returned = items.remove(itemID);
@@ -100,6 +104,7 @@ public class ItemManager implements Serializable, Saveable {
      * Removes an item from the items HashMap.
      *
      * @param item The item to be removed.
+     * @return true if the item existed.
      */
     public boolean removeItem(Item item) {
 	return removeItem(item.getId());
@@ -185,6 +190,11 @@ public class ItemManager implements Serializable, Saveable {
 	return items.containsKey(itemID);
     }
 
+    /**
+     *
+     * @return a string representing the object.
+     */
+    @Override
     public String toString() {
 	String output = "----- ItemManager -----\n";
 	output += "Current ID: " + currentID + "\n";

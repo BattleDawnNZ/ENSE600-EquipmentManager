@@ -139,9 +139,8 @@ public class CliManager {
 	    // Display the main menu (Only the options available for the current users security level)
 	    menu.dispMenu(userManager.getActiveUser());
 
-	    do { // Prompt for user input until entry is valid
-		chosenOption = inputHandler.getUserInput_integer();
-	    } while (!menu.verifyValidMenuOption(userManager.getActiveUser(), chosenOption));
+	    // Prompt for user input until entry is valid
+	    chosenOption = inputHandler.getUserInput_menuOption(menu, userManager.getActiveUser());
 
 	    return menu.getMenuOptionState(chosenOption);
 	} catch (AbortActionException e) { // User has aborted the active action

@@ -34,6 +34,7 @@ public class BookingManager implements Serializable, Saveable {
     /**
      * Loads the item manager from a file.
      */
+    @Override
     public void load() {
 	BookingManager bm = (BookingManager) FileManager.loadFile(fileName);
 	if (bm != null) {
@@ -45,6 +46,7 @@ public class BookingManager implements Serializable, Saveable {
     /**
      * Saves the item manager to a file
      */
+    @Override
     public void save() {
 	FileManager.saveFile(this, fileName);
     }
@@ -53,8 +55,10 @@ public class BookingManager implements Serializable, Saveable {
      * Creates a new booking.
      *
      * @param userID The booking users ID.
+     * @param itemID The ID of the item being booked.
      * @param bookedDate The date of the booking.
      * @param returnDate The return date of the booking.
+     * @return true if the booking was valid and created.
      */
     public boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
 	String bookingID = generateBookingID();
@@ -104,10 +108,7 @@ public class BookingManager implements Serializable, Saveable {
      */
     public boolean verifyBookingOwner(String bookingID, String userID) {
 	Booking booking = getBooking(bookingID);
-	if (booking != null && booking.isOwnedBy(userID)) {
-	    return true;
-	}
-	return false;
+	return booking != null && booking.isOwnedBy(userID);
     }
 
     /**

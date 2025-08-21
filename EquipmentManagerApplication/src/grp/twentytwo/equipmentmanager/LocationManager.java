@@ -28,6 +28,7 @@ public class LocationManager implements Serializable, Saveable {
     /**
      * Loads the location manager from a file.
      */
+    @Override
     public void load() {
 	LocationManager lm = (LocationManager) FileManager.loadFile(fileName);
 	if (lm != null) {
@@ -38,6 +39,7 @@ public class LocationManager implements Serializable, Saveable {
     /**
      * Saves the location manager to a file
      */
+    @Override
     public void save() {
 	FileManager.saveFile(this, fileName);
     }

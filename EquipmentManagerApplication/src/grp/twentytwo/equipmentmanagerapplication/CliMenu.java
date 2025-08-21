@@ -50,15 +50,14 @@ public class CliMenu {
 
     private class MenuOption {
 
-	public String option;
-	public State programState;
-	public SecurityLevels securityLevel;
+	private String option;
+	private State programState;
+	private SecurityLevels securityLevel;
 
 	public MenuOption(String option, State state, SecurityLevels securityLevel) {
 	    this.option = option;
 	    this.programState = state;
 	    this.securityLevel = securityLevel;
-
 	}
     }
 

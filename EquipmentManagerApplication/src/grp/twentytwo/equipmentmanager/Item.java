@@ -35,7 +35,7 @@ public class Item implements Serializable {
 	this.name = name;
 	this.description = "";
 	this.location = location;
-	this.status = Status.working;
+	this.status = Status.WORKING;
 	this.type = type;
 	this.history = new ArrayList<>();
 	addHistory("Item created at location " + location + ".");
@@ -148,7 +148,7 @@ public class Item implements Serializable {
      * @return An array copy of the items history.
      */
     public History[] getHistory() {
-	return history.toArray(new History[0]);
+	return history.toArray(History[]::new);
     }
 
     /**
@@ -179,6 +179,11 @@ public class Item implements Serializable {
 	return type.toLowerCase().contains(partType.toLowerCase());
     }
 
+    /**
+     *
+     * @return a string representing the object.
+     */
+    @Override
     public String toString() {
 	return "Item ID: " + id
 		+ ", Name: " + name
@@ -194,9 +199,9 @@ public class Item implements Serializable {
      * Indicates the status of an item.
      */
     public static enum Status {
-	working,
-	decommissioned,
-	faulty
+	WORKING,
+	DECOMMISIONED,
+	FAULTY
     }
 
     /**
@@ -227,16 +232,6 @@ public class Item implements Serializable {
 
 	/**
 	 *
-	 * @param timestamp When this event happened.
-	 * @param description What happened.
-	 */
-	History(ZonedDateTime timestamp, String description) {
-	    this.timestamp = timestamp;
-	    this.description = description;
-	}
-
-	/**
-	 *
 	 * @return The time stamp for when this event happened.
 	 */
 	public ZonedDateTime getTimestamp() {
@@ -251,6 +246,11 @@ public class Item implements Serializable {
 	    return description;
 	}
 
+	/**
+	 *
+	 * @return a string representing the object.
+	 */
+	@Override
 	public String toString() {
 	    return "" + timestamp.format(formatter) + " - " + description;
 	}
