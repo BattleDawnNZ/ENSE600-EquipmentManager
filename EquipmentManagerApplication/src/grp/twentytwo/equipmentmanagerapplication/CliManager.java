@@ -62,7 +62,7 @@ public class CliManager {
 
     }
 
-    void runCliLoop() {
+    private void runCliLoop() {
 
 	State newState;
 	State nextAction;
@@ -110,7 +110,7 @@ public class CliManager {
     /**
      * Handle user login
      */
-    void login() {
+    private void login() {
 	try {
 	    System.out.println("To begin please enter your ID number (or enter x to quit the program):");
 
