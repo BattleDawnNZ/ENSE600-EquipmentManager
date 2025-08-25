@@ -2,7 +2,9 @@ package grp.twentytwo.equipmentmanager;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -30,7 +32,7 @@ public class FileManager {
 	    oos.writeObject(saveObject);
 	    //Close Output Stream
 	    oos.close();
-	} catch (Exception err) {
+	} catch (IOException err) {
 	    System.out.println(err.toString());
 	}
     }
@@ -48,8 +50,10 @@ public class FileManager {
 	    // Read Object from File
 	    data = ois.readObject();
 	    ois.close();
-	} catch (Exception err) {
+	} catch (ClassNotFoundException err) {
 	    System.out.println(err.toString());
+	} catch (IOException err) {
+	    System.out.println("No loadable data found for " + fileName + ".");
 	}
 	return data;
     }

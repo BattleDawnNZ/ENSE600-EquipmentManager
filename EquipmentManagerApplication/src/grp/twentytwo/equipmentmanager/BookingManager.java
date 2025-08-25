@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class BookingManager implements Saveable {
      */
     private HashMap<String, Booking> bookings;
     private int currentID;
+
+    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public BookingManager(ItemManager itemManager) {
 	this.itemManager = itemManager;
@@ -70,7 +73,7 @@ public class BookingManager implements Saveable {
 	if (bookings.put(bookingID, booking) != null) {
 	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
 	}
-	itemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate + " to " + returnDate);
+	itemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate.format(formatter) + " to " + returnDate.format(formatter));
 	save();
 	itemManager.save();
 	return true;
