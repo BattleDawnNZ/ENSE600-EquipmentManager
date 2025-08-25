@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Manages locations, adding locations, moving items, and validating locations.
+ * Manages all locations, adding locations, moving items, and validating
+ * locations.
  *
  * @author fmw5088
  */
