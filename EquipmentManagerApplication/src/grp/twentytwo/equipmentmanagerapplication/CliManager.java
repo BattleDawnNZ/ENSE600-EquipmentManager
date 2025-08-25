@@ -302,7 +302,7 @@ public class CliManager {
 
 		case ACTION_CalibrateItem:
 		    System.out.println("Enter the item ID to record its calibration:");
-		    if (locationManager.addLocation(inputHandler.getUserInput_itemID())) {
+		    if (maintenanceManager.calibrateItem(inputHandler.getUserInput_itemID())) {
 			System.out.println("Calibration recorded.");
 		    } else {
 			System.out.println("Failed to record calibration.");

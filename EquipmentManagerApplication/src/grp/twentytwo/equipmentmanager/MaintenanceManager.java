@@ -16,9 +16,15 @@ public class MaintenanceManager {
      *
      * @param itemID
      */
-    public void calibrateItem(String itemID) {
-	itemManager.getItemFromID(itemID).calibrate();
-	itemManager.save();
+    public boolean calibrateItem(String itemID) {
+	Item item = itemManager.getItemFromID(itemID);
+	if (item != null) {
+	    item.calibrate();
+	    itemManager.save();
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
