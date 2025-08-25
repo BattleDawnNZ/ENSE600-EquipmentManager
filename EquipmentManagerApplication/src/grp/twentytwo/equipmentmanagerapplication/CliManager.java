@@ -12,6 +12,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 /**
+ * Manages the Command Line User Interface, allowing a user to access the
+ * equipment manager.
  *
  * @author mymys
  */

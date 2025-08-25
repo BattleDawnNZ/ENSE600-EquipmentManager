@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanagerapplication;
 
 /**
+ * Menu class to store menu details and speed up menu creation.
  *
  * @author ppj1707
  */

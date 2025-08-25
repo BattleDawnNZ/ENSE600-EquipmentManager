@@ -3,6 +3,8 @@ package grp.twentytwo.equipmentmanager;
 import java.io.Serializable;
 
 /**
+ * Extends the Serializable interface and requires an object to have a save and
+ * load function.
  *
  * @author cwitt
  */

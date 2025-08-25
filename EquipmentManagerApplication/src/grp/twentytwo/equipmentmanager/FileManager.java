@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
+ * Loads objects from a file utilizing the java.io.Serializable interface.
  *
  * @author fmw5088
  */

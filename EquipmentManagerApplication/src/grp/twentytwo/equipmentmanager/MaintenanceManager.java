@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
 /**
+ * Manages flagging, calibrating, and adding service notes.
  *
  * @author fmw5088
  */

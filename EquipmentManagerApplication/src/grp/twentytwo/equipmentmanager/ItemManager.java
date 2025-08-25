@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Manages item operations such as adding, removing, generating IDs, and
+ * retrieving items from the HashMap.
  *
  * @author fmw5088
  */

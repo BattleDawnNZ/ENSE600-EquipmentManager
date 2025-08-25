@@ -4,6 +4,8 @@ import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.util.HashMap; // Import the HashSet class
 
 /**
+ * Manages users allowing for login, logout, create user, remove user, verifying
+ * IDs, and tracking the current user.
  *
  * @author ppj1707
  */

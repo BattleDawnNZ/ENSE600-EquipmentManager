@@ -1,10 +1,10 @@
 package grp.twentytwo.equipmentmanagerapplication;
 
 /**
+ * Custom exception used to completely abort an action
  *
  * @author ppj1707
  */
-// Custom exception used to completely abort an action
 public class AbortActionException extends Exception {
 
     private static final String message = "Action aborted\n";

@@ -7,6 +7,8 @@ import grp.twentytwo.equipmentmanager.MaintenanceManager;
 import grp.twentytwo.equipmentmanager.UserManager;
 
 /**
+ * Base application entry class. Responsible for creating and loading managers,
+ * and starting application flow.
  *
  * @author fmw5088
  */

@@ -16,6 +16,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
+ * Provides helper functions to allow for retrieving formatted input from the
+ * user.
  *
  * @author ppj1707
  */

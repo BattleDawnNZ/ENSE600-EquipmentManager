@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
 /**
+ * The manager user type.
  *
  * @author ppj1707
  */

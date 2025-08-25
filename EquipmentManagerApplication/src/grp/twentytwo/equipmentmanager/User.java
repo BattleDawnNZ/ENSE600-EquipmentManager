@@ -3,6 +3,7 @@ package grp.twentytwo.equipmentmanager;
 import java.io.Serializable;
 
 /**
+ * Abstract user class implements the functionality for all user types.
  *
  * @author ppj1707
  */

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * Manages issuing and returning of items.
+ * Manages booking and returning of items.
  *
  * @author fmw5088
  */
