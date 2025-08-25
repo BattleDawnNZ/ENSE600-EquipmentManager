@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Manages the Command Line User Interface, allowing a user to access the
  * equipment manager.
  *
- * @author mymys
+ * @author ppj1707
  */
 public class CliManager {
 

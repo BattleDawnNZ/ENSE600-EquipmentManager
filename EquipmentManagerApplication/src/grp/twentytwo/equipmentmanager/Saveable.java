@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Extends the Serializable interface and requires an object to have a save and
  * load function.
  *
- * @author cwitt
+ * @author fmw5088
  */
 public interface Saveable extends Serializable {
 
