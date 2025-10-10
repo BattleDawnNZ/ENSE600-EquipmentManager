@@ -28,8 +28,10 @@ public class DatabaseManager {
 
     // TEST CODE FOR DB CONNECTION
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:UserDB; create=true");
-        System.out.println(dbManager.getConnection());
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:UserDB; drop=true");
+        //System.out.println(dbManager.getConnection());
+        //dbManager.updateDB("DROP DATABASE UserDB");
+
     }
 
     public Connection getConnection() {
