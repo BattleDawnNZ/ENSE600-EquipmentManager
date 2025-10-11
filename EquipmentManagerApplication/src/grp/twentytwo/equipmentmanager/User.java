@@ -14,25 +14,29 @@ public abstract class User implements Serializable {
     protected SecurityLevels securityLevel;
 
     public static enum SecurityLevels {
-	GUEST, EMPLOYEE, MANAGER
+        GUEST, EMPLOYEE, MANAGER
     };
 
     User(String userID, String name, SecurityLevels securityLevel) {
-	this.userID = userID;
-	this.name = name;
-	this.securityLevel = securityLevel;
+        this.userID = userID;
+        this.name = name;
+        this.securityLevel = securityLevel;
     }
 
     public SecurityLevels getSecurityLevel() {
-	return this.securityLevel;
+        return this.securityLevel;
     }
 
     public String getUserID() {
-	return this.userID;
+        return this.userID;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     @Override
     public String toString() {
-	return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ".";
+        return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ".";
     }
 }

@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.derby.iapi.sql.PreparedStatement;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -31,6 +31,7 @@ public class DatabaseStream {
     public static void main(String[] args) {
         DatabaseStream db = new DatabaseStream();
         db.printUserTableFromDB();
+        db.verifyID("000001");
     }
 
     public void createUserTableIfNotExist() {
@@ -68,4 +69,22 @@ public class DatabaseStream {
         }
 
     }
+
+    public boolean verifyID(String id) {
+        String sql = "SELECT * FROM usertable where UserID = ?";
+        try {
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, "000001");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getString("securitylevel"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+
+        return true;
+    }
+
 }

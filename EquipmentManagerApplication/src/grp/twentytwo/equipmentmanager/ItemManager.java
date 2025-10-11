@@ -25,12 +25,12 @@ public class ItemManager implements Saveable {
     private int currentID;
 
     public ItemManager() {
-	items = new HashMap<>();
-	currentID = 0;
+        items = new HashMap<>();
+        currentID = 0;
     }
 
     public void setLocationManager(LocationManager locationManager) {
-	this.locationManager = locationManager;
+        this.locationManager = locationManager;
     }
 
     /**
@@ -38,11 +38,11 @@ public class ItemManager implements Saveable {
      */
     @Override
     public void load() {
-	ItemManager im = (ItemManager) FileManager.loadFile(fileName);
-	if (im != null) {
-	    items = im.items;
-	    currentID = im.currentID;
-	}
+        ItemManager im = (ItemManager) FileManager.loadFile(fileName);
+        if (im != null) {
+            items = im.items;
+            currentID = im.currentID;
+        }
     }
 
     /**
@@ -50,7 +50,7 @@ public class ItemManager implements Saveable {
      */
     @Override
     public void save() {
-	FileManager.saveFile(this, fileName);
+        FileManager.saveFile(this, fileName);
     }
 
     /**
@@ -62,14 +62,14 @@ public class ItemManager implements Saveable {
      * @return The Item ID of the Item Added.
      */
     public String addItem(String name, String location, String type) {
-	if (!locationManager.isValidLocation(location)) {
-	    return null;
-	}
-	String itemID = generateItemID(type);
-	Item item = new Item(itemID, name, location, type);
-	items.put(itemID, item);
-	save();
-	return itemID;
+        if (!locationManager.isValidLocation(location)) {
+            return null;
+        }
+        String itemID = generateItemID(type);
+        Item item = new Item(itemID, name, location, type);
+        items.put(itemID, item);
+        save();
+        return itemID;
     }
 
     /**
@@ -78,15 +78,15 @@ public class ItemManager implements Saveable {
      * @return A unique item ID.
      */
     public String generateItemID(String type) {
-	String newID;
-	do {
-	    newID = "";
-	    for (String str : type.toUpperCase().split("/")) {
-		newID += str.toCharArray()[0];
-	    }
-	    newID += String.format("%06d", currentID++);
-	} while (items.containsKey(newID));
-	return newID;
+        String newID;
+        do {
+            newID = "";
+            for (String str : type.toUpperCase().split("/")) {
+                newID += str.toCharArray()[0];
+            }
+            newID += String.format("%06d", currentID++);
+        } while (items.containsKey(newID));
+        return newID;
     }
 
     /**
@@ -96,9 +96,9 @@ public class ItemManager implements Saveable {
      * @return true if the item existed.
      */
     public boolean removeItem(String itemID) {
-	Item returned = items.remove(itemID);
-	save();
-	return returned != null;
+        Item returned = items.remove(itemID);
+        save();
+        return returned != null;
     }
 
     /**
@@ -108,7 +108,7 @@ public class ItemManager implements Saveable {
      * @return true if the item existed.
      */
     public boolean removeItem(Item item) {
-	return removeItem(item.getId());
+        return removeItem(item.getId());
     }
 
     /**
@@ -119,7 +119,7 @@ public class ItemManager implements Saveable {
      * @return The desired item.
      */
     public Item getItemFromID(String itemID) {
-	return items.get(itemID);
+        return items.get(itemID);
     }
 
     /**
@@ -130,16 +130,16 @@ public class ItemManager implements Saveable {
      * @return The desired item.
      */
     public ArrayList<Item> getItemsFromID(String partID) {
-	if (partID.isBlank()) {
-	    return new ArrayList<>(items.values());
-	}
-	ArrayList<Item> validItems = new ArrayList<>();
-	items.forEach((k, v) -> {
-	    if (v.hasInID(partID)) {
-		validItems.add(v);
-	    }
-	});
-	return validItems;
+        if (partID.isBlank()) {
+            return new ArrayList<>(items.values());
+        }
+        ArrayList<Item> validItems = new ArrayList<>();
+        items.forEach((k, v) -> {
+            if (v.hasInID(partID)) {
+                validItems.add(v);
+            }
+        });
+        return validItems;
     }
 
     /**
@@ -150,16 +150,16 @@ public class ItemManager implements Saveable {
      * @return The desired item.
      */
     public ArrayList<Item> getItemsFromName(String partName) {
-	if (partName.isBlank()) {
-	    return new ArrayList<>(items.values());
-	}
-	ArrayList<Item> validItems = new ArrayList<>();
-	items.forEach((k, v) -> {
-	    if (v.hasInName(partName)) {
-		validItems.add(v);
-	    }
-	});
-	return validItems;
+        if (partName.isBlank()) {
+            return new ArrayList<>(items.values());
+        }
+        ArrayList<Item> validItems = new ArrayList<>();
+        items.forEach((k, v) -> {
+            if (v.hasInName(partName)) {
+                validItems.add(v);
+            }
+        });
+        return validItems;
     }
 
     /**
@@ -170,16 +170,16 @@ public class ItemManager implements Saveable {
      * @return The desired item.
      */
     public ArrayList<Item> getItemsFromType(String partType) {
-	if (partType.isBlank()) {
-	    return new ArrayList<>(items.values());
-	}
-	ArrayList<Item> validItems = new ArrayList<>();
-	items.forEach((k, v) -> {
-	    if (v.hasInType(partType)) {
-		validItems.add(v);
-	    }
-	});
-	return validItems;
+        if (partType.isBlank()) {
+            return new ArrayList<>(items.values());
+        }
+        ArrayList<Item> validItems = new ArrayList<>();
+        items.forEach((k, v) -> {
+            if (v.hasInType(partType)) {
+                validItems.add(v);
+            }
+        });
+        return validItems;
     }
 
     /**
@@ -188,7 +188,7 @@ public class ItemManager implements Saveable {
      * @return True if ID is valid.
      */
     public boolean verifyID(String itemID) {
-	return items.containsKey(itemID);
+        return items.containsKey(itemID);
     }
 
     /**
@@ -197,12 +197,12 @@ public class ItemManager implements Saveable {
      */
     @Override
     public String toString() {
-	String output = "----- ItemManager -----\n";
-	output += "Current ID: " + currentID + "\n";
-	output += "Items:\n";
-	for (Map.Entry<String, Item> entry : items.entrySet()) {
-	    output += " - " + entry.getValue().toString() + "\n";
-	}
-	return output;
+        String output = "----- ItemManager -----\n";
+        output += "Current ID: " + currentID + "\n";
+        output += "Items:\n";
+        for (Map.Entry<String, Item> entry : items.entrySet()) {
+            output += " - " + entry.getValue().toString() + "\n";
+        }
+        return output;
     }
 }
