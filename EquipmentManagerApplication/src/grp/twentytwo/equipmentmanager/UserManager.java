@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages all users allowing for login, logout, create user, remove user,
@@ -23,13 +26,19 @@ public class UserManager { // Implement importable!!
     PreparedStatement st_deleteRowById;
     PreparedStatement st_updateRowById;
     PreparedStatement st_createRowById;
+    PreparedStatement st_createTable;
+
+    // Must HAVES ASWELL AS PRINT DATA AND UPDATE AND ETC
+    String tableName = "USERTABLE";
+    ArrayList<String> columns = new ArrayList<String>(); // Set the first column as the primary key / id
 
     public static void main(String[] args) {
         UserManager um = new UserManager();
-        um.printUserTableFromDB();
-        User user = new Manager("000004", "Alice");
+        um.printTableFromDB();
+        User user = new Manager("000004", "Alice Fran");
         um.removeUser("000004");
-        um.printUserTableFromDB();
+        //um.saveUser(user);
+        um.printTableFromDB();
         System.out.println(um.getUserFromID("000004"));
     }
 
@@ -41,23 +50,23 @@ public class UserManager { // Implement importable!!
         // Initialise Tables ()
         createUserTableIfNotExist();
 
+        columns.add("UserID");
+        columns.add("Name");
+        columns.add("SecurityLevel");
+
         // Initialise Statements
-        try {
-            st_getRowById = conn.prepareStatement("SELECT * FROM USERTABLE where UserID = ?");
-            st_deleteRowById = conn.prepareStatement("DELETE FROM USERTABLE where UserID = ?");
-            st_createRowById = conn.prepareStatement("INSERT INTO USERTABLE (UserID, Name, SecurityLevel) VALUES (?, ?, ?)");
-            st_updateRowById = conn.prepareStatement("UPDATE USERTABLE SET Name = ?, SecurityLevel = ? WHERE UserID = ?");
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
+        prepareStatements();
     }
 
-    public void printUserTableFromDB() {
+    public void printTableFromDB() {
         try {
             System.out.println("User Table Data:");
             ResultSet rs = dbManager.queryDB("SELECT * FROM USERTABLE");
             while (rs.next()) {
-                System.out.println("ID: " + rs.getString("UserID") + "      Name: " + rs.getString("Name") + "      SecurityLevel" + rs.getString("SecurityLevel"));
+                for (String col : columns) {
+                    System.out.print(col + ": " + rs.getString(col) + "     ");
+                }
+                System.out.print("\n");
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e);
@@ -157,9 +166,13 @@ public class UserManager { // Implement importable!!
 
     public void createUserTableIfNotExist() {
         if (!dbManager.checkTableExists("USERTABLE")) {
-            // Create table. Assign user id as primary key to prevent duplicates
             System.out.println("USER table does not exist. Creating table");
-            dbManager.updateDB("CREATE TABLE USERTABLE (UserID VARCHAR(12) not NULL, Name VARCHAR(30), SecurityLevel VARCHAR(15), PRIMARY KEY (UserID))");
+            try {
+                // Create table. Assign user id as primary key to prevent duplicates
+                st_createTable.execute();
+            } catch (SQLException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
             // Add test data to table
             dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
                     + "('000002', 'Sally', 'EMPLOYEE'), "
@@ -245,6 +258,59 @@ public class UserManager { // Implement importable!!
     public boolean logout() {
         activeUser = null; // Save the current user
         return true;
+    }
+
+    public void prepareStatements() {
+
+        // Prepare SQL
+        String sql_getRowById = "SELECT * FROM " + tableName + " where " + columns.get(0) + " = ?";
+
+        String sql_deleteRowById = "DELETE FROM " + tableName + " where " + columns.get(0) + " = ?";
+
+        String sql_updateRowById = "UPDATE " + tableName + " SET ";
+        for (int i = 1; i < columns.size(); i++) { // Update everything other than the id
+            sql_updateRowById += (columns.get(i) + " = ?");
+            if (i != columns.size() - 1) { // If column is not the last one
+                sql_updateRowById += ", ";
+            }
+        }
+        sql_updateRowById += (" WHERE " + columns.get(0) + " = ?");
+
+        String sql_createRowById = "INSERT INTO " + tableName + " (";
+        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
+            sql_createRowById += columns.get(i);
+            if (i != columns.size() - 1) { // If column is not the last one
+                sql_createRowById += ", ";
+            }
+        }
+        sql_createRowById += ") VALUES (";
+        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
+            sql_createRowById += "?";
+            if (i != columns.size() - 1) { // If column is not the last one
+                sql_createRowById += ", ";
+            }
+        }
+        sql_createRowById += ")";
+
+        String sql_createTable = "CREATE TABLE " + tableName + "(";
+        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
+            sql_createTable += "?";
+            if (i != columns.size() - 1) { // If column is not the last one
+                sql_createTable += ", ";
+            }
+        }
+        dbManager.updateDB("CREATE TABLE USERTABLE (UserID VARCHAR(12) not NULL, Name VARCHAR(30), SecurityLevel VARCHAR(15), PRIMARY KEY (UserID))");
+
+        // Prepare Statements
+        try {
+            st_getRowById = conn.prepareStatement(sql_getRowById);
+            st_deleteRowById = conn.prepareStatement(sql_deleteRowById);
+            st_createRowById = conn.prepareStatement(sql_createRowById);
+            st_updateRowById = conn.prepareStatement(sql_updateRowById);
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+
     }
 
 }
