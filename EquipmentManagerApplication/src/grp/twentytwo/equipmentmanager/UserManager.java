@@ -100,17 +100,18 @@ public class UserManager {
 
     /**
      *
-     * @param user
+     * @param userID
+     * @param name
+     * @param level
      * @return true if created (did not previously exist)
      */
-    public boolean createUser(User user) {
-        String id = user.getUserID();
+    public boolean createUser(String userID, String name, SecurityLevels level) {
 
-        if (!verifyID(id)) { // Ensure user is new
+        if (!verifyID(userID)) { // Ensure user is new
             HashMap<String, String> data = new HashMap<>();
-            data.put("UserID", id);
-            data.put("Name", user.getName());
-            data.put("SecurityLevel", user.getSecurityLevel().toString());
+            data.put("UserID", userID);
+            data.put("Name", name);
+            data.put("SecurityLevel", level.toString());
             tableManager.createRow(data);
             return true; // User created
         }
@@ -147,34 +148,6 @@ public class UserManager {
         return activeUser;
     }
 
-//    /**
-//     *
-//     * @param userID
-//     * @param level
-//     * @return true if the user was successfully created (or false if they
-//     * already exist)
-//     */
-//    public boolean createUser(String userID, String name, SecurityLevels level) {
-//        if (verifyID(userID)) {
-//            return false;
-//        } else {
-//            switch (level) { // Create new user based on their security level
-//                case MANAGER:
-//                    Manager newManager = new Manager(userID, name);
-//                    users.put(userID, newManager);
-//                    break;
-//                case EMPLOYEE:
-//                    Employee newEmployee = new Employee(userID, name);
-//                    users.put(userID, newEmployee);
-//                    break;
-//                case GUEST:
-//                    Guest newGuest = new Guest(userID, name);
-//                    users.put(userID, newGuest);
-//                    break;
-//            }
-//            return true;
-//        }
-//    }
     /**
      *
      * @param userID
@@ -211,16 +184,24 @@ public class UserManager {
         return true;
     }
 
+    /**
+     * Print the entire user table to the console
+     */
     public void printTable() {
         tableManager.printTable();
     }
 
-    private User getUserObjectFromResultSet(ResultSet rs) {
+    /**
+     *
+     * @param resultSet
+     * @return a user object
+     */
+    private User getUserObjectFromResultSet(ResultSet resultSet) {
         try {
-            if (rs.next()) { // User exists
-                String userID = rs.getString("UserID");
-                String name = rs.getString("Name");
-                String sL = rs.getString("SecurityLevel");
+            if (resultSet.next()) { // User exists
+                String userID = resultSet.getString("UserID");
+                String name = resultSet.getString("Name");
+                String sL = resultSet.getString("SecurityLevel");
                 return importUser(userID, name, SecurityLevels.valueOf(sL));
             } else {
                 return null;
