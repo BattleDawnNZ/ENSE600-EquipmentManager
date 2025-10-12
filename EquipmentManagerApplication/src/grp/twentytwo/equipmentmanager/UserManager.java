@@ -21,7 +21,7 @@ public class UserManager {
     private User activeUser; // Stores the active user object
 
     String tableName = "USERTABLE";
-    HashMap<String, String> columns;
+    HashMap<String, String> columnDefinitions;
     String primaryKey = "UserID";
 
     public static void main(String[] args) {
@@ -38,32 +38,19 @@ public class UserManager {
         dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
 
         // Define Table Parameters
-        columns = new HashMap<String, String>();
-        columns.put("UserID", "VARCHAR(12) not NULL");
-        columns.put("Name", "VARCHAR(30)");
-        columns.put("SecurityLevel", "VARCHAR(15)");
+        columnDefinitions = new HashMap<String, String>();
+        columnDefinitions.put("UserID", "VARCHAR(12) not NULL");
+        columnDefinitions.put("Name", "VARCHAR(30)");
+        columnDefinitions.put("SecurityLevel", "VARCHAR(15)");
 
         // Initialise Table
-        tableManager = new TableManager(dbManager, tableName, columns, primaryKey);
-    }
+        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
 
-    /**
-     *
-     * @param id
-     * @return whether the user ID is registered in the system
-     */
-    public boolean verifyID(String id) {
-        try {
-            ResultSet rs = tableManager.getRowByPrimaryKey(id);
-            if (rs.next()) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-            return false;
-        }
+        // Add test data to table
+        dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
+                + "('000002', 'Sally', 'EMPLOYEE'), "
+                + "('000003', 'Fred', 'GUEST')");
+        tableManager.getNextPrimaryKeyId();
     }
 
     /**
@@ -105,9 +92,9 @@ public class UserManager {
      * @param level
      * @return true if created (did not previously exist)
      */
-    public boolean createUser(String userID, String name, SecurityLevels level) {
+    public boolean addUser(String userID, String name, SecurityLevels level) {
 
-        if (!verifyID(userID)) { // Ensure user is new
+        if (!tableManager.verifyPrimaryKey(userID)) { // Ensure user is new
             HashMap<String, String> data = new HashMap<>();
             data.put("UserID", userID);
             data.put("Name", name);
@@ -128,7 +115,7 @@ public class UserManager {
 
         String id = user.getUserID();
 
-        if (verifyID(id)) { // Update the table
+        if (tableManager.verifyPrimaryKey(id)) { // Update the table
             HashMap<String, String> data = new HashMap<>();
             data.put("UserID", id);
             data.put("Name", user.getName());
@@ -166,7 +153,7 @@ public class UserManager {
      * found in the system)
      */
     public boolean login(String userID) {
-        if (verifyID(userID)) {
+        if (tableManager.verifyPrimaryKey(userID)) {
             activeUser = getUserFromID(userID); // Save the current user
             return true;
         } else {

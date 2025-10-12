@@ -31,8 +31,9 @@ public class TableManager {
     PreparedStatement st_updateRowByPrimaryKey;
     PreparedStatement st_createRowByPrimaryKey;
     PreparedStatement st_createTable;
+    PreparedStatement st_getMaxPrimaryKey;
 
-    public TableManager(DatabaseManager dbManager, String tableName, HashMap columns, String primaryKey) {
+    public TableManager(DatabaseManager dbManager, String tableName, HashMap<String, String> columns, String primaryKey) {
         this.dbManager = dbManager;
         this.tableName = tableName;
         this.primaryKey = primaryKey;
@@ -78,18 +79,14 @@ public class TableManager {
         }
         sql_createRowByPrimaryKey += ")";
 
-        String sql_createTable = "CREATE TABLE " + tableName + "(";
-        for (Map.Entry<String, String> col : columnDefinitions.entrySet()) { // Update everything other than the id
-            sql_createTable += (col.getKey() + " " + col.getValue() + ", ");
-        }
-        sql_createTable += ("PRIMARY KEY (" + primaryKey + "))");
+        String sql_getMaxPrimaryKey = "SELECT MAX(" + primaryKey + ") AS maxId FROM " + tableName;
 
         // Print SQL to verify
         System.out.println(sql_createRowByPrimaryKey);
-        System.out.println(sql_createTable);
         System.out.println(sql_deleteRowByPrimaryKey);
         System.out.println(sql_updateRowByPrimaryKey);
         System.out.println(sql_getRowByPrimaryKey);
+        System.out.println(sql_getMaxPrimaryKey);
 
         // Prepare Statements
         try {
@@ -97,7 +94,8 @@ public class TableManager {
             st_deleteRowByPrimaryKey = conn.prepareStatement(sql_deleteRowByPrimaryKey);
             st_createRowByPrimaryKey = conn.prepareStatement(sql_createRowByPrimaryKey);
             st_updateRowByPrimaryKey = conn.prepareStatement(sql_updateRowByPrimaryKey);
-            st_createTable = conn.prepareStatement(sql_createTable);
+
+            st_getMaxPrimaryKey = conn.prepareStatement(sql_getMaxPrimaryKey);
         } catch (SQLException ex) {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,7 +149,19 @@ public class TableManager {
         }
     }
 
-    private void createUserTableIfNotExist() {
+    private boolean createUserTableIfNotExist() {
+
+        String sql_createTable = "CREATE TABLE " + tableName + "(";
+        for (Map.Entry<String, String> col : columnDefinitions.entrySet()) { // Update everything other than the id
+            sql_createTable += (col.getKey() + " " + col.getValue() + ", ");
+        }
+        sql_createTable += ("PRIMARY KEY (" + primaryKey + "))");
+        try {
+            st_createTable = conn.prepareStatement(sql_createTable);
+        } catch (SQLException ex) {
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         if (!dbManager.checkTableExists(tableName)) {
             System.out.println(tableName + " table does not exist. Creating table");
             try {
@@ -160,11 +170,11 @@ public class TableManager {
             } catch (SQLException ex) {
                 Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             }
-            // Add test data to table
-            dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
-                    + "('000002', 'Sally', 'EMPLOYEE'), "
-                    + "('000003', 'Fred', 'GUEST')");
+            return true;
         }
+
+        return false;
+
     }
 
     public void printTable() {
@@ -180,6 +190,53 @@ public class TableManager {
         } catch (SQLException ex) {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+    }
+
+    /**
+     *
+     * @param id
+     * @return whether the user ID is registered in the system
+     */
+    public boolean verifyPrimaryKey(String id) {
+        try {
+            ResultSet rs = getRowByPrimaryKey(id);
+            if (rs.next()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+            return false;
+        }
+    }
+
+    public ResultSet getRowByColumnValue(String columnName, String value) {
+        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " = 'value'";
+        return dbManager.queryDB(sql_query);
+
+    }
+
+    /**
+     *
+     * @return the next primary key based (incremented from the maximum key)
+     */
+    public String getNextPrimaryKeyId() {
+        String next = "";
+        try {
+            ResultSet rs = st_getMaxPrimaryKey.executeQuery();
+            if (rs.next()) {
+                return Integer.toString(Integer.parseInt(rs.getString("maxId")) + 1);
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //String next = Integer.toString(Integer.parseInt(rs.getString(primaryKey)) + 1);
+        return next;
 
     }
 

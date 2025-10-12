@@ -205,4 +205,15 @@ public class ItemManager implements Saveable {
         }
         return output;
     }
+
+    /**
+     * Moves an item to a new location.
+     *
+     * @param itemID The items ID.
+     * @param newLocation The location to move the item to.
+     */
+    public void moveItem(String itemID, String newLocation) {
+        itemManager.getItemFromID(itemID).setLocation(newLocation.toUpperCase());
+        itemManager.save();
+    }
 }
