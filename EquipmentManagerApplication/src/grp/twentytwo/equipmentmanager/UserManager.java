@@ -1,12 +1,11 @@
 package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages all users allowing for login, logout, create user, remove user,
@@ -14,14 +13,13 @@ import java.util.HashMap;
  *
  * @author ppj1707
  */
-public class UserManager { // Implement importable!!
+public class UserManager {
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
     private User activeUser; // Stores the active user object
 
-    // Must HAVES ASWELL AS PRINT DATA AND UPDATE AND ETC
     String tableName = "USERTABLE";
     HashMap<String, String> columns;
     String primaryKey = "UserID";
@@ -38,12 +36,12 @@ public class UserManager { // Implement importable!!
 
     public UserManager() {
         dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        columns = new HashMap<String, String>();
+
         // Define Table Parameters
+        columns = new HashMap<String, String>();
         columns.put("UserID", "VARCHAR(12) not NULL");
         columns.put("Name", "VARCHAR(30)");
         columns.put("SecurityLevel", "VARCHAR(15)");
-        primaryKey = "UserID";
 
         // Initialise Table
         tableManager = new TableManager(dbManager, tableName, columns, primaryKey);
@@ -74,19 +72,8 @@ public class UserManager { // Implement importable!!
      * @return a User object (if the id string exists) else, null
      */
     public User getUserFromID(String userID) {
-        try {
-            ResultSet rs = tableManager.getRowByPrimaryKey(userID);
-            if (rs.next()) { // User exists
-                String name = rs.getString("Name");
-                String sL = rs.getString("SecurityLevel");
-                return importUser(userID, name, SecurityLevels.valueOf(sL));
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-            return null;
-        }
+        ResultSet rs = tableManager.getRowByPrimaryKey(userID);
+        return getUserObjectFromResultSet(rs);
     }
 
     /**
@@ -113,10 +100,31 @@ public class UserManager { // Implement importable!!
 
     /**
      *
-     * @param userID
-     * @return a User object (if the id string exists) else, null
+     * @param user
+     * @return true if created (did not previously exist)
      */
-    public boolean saveUser(User user) {
+    public boolean createUser(User user) {
+        String id = user.getUserID();
+
+        if (!verifyID(id)) { // Ensure user is new
+            HashMap<String, String> data = new HashMap<>();
+            data.put("UserID", id);
+            data.put("Name", user.getName());
+            data.put("SecurityLevel", user.getSecurityLevel().toString());
+            tableManager.createRow(data);
+            return true; // User created
+        }
+        return false; // User already exists
+
+    }
+
+    /**
+     *
+     * @param user
+     * @return true if updated (User previously existed)
+     */
+    public boolean updateUser(User user) {
+
         String id = user.getUserID();
 
         if (verifyID(id)) { // Update the table
@@ -125,14 +133,10 @@ public class UserManager { // Implement importable!!
             data.put("Name", user.getName());
             data.put("SecurityLevel", user.getSecurityLevel().toString());
             tableManager.updateRowByPrimaryKey(data);
-        } else { // Create new entry
-            HashMap<String, String> data = new HashMap<>();
-            data.put("UserID", id);
-            data.put("Name", user.getName());
-            data.put("SecurityLevel", user.getSecurityLevel().toString());
-            tableManager.createRow(data);
+            return true;
         }
-        return true;
+        return false;
+
     }
 
     /**
@@ -209,6 +213,23 @@ public class UserManager { // Implement importable!!
 
     public void printTable() {
         tableManager.printTable();
+    }
+
+    private User getUserObjectFromResultSet(ResultSet rs) {
+        try {
+            if (rs.next()) { // User exists
+                String userID = rs.getString("UserID");
+                String name = rs.getString("Name");
+                String sL = rs.getString("SecurityLevel");
+                return importUser(userID, name, SecurityLevels.valueOf(sL));
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
 }
