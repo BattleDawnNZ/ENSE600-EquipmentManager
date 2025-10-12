@@ -6,8 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
 
 /**
  * Manages all users allowing for login, logout, create user, remove user,
@@ -18,60 +17,36 @@ import java.util.logging.Logger;
 public class UserManager { // Implement importable!!
 
     private final DatabaseManager dbManager;
-    private final Connection conn;
-    private User activeUser; // Stores the active user object
+    private final TableManager tableManager;
 
-    // Prepared Statements
-    PreparedStatement st_getRowById;
-    PreparedStatement st_deleteRowById;
-    PreparedStatement st_updateRowById;
-    PreparedStatement st_createRowById;
-    PreparedStatement st_createTable;
+    private User activeUser; // Stores the active user object
 
     // Must HAVES ASWELL AS PRINT DATA AND UPDATE AND ETC
     String tableName = "USERTABLE";
-    ArrayList<String> columns = new ArrayList<String>(); // Set the first column as the primary key / id
+    HashMap<String, String> columns;
+    String primaryKey = "UserID";
 
     public static void main(String[] args) {
         UserManager um = new UserManager();
-        um.printTableFromDB();
-        User user = new Manager("000004", "Alice Fran");
-        um.removeUser("000004");
+        um.printTable();
+        User user = new Manager("000004", "Alice");
+        //um.removeUser("000004");
         //um.saveUser(user);
-        um.printTableFromDB();
+        um.printTable();
         System.out.println(um.getUserFromID("000004"));
     }
 
     public UserManager() {
         dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        conn = dbManager.getConnection();
-        System.out.println(conn);
+        columns = new HashMap<String, String>();
+        // Define Table Parameters
+        columns.put("UserID", "VARCHAR(12) not NULL");
+        columns.put("Name", "VARCHAR(30)");
+        columns.put("SecurityLevel", "VARCHAR(15)");
+        primaryKey = "UserID";
 
-        // Initialise Tables ()
-        createUserTableIfNotExist();
-
-        columns.add("UserID");
-        columns.add("Name");
-        columns.add("SecurityLevel");
-
-        // Initialise Statements
-        prepareStatements();
-    }
-
-    public void printTableFromDB() {
-        try {
-            System.out.println("User Table Data:");
-            ResultSet rs = dbManager.queryDB("SELECT * FROM USERTABLE");
-            while (rs.next()) {
-                for (String col : columns) {
-                    System.out.print(col + ": " + rs.getString(col) + "     ");
-                }
-                System.out.print("\n");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-
+        // Initialise Table
+        tableManager = new TableManager(dbManager, tableName, columns, primaryKey);
     }
 
     /**
@@ -81,8 +56,7 @@ public class UserManager { // Implement importable!!
      */
     public boolean verifyID(String id) {
         try {
-            st_getRowById.setString(1, id);
-            ResultSet rs = st_getRowById.executeQuery();
+            ResultSet rs = tableManager.getRowByPrimaryKey(id);
             if (rs.next()) {
                 return true;
             } else {
@@ -101,8 +75,7 @@ public class UserManager { // Implement importable!!
      */
     public User getUserFromID(String userID) {
         try {
-            st_getRowById.setString(1, userID);
-            ResultSet rs = st_getRowById.executeQuery();
+            ResultSet rs = tableManager.getRowByPrimaryKey(userID);
             if (rs.next()) { // User exists
                 String name = rs.getString("Name");
                 String sL = rs.getString("SecurityLevel");
@@ -145,39 +118,21 @@ public class UserManager { // Implement importable!!
      */
     public boolean saveUser(User user) {
         String id = user.getUserID();
-        try {
-            if (verifyID(id)) { // Update the table
-                st_updateRowById.setString(1, user.getName());
-                st_updateRowById.setString(2, user.getSecurityLevel().toString());
-                st_updateRowById.setString(3, id);
-                st_updateRowById.executeUpdate();
-            } else { // Create new entry
-                st_createRowById.setString(1, id);
-                st_createRowById.setString(2, user.getName());
-                st_createRowById.setString(3, user.getSecurityLevel().toString());
-                st_createRowById.executeUpdate();
-            }
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-            return false;
-        }
-    }
 
-    public void createUserTableIfNotExist() {
-        if (!dbManager.checkTableExists("USERTABLE")) {
-            System.out.println("USER table does not exist. Creating table");
-            try {
-                // Create table. Assign user id as primary key to prevent duplicates
-                st_createTable.execute();
-            } catch (SQLException ex) {
-                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            // Add test data to table
-            dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
-                    + "('000002', 'Sally', 'EMPLOYEE'), "
-                    + "('000003', 'Fred', 'GUEST')");
+        if (verifyID(id)) { // Update the table
+            HashMap<String, String> data = new HashMap<>();
+            data.put("UserID", id);
+            data.put("Name", user.getName());
+            data.put("SecurityLevel", user.getSecurityLevel().toString());
+            tableManager.updateRowByPrimaryKey(data);
+        } else { // Create new entry
+            HashMap<String, String> data = new HashMap<>();
+            data.put("UserID", id);
+            data.put("Name", user.getName());
+            data.put("SecurityLevel", user.getSecurityLevel().toString());
+            tableManager.createRow(data);
         }
+        return true;
     }
 
     /**
@@ -223,15 +178,7 @@ public class UserManager { // Implement importable!!
      * already do not exist)
      */
     public boolean removeUser(String userID) {
-        try {
-            st_deleteRowById.setString(1, userID);
-            st_deleteRowById.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-            return false;
-        }
-
+        return tableManager.deleteRowByPrimaryKey(userID);
     }
 
     /**
@@ -260,57 +207,8 @@ public class UserManager { // Implement importable!!
         return true;
     }
 
-    public void prepareStatements() {
-
-        // Prepare SQL
-        String sql_getRowById = "SELECT * FROM " + tableName + " where " + columns.get(0) + " = ?";
-
-        String sql_deleteRowById = "DELETE FROM " + tableName + " where " + columns.get(0) + " = ?";
-
-        String sql_updateRowById = "UPDATE " + tableName + " SET ";
-        for (int i = 1; i < columns.size(); i++) { // Update everything other than the id
-            sql_updateRowById += (columns.get(i) + " = ?");
-            if (i != columns.size() - 1) { // If column is not the last one
-                sql_updateRowById += ", ";
-            }
-        }
-        sql_updateRowById += (" WHERE " + columns.get(0) + " = ?");
-
-        String sql_createRowById = "INSERT INTO " + tableName + " (";
-        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
-            sql_createRowById += columns.get(i);
-            if (i != columns.size() - 1) { // If column is not the last one
-                sql_createRowById += ", ";
-            }
-        }
-        sql_createRowById += ") VALUES (";
-        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
-            sql_createRowById += "?";
-            if (i != columns.size() - 1) { // If column is not the last one
-                sql_createRowById += ", ";
-            }
-        }
-        sql_createRowById += ")";
-
-        String sql_createTable = "CREATE TABLE " + tableName + "(";
-        for (int i = 0; i < columns.size(); i++) { // Update everything other than the id
-            sql_createTable += "?";
-            if (i != columns.size() - 1) { // If column is not the last one
-                sql_createTable += ", ";
-            }
-        }
-        dbManager.updateDB("CREATE TABLE USERTABLE (UserID VARCHAR(12) not NULL, Name VARCHAR(30), SecurityLevel VARCHAR(15), PRIMARY KEY (UserID))");
-
-        // Prepare Statements
-        try {
-            st_getRowById = conn.prepareStatement(sql_getRowById);
-            st_deleteRowById = conn.prepareStatement(sql_deleteRowById);
-            st_createRowById = conn.prepareStatement(sql_createRowById);
-            st_updateRowById = conn.prepareStatement(sql_updateRowById);
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-
+    public void printTable() {
+        tableManager.printTable();
     }
 
 }
