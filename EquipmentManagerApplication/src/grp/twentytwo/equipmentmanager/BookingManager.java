@@ -1,55 +1,71 @@
 package grp.twentytwo.equipmentmanager;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages booking and returning of items.
  *
- * @author fmw5088
+ * @author ppj1707
  */
-public class BookingManager implements Saveable {
+public class BookingManager {
 
     private ItemManager itemManager;
-    /**
-     * The name for the save file.
-     */
-    private final String fileName = "booking_manager.bin";
-    /**
-     * Contains All the Bookings. Keyed by Booking ID.
-     */
-    private HashMap<String, Booking> bookings;
-    private int currentID;
+
+    private final DatabaseManager dbManager;
+    private final TableManager tableManager;
+
+    // Database table properties
+    String tableName = "BOOKINGTABLE";
+    HashMap<String, String> columnDefinitions;
+    String primaryKey = "BookingID";
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    public BookingManager(ItemManager itemManager) {
-	this.itemManager = itemManager;
-	bookings = new HashMap<>();
-	currentID = 0;
+    public static void main(String[] args) {
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        ItemManager itemManager = new ItemManager();
+        BookingManager um = new BookingManager(itemManager, dbManager);
+        um.printTable();
+        //um.removeUser("000004");
+        //um.saveUser(user);
+        um.printTable();
+        System.out.println(um.getBookingFromID("000001"));
+    }
+
+    public BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
+        this.itemManager = itemManager;
+        this.dbManager = databaseManager;
+
+        // Define Table Parameters
+        columnDefinitions = new HashMap<String, String>();
+        columnDefinitions.put("BookingID", "VARCHAR(12) not NULL");
+        columnDefinitions.put("UserID", "VARCHAR(12) not NULL");
+        columnDefinitions.put("ItemID", "VARCHAR(12) not NULL");
+        columnDefinitions.put("BookedDate", "VARCHAR(20) not NULL");
+        columnDefinitions.put("ReturnDate", "VARCHAR(20) not NULL");
+
+        // Initialise Table
+        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+
+        // Add test data to table
+        dbManager.updateDB("INSERT INTO BOOKINGTABLE VALUES ('1', '000001', '000001', '03-10-2025 14:20', '06-11-2025 15:30')");
     }
 
     /**
-     * Loads the item manager from a file.
+     *
+     * @param bookingID The booking ID of the booking requested.
+     * @return the booking with the corresponding booking ID.
      */
-    @Override
-    public void load() {
-	BookingManager bm = (BookingManager) FileManager.loadFile(fileName);
-	if (bm != null) {
-	    bookings = bm.bookings;
-	    currentID = bm.currentID;
-	}
-    }
-
-    /**
-     * Saves the item manager to a file
-     */
-    @Override
-    public void save() {
-	FileManager.saveFile(this, fileName);
+    public Booking getBookingFromID(String bookingID) {
+        ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
+        return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
     }
 
     /**
@@ -62,21 +78,20 @@ public class BookingManager implements Saveable {
      * @return true if the booking was valid and created.
      */
     public boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
-	String bookingID = generateBookingID();
-	Booking booking = new Booking(bookingID, userID, itemID, bookedDate, returnDate);
-	for (Booking other : getBookingsForItem(itemID)) {
-	    if (booking.overlaps(other)) {
-		return false;
-	    }
-	}
-	// Should never occur.
-	if (bookings.put(bookingID, booking) != null) {
-	    System.out.println("ERROR! BookingID: " + bookingID + " was already in use.");
-	}
-	itemManager.getItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate.format(formatter) + " to " + returnDate.format(formatter));
-	save();
-	itemManager.save();
-	return true;
+        String bookingID = tableManager.getNextPrimaryKeyId();
+
+        // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
+        // If this is not desired then it should be checked application-layer.
+        HashMap<String, String> data = new HashMap<>();
+        data.put("BookingID", bookingID);
+        data.put("UserID", userID);
+        data.put("ItemID", itemID);
+        data.put("BookedDate", bookedDate.format(formatter));
+        data.put("ReturnDate", returnDate.format(formatter));
+        tableManager.createRow(data);
+        return true; // User created
+
+        //HISTORY ADDitemManagergetItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate.format(formatter) + " to " + returnDate.format(formatter));
     }
 
     /**
@@ -87,18 +102,43 @@ public class BookingManager implements Saveable {
      * booking both actually existed.
      */
     public boolean returnItem(String bookingID) {
-	Booking booking = bookings.remove(bookingID);
-	if (booking == null) {
-	    return false;
-	}
-	Item bookedItem = itemManager.getItemFromID(booking.getItemID());
-	if (bookedItem == null) {
-	    return false;
-	}
-	bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
-	save();
-	itemManager.save();
-	return true;
+        return tableManager.deleteRowByPrimaryKey(bookingID);
+
+        //!!!!!!!!!!!!!!!!!!!!!bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
+    }
+
+    /**
+     * Print the entire user table to the console
+     */
+    public void printTable() {
+        tableManager.printTable();
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @return a user object
+     */
+    private ArrayList<Booking> getBookingObjectsFromResultSet(ResultSet resultSet) {
+        ArrayList<Booking> bookingList = new ArrayList<Booking>();
+
+        try {
+
+            while (resultSet.next()) { // User exists
+                String bookingID = resultSet.getString("BookingID");
+                String userID = resultSet.getString("UserID");
+                String itemID = resultSet.getString("ItemID");
+                ZonedDateTime bookedDate = ZonedDateTime.parse(resultSet.getString("BookedDate"), formatter);
+                ZonedDateTime returnDate = ZonedDateTime.parse(resultSet.getString("ReturnDate"), formatter);
+                bookingList.add(new Booking(bookingID, userID, itemID, bookedDate, returnDate));
+            }
+            return bookingList;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     /**
@@ -108,40 +148,26 @@ public class BookingManager implements Saveable {
      * @return true if the booking exists and is owned by the User.
      */
     public boolean verifyBookingOwner(String bookingID, String userID) {
-	Booking booking = getBooking(bookingID);
-	return booking != null && booking.isOwnedBy(userID);
+        ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
+        Booking booking = getBookingObjectsFromResultSet(rs).getFirst();
+        return (booking != null && booking.isOwnedBy(userID));
     }
 
-    /**
-     *
-     * @param bookingID The booking ID of the booking requested.
-     * @return the booking with the corresponding booking ID.
-     */
-    public Booking getBooking(String bookingID) {
-	return bookings.get(bookingID);
-    }
-
-    /**
-     *
-     * @return An ArrayList of the bookings.
-     */
-    public ArrayList<Booking> getBookings() {
-	return (ArrayList<Booking>) bookings.values();
-    }
-
+//    /**
+//     *
+//     * @return An ArrayList of the bookings.
+//     */
+//    public ArrayList<Booking> getBookings() {
+//        return (ArrayList<Booking>) bookings.values();
+//    }
     /**
      *
      * @param itemID
      * @return All bookings for the item.
      */
     public ArrayList<Booking> getBookingsForItem(String itemID) {
-	ArrayList<Booking> validBookings = new ArrayList<>();
-	bookings.forEach((k, v) -> {
-	    if (v.getID().equals(itemID)) {
-		validBookings.add(v);
-	    }
-	});
-	return validBookings;
+        ResultSet rs = tableManager.getRowByColumnValue("ItemID", itemID);
+        return getBookingObjectsFromResultSet(rs);
     }
 
     /**
@@ -150,34 +176,8 @@ public class BookingManager implements Saveable {
      * @return All bookings for the user.
      */
     public ArrayList<Booking> getBookingsForUser(String userID) {
-	ArrayList<Booking> validBookings = new ArrayList<>();
-	bookings.forEach((k, v) -> {
-	    if (v.getUserID().equals(userID)) {
-		validBookings.add(v);
-	    }
-	});
-	return validBookings;
+        ResultSet rs = tableManager.getRowByColumnValue("UserID", userID);
+        return getBookingObjectsFromResultSet(rs);
     }
 
-    /**
-     *
-     * @return A unique booking ID.
-     */
-    private String generateBookingID() {
-	while (bookings.containsKey(Integer.toString(currentID))) {
-	    currentID++;
-	}
-	return Integer.toString(currentID++);
-    }
-
-    @Override
-    public String toString() {
-	String output = "----- BookingManager -----\n";
-	output += "Current ID: " + currentID + "\n";
-	output += "Bookings:\n";
-	for (Map.Entry<String, Booking> entry : bookings.entrySet()) {
-	    output += " - " + entry.getValue().toString() + "\n";
-	}
-	return output;
-    }
 }

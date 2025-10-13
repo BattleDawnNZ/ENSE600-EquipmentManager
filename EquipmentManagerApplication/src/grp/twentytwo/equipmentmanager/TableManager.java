@@ -26,12 +26,12 @@ public class TableManager {
     private final ArrayList<String> allColumns; // Store column names INCLUDING the primary key
 
     // Prepared Statements
-    PreparedStatement st_getRowByPrimaryKey;
-    PreparedStatement st_deleteRowByPrimaryKey;
-    PreparedStatement st_updateRowByPrimaryKey;
-    PreparedStatement st_createRowByPrimaryKey;
-    PreparedStatement st_createTable;
-    PreparedStatement st_getMaxPrimaryKey;
+    private PreparedStatement st_getRowByPrimaryKey;
+    private PreparedStatement st_deleteRowByPrimaryKey;
+    private PreparedStatement st_updateRowByPrimaryKey;
+    private PreparedStatement st_createRowByPrimaryKey;
+    private PreparedStatement st_createTable;
+    private PreparedStatement st_getMaxPrimaryKey;
 
     public TableManager(DatabaseManager dbManager, String tableName, HashMap<String, String> columns, String primaryKey) {
         this.dbManager = dbManager;

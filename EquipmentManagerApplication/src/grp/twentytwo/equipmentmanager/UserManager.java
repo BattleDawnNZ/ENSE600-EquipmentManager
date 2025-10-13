@@ -18,14 +18,16 @@ public class UserManager {
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
-    private User activeUser; // Stores the active user object
-
+    // Database table properties
     String tableName = "USERTABLE";
     HashMap<String, String> columnDefinitions;
     String primaryKey = "UserID";
 
+    private User activeUser; // Stores the active user object
+
     public static void main(String[] args) {
-        UserManager um = new UserManager();
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        UserManager um = new UserManager(dbManager);
         um.printTable();
         User user = new Manager("000004", "Alice");
         //um.removeUser("000004");
@@ -34,9 +36,9 @@ public class UserManager {
         System.out.println(um.getUserFromID("000004"));
     }
 
-    public UserManager() {
-        dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+    public UserManager(DatabaseManager databaseManager) {
 
+        this.dbManager = databaseManager;
         // Define Table Parameters
         columnDefinitions = new HashMap<String, String>();
         columnDefinitions.put("UserID", "VARCHAR(12) not NULL");
@@ -50,7 +52,6 @@ public class UserManager {
         dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
                 + "('000002', 'Sally', 'EMPLOYEE'), "
                 + "('000003', 'Fred', 'GUEST')");
-        tableManager.getNextPrimaryKeyId();
     }
 
     /**

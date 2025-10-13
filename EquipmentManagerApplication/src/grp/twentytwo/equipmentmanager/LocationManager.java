@@ -24,7 +24,8 @@ public class LocationManager {
     String primaryKey = "LocationID";
 
     public static void main(String[] args) {
-        LocationManager lm = new LocationManager();
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        LocationManager lm = new LocationManager(dbManager);
         lm.printTable();
         Location loc = new Location("1", "Workshop1");
 
@@ -35,9 +36,9 @@ public class LocationManager {
         //System.out.println(lm.getLocationFromID("000004"));
     }
 
-    public LocationManager() {
+    public LocationManager(DatabaseManager databaseManager) {
 
-        dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        this.dbManager = databaseManager;
 
         // Define Table Parameters
         columnDefinitions = new HashMap<String, String>();
