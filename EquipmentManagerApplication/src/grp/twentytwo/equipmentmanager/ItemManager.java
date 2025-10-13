@@ -1,8 +1,14 @@
 package grp.twentytwo.equipmentmanager;
 
+import grp.twentytwo.equipmentmanager.Item.Status;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages item operations such as adding, removing, generating IDs, and
@@ -10,47 +16,50 @@ import java.util.Map;
  *
  * @author fmw5088
  */
-public class ItemManager implements Saveable {
+public class ItemManager {
 
     private LocationManager locationManager;
-    /**
-     * The name for the save file.
-     */
-    private final String fileName = "item_manager.bin";
 
-    /**
-     * Contains all the items. Keyed by item ID.
-     */
-    private HashMap<String, Item> items;
-    private int currentID;
+    private final DatabaseManager dbManager;
+    private final TableManager tableManager;
 
-    public ItemManager() {
-        items = new HashMap<>();
-        currentID = 0;
+    // Database table properties
+    String tableName = "ITEMTABLE";
+    HashMap<String, String> columnDefinitions;
+    String primaryKey = "ItemID";
+
+    public ItemManager(DatabaseManager databaseManager) {
+        this.dbManager = databaseManager;
+        // Define Table Parameters
+        columnDefinitions = new HashMap<String, String>();
+        columnDefinitions.put("ItemID", "VARCHAR(12) not NULL");
+        columnDefinitions.put("Name", "VARCHAR(30) not NULL");
+        columnDefinitions.put("Description", "VARCHAR(200)");
+        columnDefinitions.put("Location", "VARCHAR(12)");
+        columnDefinitions.put("Status", "VARCHAR(14)");
+        columnDefinitions.put("Type", "VARCHAR(40)");
+        columnDefinitions.put("CalibrationFlag", "BIT");
+        columnDefinitions.put("LastCalibration", "VARCHAR(20)");
+        //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????
+
+        // Initialise Table
+        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+
+        // Add test data to table
+        dbManager.updateDB("INSERT INTO ITEMTABLE VALUES ('1', 'R9000 Universal Laser Cutter', 'Cuts mdf (1mm-12mm), arcrylic (1mm-10mm)', 'Workshop1', 'WORKING', 'Manufacturing/Cutting', '0', '03-03-2025 14:20')");
+
     }
 
-    public void setLocationManager(LocationManager locationManager) {
-        this.locationManager = locationManager;
-    }
-
     /**
-     * Loads the item manager from a file.
+     * Returns an item from the items HashMap. This should only be used if you
+     * have the exact ID, otherwise use getItemsFromID.
+     *
+     * @param itemID The desired items ID.
+     * @return The desired item.
      */
-    @Override
-    public void load() {
-        ItemManager im = (ItemManager) FileManager.loadFile(fileName);
-        if (im != null) {
-            items = im.items;
-            currentID = im.currentID;
-        }
-    }
-
-    /**
-     * Saves the item manager to a file
-     */
-    @Override
-    public void save() {
-        FileManager.saveFile(this, fileName);
+    public Item getItemFromID(String itemID) {
+        ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
+        return getItemObjectsFromResultSet(rs).getFirst();
     }
 
     /**
@@ -62,14 +71,43 @@ public class ItemManager implements Saveable {
      * @return The Item ID of the Item Added.
      */
     public String addItem(String name, String location, String type) {
+
         if (!locationManager.isValidLocation(location)) {
             return null;
         }
         String itemID = generateItemID(type);
-        Item item = new Item(itemID, name, location, type);
-        items.put(itemID, item);
-        save();
+        HashMap<String, String> data = new HashMap<>();
+        data.put("ItemID", itemID);
+        data.put("Name", name);
+        data.put("Location", location);
+        data.put("Type", type);
+        tableManager.createRow(data); // What if this fails
         return itemID;
+    }
+
+    /**
+     *
+     * @param item
+     * @return true if updated (Item previously existed)
+     */
+    public boolean updateItem(Item item) {
+
+        String id = item.getId();
+
+        if (tableManager.verifyPrimaryKey(id)) { // Update the table
+            HashMap<String, String> data = new HashMap<>();
+            data.put("ItemID", id);
+            data.put("Name", item.getName());
+            data.put("Description", item.getDescription());
+            data.put("Location", item.getLocation());
+            data.put("Status", item.getStatus().toString());
+            data.put("Type", item.getType());
+            data.put("CalibrationFlag", String.valueOf(item.getNeedsCalibration()));
+            data.put("LastCalibration", item.getLastCalibrationAsString());
+            tableManager.updateRowByPrimaryKey(data);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -79,106 +117,90 @@ public class ItemManager implements Saveable {
      */
     public String generateItemID(String type) {
         String newID;
-        do {
-            newID = "";
-            for (String str : type.toUpperCase().split("/")) {
-                newID += str.toCharArray()[0];
-            }
-            newID += String.format("%06d", currentID++);
-        } while (items.containsKey(newID));
+        newID = "";
+        for (String str : type.toUpperCase().split("/")) {
+            newID += str.toCharArray()[0];
+        }
+        newID += String.format(tableManager.getNextPrimaryKeyId());
         return newID;
     }
 
     /**
-     * Removes an item from the items HashMap.
+     * Removes an item from the database
      *
      * @param itemID The ID of the item to be removed.
      * @return true if the item existed.
      */
     public boolean removeItem(String itemID) {
-        Item returned = items.remove(itemID);
-        save();
-        return returned != null;
+        return tableManager.deleteRowByPrimaryKey(itemID);
     }
 
     /**
-     * Removes an item from the items HashMap.
+     * Returns an ArrayList of items that partial match the partial partID from
+     * the (if blank all items will be returned)
      *
-     * @param item The item to be removed.
-     * @return true if the item existed.
+     * @param partID The desired items partial ID.
+     * @return A list of item IDs that match.
      */
-    public boolean removeItem(Item item) {
-        return removeItem(item.getId());
-    }
-
-    /**
-     * Returns an item from the items HashMap. This should only be used if you
-     * have the exact ID, otherwise use getItemsFromID.
-     *
-     * @param itemID The desired items ID.
-     * @return The desired item.
-     */
-    public Item getItemFromID(String itemID) {
-        return items.get(itemID);
-    }
-
-    /**
-     * Returns an ArrayList of items that partial match the partID from the
-     * items HashMap. (if blank all items will be returned)
-     *
-     * @param partID The desired items ID.
-     * @return The desired item.
-     */
-    public ArrayList<Item> getItemsFromID(String partID) {
+    public ArrayList<String> searchItemsByID(String partID) {
         if (partID.isBlank()) {
-            return new ArrayList<>(items.values());
+            return tableManager.getAllPrimaryKeys();
         }
-        ArrayList<Item> validItems = new ArrayList<>();
-        items.forEach((k, v) -> {
-            if (v.hasInID(partID)) {
-                validItems.add(v);
+        ArrayList<String> validItems = new ArrayList<>();
+        ResultSet rs = tableManager.searchColumn("ItemID", partID);
+        try {
+            while (rs.next()) {
+                validItems.add(rs.getString("ItemID"));
             }
-        });
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return validItems;
     }
 
     /**
-     * Returns an ArrayList of items that partial match the partName from the
-     * items HashMap. (if blank all items will be returned)
+     * Returns an ArrayList of items that partial match the partial partName (if
+     * blank all items will be returned)
      *
-     * @param partName The desired items name.
-     * @return The desired item.
+     * @param partName The desired items partial name.
+     * @return A list of item IDs that match.
      */
-    public ArrayList<Item> getItemsFromName(String partName) {
+    public ArrayList<String> searchItemsByName(String partName) {
         if (partName.isBlank()) {
-            return new ArrayList<>(items.values());
+            return tableManager.getAllPrimaryKeys();
         }
-        ArrayList<Item> validItems = new ArrayList<>();
-        items.forEach((k, v) -> {
-            if (v.hasInName(partName)) {
-                validItems.add(v);
+        ArrayList<String> validItems = new ArrayList<>();
+        ResultSet rs = tableManager.searchColumn("Type", partName);
+        try {
+            while (rs.next()) {
+                validItems.add(rs.getString("ItemID"));
             }
-        });
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return validItems;
     }
 
     /**
-     * Returns an ArrayList of items that partial match the partType from the
-     * items HashMap. (if blank all items will be returned)
+     * Returns an ArrayList of items that partial match the partial partType (if
+     * blank all items will be returned)
      *
-     * @param partType The desired items type.
-     * @return The desired item.
+     * @param partType The desired items partial type.
+     * @return A list of item IDs that match.
      */
-    public ArrayList<Item> getItemsFromType(String partType) {
+    public ArrayList<String> getItemsFromType(String partType) {
         if (partType.isBlank()) {
-            return new ArrayList<>(items.values());
+            return tableManager.getAllPrimaryKeys();
         }
-        ArrayList<Item> validItems = new ArrayList<>();
-        items.forEach((k, v) -> {
-            if (v.hasInType(partType)) {
-                validItems.add(v);
+        ArrayList<String> validItems = new ArrayList<>();
+        ResultSet rs = tableManager.searchColumn("Type", partType);
+        try {
+            while (rs.next()) {
+                validItems.add(rs.getString("ItemID"));
             }
-        });
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return validItems;
     }
 
@@ -188,32 +210,44 @@ public class ItemManager implements Saveable {
      * @return True if ID is valid.
      */
     public boolean verifyID(String itemID) {
-        return items.containsKey(itemID);
+        return tableManager.verifyPrimaryKey(itemID);
+    }
+
+    /**
+     * Print the entire user table to the console
+     */
+    public void printTable() {
+        tableManager.printTable();
     }
 
     /**
      *
-     * @return a string representing the object.
+     * @param resultSet
+     * @return a user object
      */
-    @Override
-    public String toString() {
-        String output = "----- ItemManager -----\n";
-        output += "Current ID: " + currentID + "\n";
-        output += "Items:\n";
-        for (Map.Entry<String, Item> entry : items.entrySet()) {
-            output += " - " + entry.getValue().toString() + "\n";
+    private ArrayList<Item> getItemObjectsFromResultSet(ResultSet resultSet) {
+
+        ArrayList<Item> itemList = new ArrayList<Item>();
+
+        try {
+
+            while (resultSet.next()) { // User exists
+
+                String itemID = resultSet.getString("ItemID");
+                String name = resultSet.getString("Name");
+                String description = resultSet.getString("Description");
+                String location = resultSet.getString("Location");
+                Status status = Status.valueOf(resultSet.getString("Status"));
+                String type = resultSet.getString("Type");
+                boolean calibrationFlag = resultSet.getBoolean("CalibrationFlag");
+                ZonedDateTime lastCalibration = ZonedDateTime.parse(resultSet.getString("ReturnDate"), Item.getDateTimeFormatter());
+                itemList.add(new Item(itemID, name, description, location, status, type, calibrationFlag, lastCalibration));
+            }
+            return itemList;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return output;
-    }
 
-    /**
-     * Moves an item to a new location.
-     *
-     * @param itemID The items ID.
-     * @param newLocation The location to move the item to.
-     */
-    public void moveItem(String itemID, String newLocation) {
-        itemManager.getItemFromID(itemID).setLocation(newLocation.toUpperCase());
-        itemManager.save();
     }
 }

@@ -52,12 +52,22 @@ public class LocationManager {
 
     /**
      *
-     * @param userID
-     * @return a User object (if the id string exists) else, null
+     * @param locationID
+     * @return a Location object (if the id string exists) else, null
      */
     public Location getLocationFromID(String locationID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
         return getLocationObjectFromResultSet(rs);
+    }
+
+    /**
+     *
+     * @param locationID
+     * @return true if the item exists
+     */
+    public boolean isValidLocation(String locationID) {
+        ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
+        return (getLocationObjectFromResultSet(rs) != null);
     }
 
     public boolean addLocation(String name) {

@@ -213,9 +213,20 @@ public class TableManager {
     }
 
     public ResultSet getRowByColumnValue(String columnName, String value) {
-        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " = 'value'";
+        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " = '" + value + "'";
         return dbManager.queryDB(sql_query);
+    }
 
+    /**
+     * Searches a column for any partial instance of 'value'
+     *
+     * @param columnName
+     * @param value
+     * @return
+     */
+    public ResultSet searchColumn(String columnName, String value) {
+        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " LIKE '" + value + "'"; // %%
+        return dbManager.queryDB(sql_query);
     }
 
     /**
@@ -240,4 +251,21 @@ public class TableManager {
 
     }
 
+    /**
+     *
+     * @return all the primary keys in the table as an ArrayList
+     */
+    public ArrayList<String> getAllPrimaryKeys() {
+        String sql_query = "SELECT " + primaryKey + " FROM " + tableName;
+        ResultSet rs = dbManager.queryDB(sql_query);
+        ArrayList<String> keyList = new ArrayList<>();
+        try {
+            while (rs.next()) {
+                keyList.add(rs.getString(primaryKey));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return keyList;
+    }
 }
