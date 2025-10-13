@@ -28,8 +28,22 @@ public class ItemManager {
     HashMap<String, String> columnDefinitions;
     String primaryKey = "ItemID";
 
-    public ItemManager(DatabaseManager databaseManager) {
+    public static void main(String[] args) {
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        LocationManager lManager = new LocationManager(dbManager);
+        ItemManager um = new ItemManager(dbManager, lManager);
+        um.printTable();
+        Item item = new Item("2", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        System.out.println(um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive"));
+        //um.removeUser("000004");
+        //um.saveUser(user);
+        um.printTable();
+        //System.out.println(um.getItemFromID("1"));
+    }
+
+    public ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
         this.dbManager = databaseManager;
+        this.locationManager = locationManager;
         // Define Table Parameters
         columnDefinitions = new HashMap<String, String>();
         columnDefinitions.put("ItemID", "VARCHAR(12) not NULL");
@@ -38,7 +52,7 @@ public class ItemManager {
         columnDefinitions.put("Location", "VARCHAR(12)");
         columnDefinitions.put("Status", "VARCHAR(14)");
         columnDefinitions.put("Type", "VARCHAR(40)");
-        columnDefinitions.put("CalibrationFlag", "BIT");
+        columnDefinitions.put("CalibrationFlag", "VARCHAR(2)");
         columnDefinitions.put("LastCalibration", "VARCHAR(20)");
         //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????
 
@@ -46,8 +60,7 @@ public class ItemManager {
         tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
 
         // Add test data to table
-        dbManager.updateDB("INSERT INTO ITEMTABLE VALUES ('1', 'R9000 Universal Laser Cutter', 'Cuts mdf (1mm-12mm), arcrylic (1mm-10mm)', 'Workshop1', 'WORKING', 'Manufacturing/Cutting', '0', '03-03-2025 14:20')");
-
+        //dbManager.updateDB("INSERT INTO ITEMTABLE VALUES ('1', 'R9000 Universal Laser Cutter', 'Cuts mdf (1mm-12mm), arcrylic (1mm-10mm)', 'Workshop1', 'WORKING', 'Manufacturing/Cutting', '0', '03-03-2025 14:20')");
     }
 
     /**
@@ -72,7 +85,7 @@ public class ItemManager {
      */
     public String addItem(String name, String location, String type) {
 
-        if (!locationManager.isValidLocation(location)) {
+        if (!locationManager.isValidLocationName(location)) {
             return null;
         }
         String itemID = generateItemID(type);

@@ -27,13 +27,14 @@ public class LocationManager {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         LocationManager lm = new LocationManager(dbManager);
         lm.printTable();
-        Location loc = new Location("1", "Workshop1");
+        Location loc = new Location("1", "WORKSHOP1");
 
-        lm.addLocation("Workshop3");
+        lm.addLocation("WORKSHOP3");
         //lm.removeLocation(loc);
         //System.out.println(lm.getLocationFromID("000001"));
         lm.printTable();
         //System.out.println(lm.getLocationFromID("000004"));
+        System.out.println(lm.isValidLocationName("WORKSHOP3"));
     }
 
     public LocationManager(DatabaseManager databaseManager) {
@@ -65,8 +66,18 @@ public class LocationManager {
      * @param locationID
      * @return true if the item exists
      */
-    public boolean isValidLocation(String locationID) {
+    public boolean isValidLocationID(String locationID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
+        return (getLocationObjectFromResultSet(rs) != null);
+    }
+
+    /**
+     *
+     * @param locationID
+     * @return true if the item exists
+     */
+    public boolean isValidLocationName(String locationName) {
+        ResultSet rs = tableManager.getRowByColumnValue("Name", locationName);
         return (getLocationObjectFromResultSet(rs) != null);
     }
 
@@ -76,7 +87,7 @@ public class LocationManager {
             if (!tableManager.getRowByColumnValue("Name", name).next()) { // Ensure Location is new
                 HashMap<String, String> data = new HashMap<>();
                 data.put("LocationID", tableManager.getNextPrimaryKeyId());
-                data.put("Name", name);
+                data.put("Name", name.toUpperCase());
                 tableManager.createRow(data);
                 return true; // Location created
             }

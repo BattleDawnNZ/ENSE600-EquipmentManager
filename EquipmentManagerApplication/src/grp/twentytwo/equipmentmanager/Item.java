@@ -40,7 +40,7 @@ public class Item implements Serializable {
         this.status = Status.WORKING;
         this.type = type;
         //this.history = new ArrayList<>();
-        addHistory("Item created at location " + location + ".");
+        //addHistory("Item created at location " + location + ".");
         this.needsCalibration = false;
         this.lastCalibration = null;
     }
@@ -110,7 +110,7 @@ public class Item implements Serializable {
     void setLocation(String newLocation) {
         String oldLocation = location;
         location = newLocation;
-        addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
+        //addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
     }
 
     /**
@@ -134,7 +134,7 @@ public class Item implements Serializable {
      */
     void flagForCalibration() {
         needsCalibration = true;
-        addHistory("Needs calibration.");
+        //addHistory("Needs calibration.");
     }
 
     /**
@@ -151,7 +151,7 @@ public class Item implements Serializable {
     void calibrate() {
         needsCalibration = false;
         lastCalibration = ZonedDateTime.now();
-        addHistory("Calibrated.");
+        //addHistory("Calibrated.");
     }
 
     /**
@@ -170,23 +170,21 @@ public class Item implements Serializable {
         return lastCalibration.format(formatter);
     }
 
-    /**
-     *
-     * @param description
-     */
-    void addHistory(String description) {
-        History entry = new History(description);
-        history.add(entry);
-    }
-
-    /**
-     *
-     * @return An array copy of the items history.
-     */
-    public History[] getHistory() {
-        return history.toArray(History[]::new);
-    }
-
+//    /**
+//     *
+//     * @param description
+//     */
+//    void addHistory(String description) {
+//        History entry = new History(description);
+//        history.add(entry);
+//    }
+//    /**
+//     *
+//     * @return An array copy of the items history.
+//     */
+//    public History[] getHistory() {
+//        return history.toArray(History[]::new);
+//    }
     /**
      * @param partID the partial ID string to check
      * @return An ArrayList of all items where partID is contained in the id
@@ -227,8 +225,8 @@ public class Item implements Serializable {
                 + ", Location: " + location
                 + ", Status: " + status
                 + ", Type: " + type
-                + ", Last Calibration: " + ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter))
-                + ", History: " + history;
+                + ", Last Calibration: " + ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter));
+        //+ ", History: " + history;
     }
 
     /**

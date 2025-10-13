@@ -238,9 +238,13 @@ public class TableManager {
         try {
             ResultSet rs = st_getMaxPrimaryKey.executeQuery();
             if (rs.next()) {
-                return Integer.toString(Integer.parseInt(rs.getString("maxId")) + 1);
-            } else {
-                return null;
+                if (rs.getString("maxId") != null) {
+                    return Integer.toString(Integer.parseInt(rs.getString("maxId").replaceAll("[^0-9]", "")) + 1);
+                } else {
+                    next = "0";  // No data in the table yet
+                }
+            } else { // No data in the table yet
+                next = "0";
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
