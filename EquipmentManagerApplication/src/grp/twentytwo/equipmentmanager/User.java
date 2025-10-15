@@ -31,6 +31,10 @@ public abstract class User implements Serializable {
 	return this.userID;
     }
 
+    public String getName() {
+	return this.name;
+    }
+
     @Override
     public String toString() {
 	return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ".";
