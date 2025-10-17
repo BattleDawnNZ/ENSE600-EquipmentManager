@@ -21,44 +21,38 @@ public class Controller {
 	View view = new View();
 
 	//<editor-fold desc="Initializing connections between View and Model and vice versa">
+	//<editor-fold desc="Login Page">
 	// Login
 	view.login.addListener((ActionEvent e) -> {
-	    model.login();
+	    view.login(model.login());
 	});
-	model.loginSuccessful.addListener((Object newValue) -> {
-	    view.loginComplete();
-	});
+	//</editor-fold>
 	//<editor-fold desc="Items Tab">----------------------------------------
 	// Item Search
 	view.searchForItem.addListener((String searchString) -> {
-	    view.setItemSearchResults(model.searchForItem(searchString));
+	    view.setItemSearchResults(model.searchForItems(searchString));
 	});
 	// Item Preview
 	view.viewItem.addListener((String itemID) -> {
-	    model.getItemPreview(itemID);
-	});
-	model.itemPreview.addListener((Item itemData) -> {
-	    view.setItemPreview(itemData);
+	    view.setItemPreview(model.getItem(itemID));
 	});
 	//</editor-fold>
 	//<editor-fold desc="Users Tab">----------------------------------------
 	// User Search
 	view.searchForUser.addListener((String searchString) -> {
-	    view.setUserSearchResults(model.searchForUser(searchString));
+	    view.setUserSearchResults(model.searchForUsers(searchString));
 	});
 	// User Preview
 	view.viewUser.addListener((String userID) -> {
-	    model.getUserPreview(userID);
-	});
-	model.userPreview.addListener((User userData) -> {
-	    view.setUserPreview(userData);
+	    view.setUserPreview(model.getUser(userID));
 	});
 	//</editor-fold>
 	//</editor-fold>
-	/* Create and display the form */ //	java.awt.EventQueue.invokeLater(new Runnable() {
-	//	    public void run() {
+	/* Create and display the form */
+	//java.awt.EventQueue.invokeLater(new Runnable() {
+	//    public void run() {
 	view.setVisible(true);
-//	    }
-//	});
+	//    }
+	//});
     }
 }
