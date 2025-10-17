@@ -41,10 +41,6 @@ public abstract class User {
         this.name = name;
     }
 
-    public String getName() {
-	return this.name;
-    }
-
     @Override
     public String toString() {
         return "UserID: " + userID + ", Name: " + name + ", Security Level: " + securityLevel + ".";
