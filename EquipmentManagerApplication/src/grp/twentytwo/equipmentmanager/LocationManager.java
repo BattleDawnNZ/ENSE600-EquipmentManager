@@ -20,8 +20,8 @@ public class LocationManager {
     String tableName = "LOCATIONTABLE";
     private final ArrayList<Column> columns;
 
-    private Column primaryKey = new Column("LocationID", "VARCHAR(12) not NULL", "");
-    private Column locationName = new Column("Name", "VARCHAR(30)", "");
+    private Column column_primaryKey = new Column("LocationID", "VARCHAR(12) not NULL", "");
+    private Column column_locationName = new Column("Name", "VARCHAR(30)", "");
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
@@ -43,9 +43,9 @@ public class LocationManager {
 
         // Define Table Parameters
         columns = new ArrayList<Column>();
-        columns.add(primaryKey);
-        columns.add(locationName);
-        tableManager = new TableManager(dbManager, tableName, columns, primaryKey);
+        columns.add(column_primaryKey);
+        columns.add(column_locationName);
+        tableManager = new TableManager(dbManager, tableName, columns, column_primaryKey);
 
         // Add test data to table
         dbManager.updateDB("INSERT INTO LOCATIONTABLE VALUES ('000001', 'Workshop1')");
@@ -77,21 +77,29 @@ public class LocationManager {
      * @return true if the item exists
      */
     public boolean isValidLocationName(String locationName) {
-        ResultSet rs = tableManager.getRowByColumnValue("Name", locationName);
-        return (getLocationObjectFromResultSet(rs) != null);
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByColumnValue("Name", locationName);
+            return (getLocationObjectFromResultSet(rs) != null);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
     }
 
     public boolean addLocation(String name) {
-
         try {
             if (!tableManager.getRowByColumnValue("Name", name).next()) { // Ensure Location is new
-                primaryKey.data = tableManager.getNextPrimaryKeyId();
-                locationName.data = name.toUpperCase();
+                column_primaryKey.data = tableManager.getNextPrimaryKeyId();
+                column_locationName.data = name.toUpperCase();
                 tableManager.createRow(columns);
                 return true; // Location created
             }
         } catch (SQLException ex) {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException e) {
+            System.out.println("Error: Invalid Column Name!");
         }
         return false; // Location already exists
 

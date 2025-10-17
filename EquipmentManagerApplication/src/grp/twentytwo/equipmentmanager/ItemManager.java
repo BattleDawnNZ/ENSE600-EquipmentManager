@@ -5,11 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+////////////////!!!!!!!!!!!!!! search case sensitive???
 
 /**
  * Manages item operations such as adding, removing, generating IDs, and
@@ -19,15 +18,23 @@ import java.util.logging.Logger;
  */
 public class ItemManager {
 
-    private LocationManager locationManager;
+    private final LocationManager locationManager;
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
     // Database table properties
     String tableName = "ITEMTABLE";
-    HashMap<String, String> columnDefinitions;
-    String primaryKey = "ItemID";
+    ArrayList<Column> columnData;
+
+    private Column column_itemID = new Column("ItemID", "VARCHAR(12) not NULL", "");
+    private Column column_name = new Column("Name", "VARCHAR(30) not NULL", "");
+    private Column column_description = new Column("Description", "VARCHAR(200)", "");
+    private Column column_location = new Column("Location", "VARCHAR(12)", "");
+    private Column column_status = new Column("Status", "VARCHAR(14)", "");
+    private Column column_type = new Column("Type", "VARCHAR(40)", "");
+    private Column column_calibrationFlag = new Column("CalibrationFlag", "VARCHAR(6)", "");
+    private Column column_lastCalibration = new Column("LastCalibration", "VARCHAR(20)", "");
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
@@ -35,12 +42,12 @@ public class ItemManager {
         LocationManager lManager = new LocationManager(dbManager);
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
-        Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
-        item.setLocation("WORKSHOP3");
-        um.updateItem(item);
+        ///item.setLocation("WORKSHOP3");
+        //um.updateItem(item);
         um.printTable();
         //System.out.println(um.getItemFromID("MA1"));
     }
@@ -49,19 +56,19 @@ public class ItemManager {
         this.dbManager = databaseManager;
         this.locationManager = locationManager;
         // Define Table Parameters
-        columnDefinitions = new HashMap<String, String>();
-        columnDefinitions.put("ItemID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("Name", "VARCHAR(30) not NULL");
-        columnDefinitions.put("Description", "VARCHAR(200)");
-        columnDefinitions.put("Location", "VARCHAR(12)");
-        columnDefinitions.put("Status", "VARCHAR(14)");
-        columnDefinitions.put("Type", "VARCHAR(40)");
-        columnDefinitions.put("CalibrationFlag", "VARCHAR(6)");
-        columnDefinitions.put("LastCalibration", "VARCHAR(20)");
-        //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????
+        columnData = new ArrayList<Column>();
+        columnData.add(column_itemID);
+        columnData.add(column_name);
+        columnData.add(column_description);
+        columnData.add(column_location);
+        columnData.add(column_status);
+        columnData.add(column_type);
+        columnData.add(column_calibrationFlag);
+        columnData.add(column_lastCalibration);
 
+        //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????!!!!!
         // Initialise Table
-        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+        tableManager = new TableManager(dbManager, tableName, columnData, column_itemID);
 
         // Add test data to table
         //dbManager.updateDB("INSERT INTO ITEMTABLE VALUES ('1', 'R9000 Universal Laser Cutter', 'Cuts mdf (1mm-12mm), arcrylic (1mm-10mm)', 'Workshop1', 'WORKING', 'Manufacturing/Cutting', '0', '03-03-2025 14:20')");
@@ -98,13 +105,17 @@ public class ItemManager {
             return null;
         }
         String itemID = generateItemID(type);
-        HashMap<String, String> data = new HashMap<>();
-        data.put("ItemID", itemID);
-        data.put("Name", name);
-        data.put("Location", location);
-        data.put("Type", type);
-        tableManager.createRow(data); // What if this fails
-        return itemID;
+        column_itemID.data = itemID;
+        column_name.data = name;
+        column_location.data = location;
+        column_type.data = type;
+        try {
+            tableManager.createRow(columnData);
+            return itemID;
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     /**
@@ -114,7 +125,7 @@ public class ItemManager {
      */
     public boolean updateItem(Item item) {
 
-        String id = item.getId();
+        String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
             if (locationManager.isValidLocationID(item.getLocation())) {
@@ -132,19 +143,21 @@ public class ItemManager {
      */
     private boolean saveItem(Item item) {
 
-        String id = item.getId();
+        String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            HashMap<String, String> data = new HashMap<>();
-            data.put("ItemID", id);
-            data.put("Name", item.getName());
-            data.put("Description", item.getDescription());
-            data.put("Location", item.getLocation());
-            data.put("Status", item.getStatus().toString());
-            data.put("Type", item.getType());
-            data.put("CalibrationFlag", String.valueOf(item.getNeedsCalibration()));
-            data.put("LastCalibration", item.getLastCalibrationAsString());
-            tableManager.updateRowByPrimaryKey(data);
+            column_itemID.data = id;
+            column_name.data = item.getName();
+            column_description.data = item.getDescription();
+            column_location.data = item.getLocation();
+            column_type.data = item.getType();
+            column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
+            column_lastCalibration.data = item.getLastCalibrationAsString();
+            try {
+                tableManager.updateRowByPrimaryKey(columnData);
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return true;
         }
         return false;
@@ -187,12 +200,15 @@ public class ItemManager {
             return tableManager.getAllPrimaryKeys();
         }
         ArrayList<String> validItems = new ArrayList<>();
-        ResultSet rs = tableManager.searchColumn("ItemID", partID);
+        ResultSet rs;
         try {
+            rs = tableManager.searchColumn("ItemID", partID);
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }
         } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
@@ -210,12 +226,15 @@ public class ItemManager {
             return tableManager.getAllPrimaryKeys();
         }
         ArrayList<String> validItems = new ArrayList<>();
-        ResultSet rs = tableManager.searchColumn("Type", partName);
+        ResultSet rs;
         try {
+            rs = tableManager.searchColumn("Type", partName);
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }
         } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
@@ -229,19 +248,25 @@ public class ItemManager {
      * @return A list of item IDs that match.
      */
     public ArrayList<String> getItemsFromType(String partType) {
-        if (partType.isBlank()) {
-            return tableManager.getAllPrimaryKeys();
-        }
-        ArrayList<String> validItems = new ArrayList<>();
-        ResultSet rs = tableManager.searchColumn("Type", partType);
         try {
+            if (partType.isBlank()) {
+                return tableManager.getAllPrimaryKeys();
+            }
+            ArrayList<String> validItems = new ArrayList<>();
+            ResultSet rs;
+
+            rs = tableManager.searchColumn("Type", partType);
+
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }
+            return validItems;
         } catch (SQLException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return validItems;
+        return null;
     }
 
     /**

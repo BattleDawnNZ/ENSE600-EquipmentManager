@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,22 +14,27 @@ import java.util.logging.Logger;
  * @author ppj1707
  */
 public class BookingManager {
-
-    private ItemManager itemManager;
+    //////// MUST CHECK ITEM ID IS VALID
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
     // Database table properties
     String tableName = "BOOKINGTABLE";
-    HashMap<String, String> columnDefinitions;
-    String primaryKey = "BookingID";
+    private final ArrayList<Column> columnData;
+
+    private Column column_bookingID = new Column("BookingID", "VARCHAR(12) not NULL", "");
+    private Column column_userID = new Column("UserID", "VARCHAR(12) not NULL", "");
+    private Column column_itemID = new Column("ItemID", "VARCHAR(12) not NULL", "");
+    private Column column_bookedDate = new Column("BookedDate", "VARCHAR(20) not NULL", "");
+    private Column column_returnDate = new Column("ReturnDate", "VARCHAR(20) not NULL", "");
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        ItemManager itemManager = new ItemManager();
+        LocationManager lManager = new LocationManager(dbManager);
+        ItemManager itemManager = new ItemManager(dbManager, lManager);
         BookingManager um = new BookingManager(itemManager, dbManager);
         um.printTable();
         //um.removeUser("000004");
@@ -40,19 +44,18 @@ public class BookingManager {
     }
 
     public BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
-        this.itemManager = itemManager;
         this.dbManager = databaseManager;
 
-        // Define Table Parameters
-        columnDefinitions = new HashMap<String, String>();
-        columnDefinitions.put("BookingID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("UserID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("ItemID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("BookedDate", "VARCHAR(20) not NULL");
-        columnDefinitions.put("ReturnDate", "VARCHAR(20) not NULL");
+        // Define table parameters
+        columnData = new ArrayList<>();
+        columnData.add(column_bookingID);
+        columnData.add(column_userID);
+        columnData.add(column_itemID);
+        columnData.add(column_bookedDate);
+        columnData.add(column_returnDate);
 
         // Initialise Table
-        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+        tableManager = new TableManager(dbManager, tableName, columnData, column_bookingID);
 
         // Add test data to table
         dbManager.updateDB("INSERT INTO BOOKINGTABLE VALUES ('1', '000001', '000001', '03-10-2025 14:20', '06-11-2025 15:30')");
@@ -82,14 +85,20 @@ public class BookingManager {
 
         // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
         // If this is not desired then it should be checked application-layer.
-        HashMap<String, String> data = new HashMap<>();
-        data.put("BookingID", bookingID);
-        data.put("UserID", userID);
-        data.put("ItemID", itemID);
-        data.put("BookedDate", bookedDate.format(formatter));
-        data.put("ReturnDate", returnDate.format(formatter));
-        tableManager.createRow(data);
-        return true; // User created
+        column_bookingID.data = tableManager.getNextPrimaryKeyId();
+
+        column_userID.data = userID;
+        column_itemID.data = itemID;
+        column_bookedDate.data = bookedDate.format(formatter);
+        column_returnDate.data = returnDate.format(formatter);
+
+        try {
+            tableManager.createRow(columnData);
+            return true; // User created
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
 
         //HISTORY ADDitemManagergetItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate.format(formatter) + " to " + returnDate.format(formatter));
     }
@@ -166,8 +175,15 @@ public class BookingManager {
      * @return All bookings for the item.
      */
     public ArrayList<Booking> getBookingsForItem(String itemID) {
-        ResultSet rs = tableManager.getRowByColumnValue("ItemID", itemID);
-        return getBookingObjectsFromResultSet(rs);
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByColumnValue("ItemID", itemID);
+            return getBookingObjectsFromResultSet(rs);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     /**
@@ -176,8 +192,13 @@ public class BookingManager {
      * @return All bookings for the user.
      */
     public ArrayList<Booking> getBookingsForUser(String userID) {
-        ResultSet rs = tableManager.getRowByColumnValue("UserID", userID);
-        return getBookingObjectsFromResultSet(rs);
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByColumnValue("UserID", userID);
+            return getBookingObjectsFromResultSet(rs);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
-
 }

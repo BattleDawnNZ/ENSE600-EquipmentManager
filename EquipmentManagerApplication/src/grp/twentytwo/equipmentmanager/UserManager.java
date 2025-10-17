@@ -3,7 +3,7 @@ package grp.twentytwo.equipmentmanager;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,8 +20,11 @@ public class UserManager {
 
     // Database table properties
     String tableName = "USERTABLE";
-    HashMap<String, String> columnDefinitions;
-    String primaryKey = "UserID";
+    ArrayList<Column> columnData;
+
+    private Column column_userID = new Column("UserID", "VARCHAR(12) not NULL", "");
+    private Column column_name = new Column("Name", "VARCHAR(30)", "");
+    private Column column_securityLevel = new Column("SecurityLevel", "VARCHAR(15)", "");
 
     private User activeUser; // Stores the active user object
 
@@ -40,13 +43,13 @@ public class UserManager {
 
         this.dbManager = databaseManager;
         // Define Table Parameters
-        columnDefinitions = new HashMap<String, String>();
-        columnDefinitions.put("UserID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("Name", "VARCHAR(30)");
-        columnDefinitions.put("SecurityLevel", "VARCHAR(15)");
+        columnData = new ArrayList<Column>();
+        columnData.add(column_userID);
+        columnData.add(column_name);
+        columnData.add(column_securityLevel);
 
         // Initialise Table
-        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+        tableManager = new TableManager(dbManager, tableName, columnData, column_userID);
 
         // Add test data to table
         dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
@@ -96,15 +99,19 @@ public class UserManager {
     public boolean addUser(String userID, String name, SecurityLevels level) {
 
         if (!tableManager.verifyPrimaryKey(userID)) { // Ensure user is new
-            HashMap<String, String> data = new HashMap<>();
-            data.put("UserID", userID);
-            data.put("Name", name);
-            data.put("SecurityLevel", level.toString());
-            tableManager.createRow(data);
-            return true; // User created
+            column_userID.data = userID;
+            column_name.data = name;
+            column_securityLevel.data = level.toString();
+
+            try {
+                tableManager.createRow(columnData);
+                return true; // User created
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
         }
         return false; // User already exists
-
     }
 
     /**
@@ -117,15 +124,20 @@ public class UserManager {
         String id = user.getUserID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            HashMap<String, String> data = new HashMap<>();
-            data.put("UserID", id);
-            data.put("Name", user.getName());
-            data.put("SecurityLevel", user.getSecurityLevel().toString());
-            tableManager.updateRowByPrimaryKey(data);
-            return true;
+            column_userID.data = id;
+            column_name.data = user.getName();
+            column_securityLevel.data = user.getSecurityLevel().toString();
+
+            try {
+                tableManager.updateRowByPrimaryKey(columnData);
+                return true;
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+
         }
         return false;
-
     }
 
     /**
