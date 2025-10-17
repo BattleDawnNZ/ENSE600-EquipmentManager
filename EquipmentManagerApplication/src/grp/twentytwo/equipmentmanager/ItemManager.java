@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -247,7 +248,7 @@ public class ItemManager {
      * @param partType The desired items partial type.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> getItemsFromType(String partType) {
+    public ArrayList<String> searchItemsByType(String partType) {
         try {
             if (partType.isBlank()) {
                 return tableManager.getAllPrimaryKeys();
@@ -267,6 +268,24 @@ public class ItemManager {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    /**
+     * Returns an ArrayList of items that partial match the partial partType,
+     * name, or id (if blank all items will be returned)
+     *
+     * @param partType
+     * @return
+     */
+    public LinkedHashSet<String> searchForItems(String searchString) {
+
+        LinkedHashSet<String> validItems = new LinkedHashSet<>(); // Hashset forces duplicates to be removed. Preserves order
+
+        validItems.addAll(searchItemsByID(searchString));
+        validItems.addAll(searchItemsByName(searchString));
+        validItems.addAll(searchItemsByType(searchString));
+        return validItems;
+
     }
 
     /**

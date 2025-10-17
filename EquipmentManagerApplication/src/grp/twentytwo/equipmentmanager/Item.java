@@ -187,4 +187,9 @@ public class Item {
         FAULTY
     }
 
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
 }
