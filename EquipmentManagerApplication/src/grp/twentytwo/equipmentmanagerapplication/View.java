@@ -102,21 +102,20 @@ public class View extends javax.swing.JFrame {
 	});
 
 	// Test Code for vetoing DatTimes
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-	ZonedDateTime bookedDate = LocalDateTime.parse("13-10-2025 02:30:00", formatter).atZone(ZoneId.systemDefault());
-	ZonedDateTime returnDate = LocalDateTime.parse("13-11-2025 04:30:00", formatter).atZone(ZoneId.systemDefault());
-	Booking testBooking = new Booking("0", "0", "0", bookedDate, returnDate);
-	DatePickerSettings datePickerSettings = dateTimePicker1.datePicker.getSettings();
-	datePickerSettings.setVetoPolicy((LocalDate localDate) -> {
-	    ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
-	    return (returnDate.isBefore(zonedDate.plusDays(1)) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate));
-	});
-	TimePickerSettings timePickerSettings = dateTimePicker1.timePicker.getSettings();
-	timePickerSettings.setVetoPolicy((LocalTime localTime) -> {
-	    ZonedDateTime zonedDate = dateTimePicker1.datePicker.getDate().atTime(localTime).atZone(ZoneId.systemDefault());
-	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
-	});
-
+//	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+//	ZonedDateTime bookedDate = LocalDateTime.parse("13-10-2025 02:30:00", formatter).atZone(ZoneId.systemDefault());
+//	ZonedDateTime returnDate = LocalDateTime.parse("13-11-2025 04:30:00", formatter).atZone(ZoneId.systemDefault());
+//	Booking testBooking = new Booking("0", "0", "0", bookedDate, returnDate);
+//	DatePickerSettings datePickerSettings = dateTimePicker1.datePicker.getSettings();
+//	datePickerSettings.setVetoPolicy((LocalDate localDate) -> {
+//	    ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
+//	    return (returnDate.isBefore(zonedDate.plusDays(1)) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate));
+//	});
+//	TimePickerSettings timePickerSettings = dateTimePicker1.timePicker.getSettings();
+//	timePickerSettings.setVetoPolicy((LocalTime localTime) -> {
+//	    ZonedDateTime zonedDate = dateTimePicker1.datePicker.getDate().atTime(localTime).atZone(ZoneId.systemDefault());
+//	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
+//	});
 	// User Tab ------------------------------------------------------------
 	// Item Searching
 	searchForUser = new Speaker<>();
@@ -164,7 +163,7 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setItemPreview(Item itemData) {
-	text_itemID.setText(itemData.getId());
+	text_itemID.setText(itemData.getID());
 	text_itemName.setText(itemData.getName());
 	text_itemDescription.setText(itemData.getDescription());
 	text_itemLocation.setText(itemData.getLocation());

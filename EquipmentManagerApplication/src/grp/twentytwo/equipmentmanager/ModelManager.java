@@ -8,38 +8,20 @@ import java.util.ArrayList;
  * @author fmw5088
  */
 public class ModelManager {
-    // <editor-fold desc="Speakers">
-
-    public Speaker loginSuccessful = new Speaker();
-    public Speaker<Item> itemPreview = new Speaker<>();
-    public Speaker<User> userPreview = new Speaker<>();
-    // </editor-fold>
-    UserManager userManager;
-    ItemManager itemManager;
-    BookingManager bookingManager;
-    LocationManager locationManager;
-    MaintenanceManager maintenanceManager;
 
     public ModelManager() {
-	userManager = new UserManager();
-	itemManager = new ItemManager();
-	bookingManager = new BookingManager(itemManager);
-	locationManager = new LocationManager(itemManager);
-	maintenanceManager = new MaintenanceManager(itemManager);
-	itemManager.setLocationManager(locationManager);
     }
 
-    public void login() {
-	loginSuccessful.notifyListeners(null);
+    public boolean login() {
+	return true;
     }
     // Item Functions ----------------------------------------------------------
 
-    public void getItemPreview(String itemID) {
-	Item itemData = new Item(itemID, itemID + "'s Name", "TJ06A01", "Test/Item/Useless");
-	itemPreview.notifyListeners(itemData);
+    public Item getItem(String itemID) {
+	return new Item(itemID + "'s Name", "TJ06A01", "Test/Item/Useless");
     }
 
-    public ArrayList<String> searchForItem(String searchQuery) {
+    public ArrayList<String> searchForItems(String searchQuery) {
 	ArrayList<String> test = new ArrayList<>();
 	for (int i = 0; i < 10; i++) {
 	    test.add(searchQuery.substring(0, 2) + "0" + i);
@@ -52,12 +34,11 @@ public class ModelManager {
     }
 
     // User Functions ----------------------------------------------------------
-    public void getUserPreview(String userID) {
-	User userData = new Manager(userID, userID + "'s Name");
-	userPreview.notifyListeners(userData);
+    public User getUser(String userID) {
+	return new Manager(userID, userID + "'s Name");
     }
 
-    public ArrayList<String> searchForUser(String searchQuery) {
+    public ArrayList<String> searchForUsers(String searchQuery) {
 	ArrayList<String> test = new ArrayList<>();
 	for (int i = 0; i < 10; i++) {
 	    test.add(searchQuery.substring(0, 2) + "0" + i);
