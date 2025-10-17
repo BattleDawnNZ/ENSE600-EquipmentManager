@@ -4,21 +4,15 @@
  */
 package grp.twentytwo.equipmentmanagerapplication;
 
-import com.github.lgooddatepicker.components.DatePickerSettings;
-import com.github.lgooddatepicker.components.TimePickerSettings;
 import grp.twentytwo.equipmentmanager.Booking;
 import grp.twentytwo.equipmentmanager.Item;
 import grp.twentytwo.equipmentmanager.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashSet;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -141,6 +135,12 @@ public class View extends javax.swing.JFrame {
 	});
     }
 
+    // Errors ------------------------------------------------------------------
+    public void showError(Exception err) {
+	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Login -------------------------------------------------------------------
     public void login(boolean successful) {
 	if (successful) {
 	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
@@ -155,7 +155,7 @@ public class View extends javax.swing.JFrame {
 	dialog_addItem.setVisible(false);
     }
 
-    public void setItemSearchResults(List<String> newList) {
+    public void setItemSearchResults(LinkedHashSet<String> newList) {
 	DefaultListModel<String> model = new DefaultListModel<>();
 	model.clear();
 	model.addAll(newList);
@@ -163,14 +163,18 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setItemPreview(Item itemData) {
-	text_itemID.setText(itemData.getID());
-	text_itemName.setText(itemData.getName());
-	text_itemDescription.setText(itemData.getDescription());
-	text_itemLocation.setText(itemData.getLocation());
-	text_itemStatus.setText(itemData.getStatus().toString());
-	text_itemType.setText(itemData.getType());
-	text_lastCalibration.setText(itemData.getLastCalibration() != null ? itemData.getLastCalibration().toString() : "Uncalibrated");
-	check_needsCalibration.setSelected(itemData.getNeedsCalibration());
+	try {
+	    text_itemID.setText(itemData.getID());
+	    text_itemName.setText(itemData.getName());
+	    text_itemDescription.setText(itemData.getDescription());
+	    text_itemLocation.setText(itemData.getLocation());
+	    text_itemStatus.setText(itemData.getStatus().toString());
+	    text_itemType.setText(itemData.getType());
+	    text_lastCalibration.setText(itemData.getLastCalibration() != null ? itemData.getLastCalibration().toString() : "Uncalibrated");
+	    check_needsCalibration.setSelected(itemData.getNeedsCalibration());
+	} catch (Exception err) {
+	    showError(err);
+	}
     }
 
     public void setItemBookings(List<Booking> newList) {
