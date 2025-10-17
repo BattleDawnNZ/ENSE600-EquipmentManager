@@ -1,6 +1,5 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -9,9 +8,9 @@ import java.time.format.DateTimeFormatter;
  *
  * @author fmw5088
  */
-public class Booking implements Serializable {
+public class Booking {
 
-    private String id;
+    private final String id;
     private String userID;
     private String itemID;
     private ZonedDateTime bookedDate;
@@ -20,7 +19,8 @@ public class Booking implements Serializable {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     /**
-     * Creates a new booking with the specified details.
+     * Creates a new booking with the specified details. Package private - only
+     * for official bookings with an assigned ID
      *
      * @param id the bookings ID
      * @param userID the ID of the user who booked
@@ -33,6 +33,18 @@ public class Booking implements Serializable {
         this.itemID = itemID;
         this.bookedDate = bookedDate;
         this.returnDate = returnDate;
+    }
+
+    /**
+     * Public booking constructor (no ID will be assigned)
+     *
+     * @param userID
+     * @param itemID
+     * @param bookedDate
+     * @param returnDate
+     */
+    public Booking(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+        this(null, userID, itemID, bookedDate, returnDate);
     }
 
     /**

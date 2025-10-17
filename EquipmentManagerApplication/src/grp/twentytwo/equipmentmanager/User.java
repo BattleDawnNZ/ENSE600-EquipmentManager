@@ -1,15 +1,13 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.io.Serializable;
-
 /**
  * Abstract user class implements the functionality for all user types.
  *
  * @author ppj1707
  */
-public abstract class User implements Serializable {
+public abstract class User {
 
-    private String userID; // Cannot be changed once initialised
+    private final String userID; // Cannot be changed once initialised
     private String name;
     protected SecurityLevels securityLevel;
 
@@ -17,22 +15,30 @@ public abstract class User implements Serializable {
         GUEST, EMPLOYEE, MANAGER
     };
 
-    User(String userID, String name, SecurityLevels securityLevel) {
+    public User(String userID, String name, SecurityLevels securityLevel) {
         this.userID = userID;
         this.name = name;
         this.securityLevel = securityLevel;
-    }
-
-    public SecurityLevels getSecurityLevel() {
-        return this.securityLevel;
     }
 
     public String getUserID() {
         return this.userID;
     }
 
+    public SecurityLevels getSecurityLevel() {
+        return this.securityLevel;
+    }
+
+    public void setSecurityLevel(SecurityLevels level) {
+        this.securityLevel = level;
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

@@ -6,12 +6,16 @@ package grp.twentytwo.equipmentmanager;
  */
 public class Location {
 
-    private String id;
+    private final String id;
     private String name;
 
-    public Location(String id, String name) {
+    Location(String id, String name) { // Package private for official locations only
         this.id = id;
         this.name = name.toUpperCase();
+    }
+
+    public Location(String name) {
+        this(null, name);
     }
 
     public String getId() {
