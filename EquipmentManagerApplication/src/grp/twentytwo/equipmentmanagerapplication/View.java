@@ -67,12 +67,23 @@ public class View extends javax.swing.JFrame {
 	login = new Speaker(button_login);
 
 	// Item Tab ------------------------------------------------------------
+	// Item Adding
+	button_addItem.addActionListener((ActionEvent e) -> {
+	    clearAddItemDialog();
+	    dialog_addItem.setVisible(true);
+	});
+	button_addItemCancel.addActionListener((ActionEvent e) -> {
+	    dialog_addItem.setVisible(false);
+	});
 	// Item Searching
 	searchForItem = new Speaker<>();
 	ActionListener searchItemListener = new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		searchForItem.notifyListeners(field_searchItem.getText());
+		String searchString = field_searchItem.getText();
+		if (!searchString.isBlank()) {
+		    searchForItem.notifyListeners(searchString);
+		}
 	    }
 	};
 	button_searchItem.addActionListener(searchItemListener);
@@ -131,11 +142,20 @@ public class View extends javax.swing.JFrame {
 	});
     }
 
-    public void loginComplete() {
-	((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
+    public void login(boolean successful) {
+	if (successful) {
+	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
+	}
     }
 
     // Item Functions ----------------------------------------------------------
+    public void clearAddItemDialog() {
+	field_addItemName.setText("");
+	field_addItemLocation.setText("");
+	field_addItemType.setText("");
+	dialog_addItem.setVisible(false);
+    }
+
     public void setItemSearchResults(List<String> newList) {
 	DefaultListModel<String> model = new DefaultListModel<>();
 	model.clear();
@@ -160,10 +180,9 @@ public class View extends javax.swing.JFrame {
 
     // User Functions ----------------------------------------------------------
     public void setUserSearchResults(List<String> newList) {
-	DefaultListModel<String> model = new DefaultListModel<>();
-	model.clear();
-	model.addAll(newList);
-	list_userSearchResults.setModel(model);
+	DefaultListModel<String> userListModel = new DefaultListModel<>();
+	userListModel.addAll(newList);
+	list_userSearchResults.setModel(userListModel);
     }
 
     public void setUserPreview(User userData) {
@@ -172,6 +191,18 @@ public class View extends javax.swing.JFrame {
 	text_userSecurityLevel.setText(userData.getSecurityLevel().toString());
     }
 
+    // Location Functions ------------------------------------------------------
+//    public void setLocationSearchResults(List<String> newList) {
+//	DefaultListModel<String> userListModel = new DefaultListModel<>();
+//	userListModel.addAll(newList);
+//	list_userSearchResults.setModel(userListModel);
+//    }
+//
+//    public void setLocationPreview(Location locationData) {
+//	text_userID.setText(locationData.getUserID());
+//	text_userName.setText(locationData.getName());
+//	text_userSecurityLevel.setText(locationData.getSecurityLevel().toString());
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -189,6 +220,17 @@ public class View extends javax.swing.JFrame {
         jList1 = new javax.swing.JList<>();
         jLabel7 = new javax.swing.JLabel();
         calendarPanel1 = new com.github.lgooddatepicker.components.CalendarPanel();
+        dialog_addItem = new javax.swing.JDialog();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        field_addItemName = new javax.swing.JTextField();
+        field_addItemLocation = new javax.swing.JTextField();
+        field_addItemType = new javax.swing.JTextField();
+        jPanel7 = new javax.swing.JPanel();
+        button_addItemCancel = new javax.swing.JButton();
+        button_addItemAdd = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
         jPasswordField1 = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -266,6 +308,30 @@ public class View extends javax.swing.JFrame {
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         text_userSecurityLevel = new javax.swing.JTextField();
+        tab_locations = new javax.swing.JSplitPane();
+        panel_locationSearch = new javax.swing.JPanel();
+        field_searchLocation = new javax.swing.JTextField();
+        button_addLocation = new javax.swing.JButton();
+        button_searchLocation = new javax.swing.JButton();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        list_locationSearchResults = new javax.swing.JList<>();
+        panel_locationView = new javax.swing.JPanel();
+        toolbar_locationTools = new javax.swing.JToolBar();
+        jButton15 = new javax.swing.JButton();
+        jButton16 = new javax.swing.JButton();
+        jButton17 = new javax.swing.JButton();
+        jButton18 = new javax.swing.JButton();
+        jButton19 = new javax.swing.JButton();
+        jButton20 = new javax.swing.JButton();
+        jButton21 = new javax.swing.JButton();
+        panel_locationDetails = new javax.swing.JScrollPane();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        text_locationID = new javax.swing.JTextField();
+        text_locationName = new javax.swing.JTextField();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
         dialog_viewBookings.setTitle("Item Bookings");
         dialog_viewBookings.setMinimumSize(new java.awt.Dimension(400, 255));
@@ -298,6 +364,72 @@ public class View extends javax.swing.JFrame {
         jSplitPane1.setRightComponent(calendarPanel1);
 
         dialog_viewBookings.getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
+
+        dialog_addItem.setTitle("Add Item");
+        dialog_addItem.setAlwaysOnTop(true);
+        dialog_addItem.setMinimumSize(new java.awt.Dimension(300, 200));
+        dialog_addItem.setModal(true);
+        dialog_addItem.setResizable(false);
+
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        jLabel15.setText("Name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel5.add(jLabel15, gridBagConstraints);
+
+        jLabel16.setText("Location");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel5.add(jLabel16, gridBagConstraints);
+
+        jLabel17.setText("Type");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel5.add(jLabel17, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel5.add(field_addItemName, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel5.add(field_addItemLocation, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel5.add(field_addItemType, gridBagConstraints);
+
+        dialog_addItem.getContentPane().add(jPanel5, java.awt.BorderLayout.CENTER);
+
+        jPanel7.setLayout(new java.awt.GridBagLayout());
+
+        button_addItemCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel7.add(button_addItemCancel, gridBagConstraints);
+
+        button_addItemAdd.setText("Add");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel7.add(button_addItemAdd, gridBagConstraints);
+
+        dialog_addItem.getContentPane().add(jPanel7, java.awt.BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
@@ -779,6 +911,150 @@ public class View extends javax.swing.JFrame {
 
         tabs_application.addTab("Users", tab_users);
 
+        panel_locationSearch.setLayout(new java.awt.GridBagLayout());
+
+        field_searchLocation.setToolTipText("Input a string to search for a list of corresponding users.");
+        field_searchLocation.setMinimumSize(new java.awt.Dimension(100, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_locationSearch.add(field_searchLocation, gridBagConstraints);
+
+        button_addLocation.setText("Add User");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_locationSearch.add(button_addLocation, gridBagConstraints);
+
+        button_searchLocation.setText("Search");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_locationSearch.add(button_searchLocation, gridBagConstraints);
+
+        list_locationSearchResults.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "User 1", "User 2", "User 3", "User 4", "User 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane7.setViewportView(list_locationSearchResults);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        panel_locationSearch.add(jScrollPane7, gridBagConstraints);
+
+        tab_locations.setLeftComponent(panel_locationSearch);
+
+        panel_locationView.setLayout(new java.awt.BorderLayout());
+
+        toolbar_locationTools.setFloatable(false);
+        toolbar_locationTools.setRollover(true);
+
+        jButton15.setText("jButton1");
+        jButton15.setFocusable(false);
+        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton15);
+
+        jButton16.setText("jButton2");
+        jButton16.setFocusable(false);
+        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton16);
+
+        jButton17.setText("jButton3");
+        jButton17.setFocusable(false);
+        jButton17.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton17.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton17);
+
+        jButton18.setText("jButton4");
+        jButton18.setFocusable(false);
+        jButton18.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton18.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton18);
+
+        jButton19.setText("jButton5");
+        jButton19.setFocusable(false);
+        jButton19.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton19.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton19);
+
+        jButton20.setText("jButton6");
+        jButton20.setFocusable(false);
+        jButton20.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton20.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton20);
+
+        jButton21.setText("jButton7");
+        jButton21.setFocusable(false);
+        jButton21.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton21.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(jButton21);
+
+        panel_locationView.add(toolbar_locationTools, java.awt.BorderLayout.PAGE_END);
+
+        panel_locationDetails.setMinimumSize(new java.awt.Dimension(321, 16));
+
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        jLabel13.setText("ID:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel4.add(jLabel13, gridBagConstraints);
+
+        jLabel14.setText("Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel4.add(jLabel14, gridBagConstraints);
+
+        text_locationID.setEditable(false);
+        text_locationID.setText("jTextField1");
+        text_locationID.setPreferredSize(new java.awt.Dimension(232, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel4.add(text_locationID, gridBagConstraints);
+
+        text_locationName.setEditable(false);
+        text_locationName.setText("jTextField3");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel4.add(text_locationName, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.weightx = 0.1;
+        jPanel4.add(filler5, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.1;
+        jPanel4.add(filler6, gridBagConstraints);
+
+        panel_locationDetails.setViewportView(jPanel4);
+
+        panel_locationView.add(panel_locationDetails, java.awt.BorderLayout.CENTER);
+
+        tab_locations.setRightComponent(panel_locationView);
+
+        tabs_application.addTab("Locations", tab_locations);
+
         panel_main.add(tabs_application);
 
         getContentPane().add(panel_main, "card4");
@@ -788,28 +1064,46 @@ public class View extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_addItem;
+    private javax.swing.JButton button_addItemAdd;
+    private javax.swing.JButton button_addItemCancel;
+    private javax.swing.JButton button_addLocation;
     private javax.swing.JButton button_addUser;
     private javax.swing.JButton button_login;
     private javax.swing.JButton button_searchItem;
+    private javax.swing.JButton button_searchLocation;
     private javax.swing.JButton button_searchUser;
     private com.github.lgooddatepicker.components.CalendarPanel calendarPanel1;
     private com.github.lgooddatepicker.components.CalendarPanel calendarPanel2;
     private javax.swing.JCheckBox check_needsCalibration;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker1;
+    private javax.swing.JDialog dialog_addItem;
     private javax.swing.JDialog dialog_viewBookings;
+    private javax.swing.JTextField field_addItemLocation;
+    private javax.swing.JTextField field_addItemName;
+    private javax.swing.JTextField field_addItemType;
     private javax.swing.JTextField field_searchItem;
+    private javax.swing.JTextField field_searchLocation;
     private javax.swing.JTextField field_searchUser;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
+    private javax.swing.JButton jButton15;
+    private javax.swing.JButton jButton16;
+    private javax.swing.JButton jButton17;
+    private javax.swing.JButton jButton18;
+    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton20;
+    private javax.swing.JButton jButton21;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -821,6 +1115,11 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -834,12 +1133,16 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JTextField jTextField2;
@@ -847,17 +1150,22 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;
     private javax.swing.JList<String> list_itemSearchResults;
+    private javax.swing.JList<String> list_locationSearchResults;
     private javax.swing.JList<String> list_userSearchResults;
     private javax.swing.JPanel panel_itemBookings;
     private javax.swing.JScrollPane panel_itemDetails;
     private javax.swing.JPanel panel_itemSearch;
     private javax.swing.JPanel panel_itemView;
+    private javax.swing.JScrollPane panel_locationDetails;
+    private javax.swing.JPanel panel_locationSearch;
+    private javax.swing.JPanel panel_locationView;
     private javax.swing.JPanel panel_login;
     private javax.swing.JPanel panel_main;
     private javax.swing.JScrollPane panel_userDetails;
     private javax.swing.JPanel panel_userSearch;
     private javax.swing.JPanel panel_userView;
     private javax.swing.JSplitPane tab_items;
+    private javax.swing.JSplitPane tab_locations;
     private javax.swing.JSplitPane tab_users;
     private javax.swing.JTabbedPane tabs_application;
     private javax.swing.JTextArea text_itemDescription;
@@ -867,9 +1175,12 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField text_itemStatus;
     private javax.swing.JTextField text_itemType;
     private javax.swing.JTextField text_lastCalibration;
+    private javax.swing.JTextField text_locationID;
+    private javax.swing.JTextField text_locationName;
     private javax.swing.JTextField text_userID;
     private javax.swing.JTextField text_userName;
     private javax.swing.JTextField text_userSecurityLevel;
+    private javax.swing.JToolBar toolbar_locationTools;
     private javax.swing.JToolBar toolbar_userTools;
     // End of variables declaration//GEN-END:variables
 }
