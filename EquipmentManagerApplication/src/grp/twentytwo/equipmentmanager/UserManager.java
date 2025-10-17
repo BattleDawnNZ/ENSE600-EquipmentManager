@@ -1,7 +1,11 @@
 package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
-import java.util.HashMap; // Import the HashSet class
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages all users allowing for login, logout, create user, remove user,
@@ -9,56 +13,48 @@ import java.util.HashMap; // Import the HashSet class
  *
  * @author ppj1707
  */
-public class UserManager implements Saveable {
+public class UserManager {
 
-    private HashMap<String, User> users; // Store all users
+    private final DatabaseManager dbManager;
+    private final TableManager tableManager;
+
+    // Database table properties
+    String tableName = "USERTABLE";
+    ArrayList<Column> columnData;
+
+    private Column column_userID = new Column("UserID", "VARCHAR(12) not NULL", "");
+    private Column column_name = new Column("Name", "VARCHAR(30)", "");
+    private Column column_securityLevel = new Column("SecurityLevel", "VARCHAR(15)", "");
+
     private User activeUser; // Stores the active user object
-    private final String fileName = "user_manager.bin"; // The name for the save file.
 
-    public UserManager() {
-	Manager root = new Manager("111", "Bob"); // DEBUG!!!
-	users = new HashMap<>(); // DEBUG!!!
-	users.put("111", root); // DEBUG!!!
-	Employee rootE = new Employee("222", "Fred"); // DEBUG!!!
-	users.put("222", rootE);
-	Guest rootG = new Guest("333", "Robert"); // DEBUG!!!
-	users.put("333", rootG);
+    public static void main(String[] args) {
+        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        UserManager um = new UserManager(dbManager);
+        um.printTable();
+        User user = new Manager("000004", "Alice");
+        //um.removeUser("000004");
+        //um.saveUser(user);
+        um.printTable();
+        System.out.println(um.getUserFromID("000004"));
     }
 
-    /**
-     * Loads the user manager from a file.
-     */
-    @Override
-    public void load() {
-	UserManager um = (UserManager) FileManager.loadFile(fileName);
-	if (um != null) {
-	    this.users = um.users;
-	}
-    }
+    public UserManager(DatabaseManager databaseManager) {
 
-    /**
-     * Saves the user manager to a file
-     */
-    @Override
-    public void save() {
-	FileManager.saveFile(this, fileName);
-    }
+        this.dbManager = databaseManager;
+        // Define Table Parameters
+        columnData = new ArrayList<Column>();
+        columnData.add(column_userID);
+        columnData.add(column_name);
+        columnData.add(column_securityLevel);
 
-    /**
-     *
-     * @return the User object for the active user
-     */
-    public User getActiveUser() {
-	return activeUser;
-    }
+        // Initialise Table
+        tableManager = new TableManager(dbManager, tableName, columnData, column_userID);
 
-    /**
-     *
-     * @param id
-     * @return whether the user ID is registered in the system
-     */
-    public boolean verifyID(String id) {
-	return users.containsKey(id);
+        // Add test data to table
+        dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
+                + "('000002', 'Sally', 'EMPLOYEE'), "
+                + "('000003', 'Fred', 'GUEST')");
     }
 
     /**
@@ -67,41 +63,89 @@ public class UserManager implements Saveable {
      * @return a User object (if the id string exists) else, null
      */
     public User getUserFromID(String userID) {
-	if (users.containsKey(userID)) {
-	    return users.get(userID);
-	} else {
-	    return null;
-	}
+        ResultSet rs = tableManager.getRowByPrimaryKey(userID);
+        return getUserObjectFromResultSet(rs);
     }
 
     /**
      *
      * @param userID
      * @param level
-     * @return true if the user was successfully created (or false if they
-     * already exist)
+     * @return a user object from specified input
      */
-    public boolean createUser(String userID, String name, SecurityLevels level) {
-	if (verifyID(userID)) {
-	    return false;
-	} else {
-	    switch (level) { // Create new user based on their security level
-		case MANAGER:
-		    Manager newManager = new Manager(userID, name);
-		    users.put(userID, newManager);
-		    break;
-		case EMPLOYEE:
-		    Employee newEmployee = new Employee(userID, name);
-		    users.put(userID, newEmployee);
-		    break;
-		case GUEST:
-		    Guest newGuest = new Guest(userID, name);
-		    users.put(userID, newGuest);
-		    break;
-	    }
-	    save();
-	    return true;
-	}
+    private User importUser(String userID, String name, SecurityLevels level) {
+        switch (level) { // Create new user based on their security level
+            case MANAGER:
+                Manager manager = new Manager(userID, name);
+                return manager;
+            case EMPLOYEE:
+                Employee employee = new Employee(userID, name);
+                return employee;
+            case GUEST:
+                Guest guest = new Guest(userID, name);
+                return guest;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     *
+     * @param userID
+     * @param name
+     * @param level
+     * @return true if created (did not previously exist)
+     */
+    public boolean addUser(String userID, String name, SecurityLevels level) {
+
+        if (!tableManager.verifyPrimaryKey(userID)) { // Ensure user is new
+            column_userID.data = userID;
+            column_name.data = name;
+            column_securityLevel.data = level.toString();
+
+            try {
+                tableManager.createRow(columnData);
+                return true; // User created
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        }
+        return false; // User already exists
+    }
+
+    /**
+     *
+     * @param user
+     * @return true if updated (User previously existed)
+     */
+    public boolean updateUser(User user) {
+
+        String id = user.getUserID();
+
+        if (tableManager.verifyPrimaryKey(id)) { // Update the table
+            column_userID.data = id;
+            column_name.data = user.getName();
+            column_securityLevel.data = user.getSecurityLevel().toString();
+
+            try {
+                tableManager.updateRowByPrimaryKey(columnData);
+                return true;
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return the User object for the active user
+     */
+    public User getActiveUser() {
+        return activeUser;
     }
 
     /**
@@ -111,12 +155,7 @@ public class UserManager implements Saveable {
      * already do not exist)
      */
     public boolean removeUser(String userID) {
-	if (users.remove(userID) != null) {
-	    save();
-	    return true;
-	} else {
-	    return false;
-	}
+        return tableManager.deleteRowByPrimaryKey(userID);
     }
 
     /**
@@ -127,12 +166,12 @@ public class UserManager implements Saveable {
      * found in the system)
      */
     public boolean login(String userID) {
-	if (users.containsKey(userID)) {
-	    activeUser = users.get(userID); // Save the current user
-	    return true;
-	} else {
-	    return false;
-	}
+        if (tableManager.verifyPrimaryKey(userID)) {
+            activeUser = getUserFromID(userID); // Save the current user
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -141,7 +180,37 @@ public class UserManager implements Saveable {
      * @return if the logout was successful
      */
     public boolean logout() {
-	activeUser = null; // Save the current user
-	return true;
+        activeUser = null; // Save the current user
+        return true;
     }
+
+    /**
+     * Print the entire user table to the console
+     */
+    public void printTable() {
+        tableManager.printTable();
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @return a user object
+     */
+    private User getUserObjectFromResultSet(ResultSet resultSet) {
+        try {
+            if (resultSet.next()) { // User exists
+                String userID = resultSet.getString("UserID");
+                String name = resultSet.getString("Name");
+                String sL = resultSet.getString("SecurityLevel");
+                return importUser(userID, name, SecurityLevels.valueOf(sL));
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+    }
+
 }

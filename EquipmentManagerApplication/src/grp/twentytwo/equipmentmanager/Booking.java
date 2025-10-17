@@ -1,6 +1,5 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -9,45 +8,43 @@ import java.time.format.DateTimeFormatter;
  *
  * @author fmw5088
  */
-public class Booking implements Serializable {
+public class Booking {
 
-    /**
-     * The bookings ID.
-     */
-    private String id;
-    /**
-     * The ID of the user that booked.
-     */
+    private final String id;
     private String userID;
-    /**
-     * The ID of the piece of equipment being used.
-     */
     private String itemID;
-    /**
-     * The date of the booking.
-     */
     private ZonedDateTime bookedDate;
-    /**
-     * The return date of the booking.
-     */
     private ZonedDateTime returnDate;
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     /**
-     * Creates a new booking with the specified details.
+     * Creates a new booking with the specified details. Package private - only
+     * for official bookings with an assigned ID
      *
      * @param id the bookings ID
      * @param userID the ID of the user who booked
      * @param bookedDate the date of the booking
      * @param returnDate the return date of the booking
      */
-    public Booking(String id, String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
-	this.id = id;
-	this.userID = userID;
-	this.itemID = itemID;
-	this.bookedDate = bookedDate;
-	this.returnDate = returnDate;
+    Booking(String id, String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+        this.id = id;
+        this.userID = userID;
+        this.itemID = itemID;
+        this.bookedDate = bookedDate;
+        this.returnDate = returnDate;
+    }
+
+    /**
+     * Public booking constructor (no ID will be assigned)
+     *
+     * @param userID
+     * @param itemID
+     * @param bookedDate
+     * @param returnDate
+     */
+    public Booking(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+        this(null, userID, itemID, bookedDate, returnDate);
     }
 
     /**
@@ -55,7 +52,7 @@ public class Booking implements Serializable {
      * @return The bookings ID
      */
     public String getID() {
-	return id;
+        return id;
     }
 
     /**
@@ -63,7 +60,7 @@ public class Booking implements Serializable {
      * @return The ID of the user who booked.
      */
     public String getUserID() {
-	return userID;
+        return userID;
     }
 
     /**
@@ -72,7 +69,7 @@ public class Booking implements Serializable {
      * @return True if the user owns the booking.
      */
     public boolean isOwnedBy(String userID) {
-	return this.userID.equals(userID);
+        return this.userID.equals(userID);
     }
 
     /**
@@ -80,7 +77,7 @@ public class Booking implements Serializable {
      * @return The ID of the item being booked.
      */
     public String getItemID() {
-	return itemID;
+        return itemID;
     }
 
     /**
@@ -88,7 +85,7 @@ public class Booking implements Serializable {
      * @return The date of the booking
      */
     public ZonedDateTime getBookedDate() {
-	return bookedDate;
+        return bookedDate;
     }
 
     /**
@@ -96,15 +93,15 @@ public class Booking implements Serializable {
      * @return The return date of the booking.
      */
     public ZonedDateTime getReturnDate() {
-	return returnDate;
+        return returnDate;
     }
 
     public boolean overlaps(Booking other) {
-	return !(returnDate.isBefore(other.bookedDate) || bookedDate.isAfter(other.returnDate));
+        return !(returnDate.isBefore(other.bookedDate) || bookedDate.isAfter(other.returnDate));
     }
 
     @Override
     public String toString() {
-	return "Booking ID: " + id + ", User ID: " + userID + ", Item ID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
+        return "Booking ID: " + id + ", User ID: " + userID + ", Item ID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
     }
 }
