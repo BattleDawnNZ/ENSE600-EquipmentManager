@@ -3,16 +3,15 @@ package grp.twentytwo.equipmentmanager;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 /**
  * Stores item data.
  *
  * @author fmw5088
  */
-public class Item implements Serializable {
+public class Item {
 
-    private String id;
+    private final String id;
     private String name;
     private String description;
     private String location;
@@ -27,25 +26,7 @@ public class Item implements Serializable {
 
     /**
      *
-     * @param id
-     * @param name
-     * @param location
-     * @param type
-     */
-    public Item(String id, String name, String location, String type) {
-        this.id = id;
-        this.name = name;
-        this.description = "";
-        this.location = location;
-        this.status = Status.WORKING;
-        this.type = type;
-        //this.history = new ArrayList<>();
-        //addHistory("Item created at location " + location + ".");
-        this.needsCalibration = false;
-        this.lastCalibration = null;
-    }
-
-    /**
+     * Package private constructor for saved items
      *
      * @param id
      * @param name
@@ -56,7 +37,7 @@ public class Item implements Serializable {
      * @param needsCalibration
      * @param lastCalibration
      */
-    public Item(String id, String name, String description, String location, Status status, String type, boolean needsCalibration, ZonedDateTime lastCalibration) {
+    Item(String id, String name, String description, String location, Status status, String type, boolean needsCalibration, ZonedDateTime lastCalibration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -67,6 +48,10 @@ public class Item implements Serializable {
         this.lastCalibration = lastCalibration;
     }
 
+    public Item(String name, String location, String type) { // Public contructor for no id (unofficial) item
+        this(null, name, "", location, Status.WORKING, type, false, null);
+    }
+
     public static DateTimeFormatter getDateTimeFormatter() {
         return formatter;
     }
@@ -75,58 +60,50 @@ public class Item implements Serializable {
      *
      * @return Item ID
      */
-    public String getId() {
+    public String getID() {
         return id;
     }
 
-    /**
-     *
-     * @return Item name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @return Item Description
-     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    /**
-     *
-     * @return Item location
-     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getLocation() {
         return location;
     }
 
-    /**
-     *
-     * @param newLocation
-     */
     void setLocation(String newLocation) {
         String oldLocation = location;
         location = newLocation;
         //addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
     }
 
-    /**
-     *
-     * @return Item Status
-     */
     public Status getStatus() {
         return status;
     }
 
-    /**
-     *
-     * @return Item Type
-     */
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
@@ -185,34 +162,6 @@ public class Item implements Serializable {
 //    public History[] getHistory() {
 //        return history.toArray(History[]::new);
 //    }
-    /**
-     * @param partID the partial ID string to check
-     * @return An ArrayList of all items where partID is contained in the id
-     */
-    public boolean hasInID(String partID) {
-        return id.toLowerCase().contains(partID.toLowerCase());
-    }
-
-    /**
-     * @param partName the partial name string to check
-     * @return An ArrayList of all items where partName is contained in the name
-     */
-    public boolean hasInName(String partName) {
-        return name.toLowerCase().contains(partName.toLowerCase());
-    }
-
-    /**
-     * Checks whether the item has a particular type.
-     *
-     * i.e. electrical/measurement hasType electrical
-     *
-     * @param partType the partial type string to check
-     * @return An ArrayList of all items where partType is contained in the type
-     */
-    public boolean hasInType(String partType) {
-        return type.toLowerCase().contains(partType.toLowerCase());
-    }
-
     /**
      *
      * @return a string representing the object.
