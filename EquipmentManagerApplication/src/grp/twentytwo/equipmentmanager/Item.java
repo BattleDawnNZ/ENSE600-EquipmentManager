@@ -167,7 +167,7 @@ public class Item implements Serializable {
      * @return LastCalibration as a String object
      */
     public String getLastCalibrationAsString() {
-        return lastCalibration.format(formatter);
+        return ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter));
     }
 
 //    /**

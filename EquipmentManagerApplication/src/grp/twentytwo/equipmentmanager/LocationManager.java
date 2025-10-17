@@ -3,8 +3,6 @@ package grp.twentytwo.equipmentmanager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,17 +18,19 @@ public class LocationManager {
     private final TableManager tableManager;
 
     String tableName = "LOCATIONTABLE";
-    HashMap<String, String> columnDefinitions;
-    String primaryKey = "LocationID";
+    private final ArrayList<Column> columns;
+
+    private Column primaryKey = new Column("LocationID", "VARCHAR(12) not NULL", "");
+    private Column locationName = new Column("Name", "VARCHAR(30)", "");
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         LocationManager lm = new LocationManager(dbManager);
         lm.printTable();
-        Location loc = new Location("1", "WORKSHOP1");
+        Location loc = new Location("000001", "Workshop1");
 
         lm.addLocation("WORKSHOP3");
-        //lm.removeLocation(loc);
+        lm.removeLocation(loc);
         //System.out.println(lm.getLocationFromID("000001"));
         lm.printTable();
         //System.out.println(lm.getLocationFromID("000004"));
@@ -42,10 +42,10 @@ public class LocationManager {
         this.dbManager = databaseManager;
 
         // Define Table Parameters
-        columnDefinitions = new HashMap<String, String>();
-        columnDefinitions.put("LocationID", "VARCHAR(12) not NULL");
-        columnDefinitions.put("Name", "VARCHAR(30)");
-        tableManager = new TableManager(dbManager, tableName, columnDefinitions, primaryKey);
+        columns = new ArrayList<Column>();
+        columns.add(primaryKey);
+        columns.add(locationName);
+        tableManager = new TableManager(dbManager, tableName, columns, primaryKey);
 
         // Add test data to table
         dbManager.updateDB("INSERT INTO LOCATIONTABLE VALUES ('000001', 'Workshop1')");
@@ -85,10 +85,9 @@ public class LocationManager {
 
         try {
             if (!tableManager.getRowByColumnValue("Name", name).next()) { // Ensure Location is new
-                HashMap<String, String> data = new HashMap<>();
-                data.put("LocationID", tableManager.getNextPrimaryKeyId());
-                data.put("Name", name.toUpperCase());
-                tableManager.createRow(data);
+                primaryKey.data = tableManager.getNextPrimaryKeyId();
+                locationName.data = name.toUpperCase();
+                tableManager.createRow(columns);
                 return true; // Location created
             }
         } catch (SQLException ex) {

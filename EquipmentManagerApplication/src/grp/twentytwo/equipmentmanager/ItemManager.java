@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,15 +31,18 @@ public class ItemManager {
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        //dbManager.dropTable("ITEMTABLE");
         LocationManager lManager = new LocationManager(dbManager);
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
-        Item item = new Item("2", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
-        System.out.println(um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive"));
+        Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
+        item.setLocation("WORKSHOP3");
+        um.updateItem(item);
         um.printTable();
-        //System.out.println(um.getItemFromID("1"));
+        //System.out.println(um.getItemFromID("MA1"));
     }
 
     public ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
@@ -52,7 +56,7 @@ public class ItemManager {
         columnDefinitions.put("Location", "VARCHAR(12)");
         columnDefinitions.put("Status", "VARCHAR(14)");
         columnDefinitions.put("Type", "VARCHAR(40)");
-        columnDefinitions.put("CalibrationFlag", "VARCHAR(2)");
+        columnDefinitions.put("CalibrationFlag", "VARCHAR(6)");
         columnDefinitions.put("LastCalibration", "VARCHAR(20)");
         //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????
 
@@ -71,8 +75,13 @@ public class ItemManager {
      * @return The desired item.
      */
     public Item getItemFromID(String itemID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
-        return getItemObjectsFromResultSet(rs).getFirst();
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
+            return getItemObjectsFromResultSet(rs).getFirst();
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        }
     }
 
     /**
@@ -104,6 +113,24 @@ public class ItemManager {
      * @return true if updated (Item previously existed)
      */
     public boolean updateItem(Item item) {
+
+        String id = item.getId();
+
+        if (tableManager.verifyPrimaryKey(id)) { // Update the table
+            if (locationManager.isValidLocationID(item.getLocation())) {
+                return saveItem(item);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verifies item parameters (eg. location) !!!!!!!!!!!! Mediator level???
+     *
+     * @param item
+     * @return true if updated (Item previously existed)
+     */
+    private boolean saveItem(Item item) {
 
         String id = item.getId();
 
@@ -250,10 +277,18 @@ public class ItemManager {
                 String name = resultSet.getString("Name");
                 String description = resultSet.getString("Description");
                 String location = resultSet.getString("Location");
-                Status status = Status.valueOf(resultSet.getString("Status"));
+                String statusString = resultSet.getString("Status");
+                Status status = null;
+                if (statusString != null) {
+                    status = Status.valueOf(statusString);
+                }
                 String type = resultSet.getString("Type");
                 boolean calibrationFlag = resultSet.getBoolean("CalibrationFlag");
-                ZonedDateTime lastCalibration = ZonedDateTime.parse(resultSet.getString("ReturnDate"), Item.getDateTimeFormatter());
+                String calibrationDateString = resultSet.getString("LastCalibration");
+                ZonedDateTime lastCalibration = null;
+                if (calibrationDateString != null) {
+                    lastCalibration = ZonedDateTime.parse(calibrationDateString, Item.getDateTimeFormatter());
+                }
                 itemList.add(new Item(itemID, name, description, location, status, type, calibrationFlag, lastCalibration));
             }
             return itemList;
