@@ -7,7 +7,7 @@ package grp.twentytwo.equipmentmanager;
  */
 public abstract class User {
 
-    private final String userID; // Cannot be changed once initialised
+    private String userID; // Cannot be changed once initialised
     private String name;
     protected SecurityLevels securityLevel;
     protected String password;
@@ -23,8 +23,12 @@ public abstract class User {
         this.password = password;
     }
 
-    public String getUserID() {
+    public String getID() {
         return this.userID;
+    }
+
+    public void setID(String userID) {
+        this.userID = userID;
     }
 
     public SecurityLevels getSecurityLevel() {
@@ -45,6 +49,10 @@ public abstract class User {
 
     public String getPassword() { // Unofficial password. Used only for the user entry. Actual password remains in the DB.
         return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

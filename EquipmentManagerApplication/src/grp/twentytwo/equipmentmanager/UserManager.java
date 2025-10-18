@@ -91,8 +91,8 @@ public class UserManager {
      */
     public boolean addUser(User user) {
 
-        if (!tableManager.verifyPrimaryKey(user.getUserID())) { // Ensure user is new
-            column_userID.data = user.getUserID();
+        if (!tableManager.verifyPrimaryKey(user.getID())) { // Ensure user is new
+            column_userID.data = user.getID();
             column_name.data = user.getName();
             column_securityLevel.data = user.getSecurityLevel().toString();
             column_password.data = user.getPassword();
@@ -115,7 +115,7 @@ public class UserManager {
      */
     public boolean updateUser(User user) {
 
-        String id = user.getUserID();
+        String id = user.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
             column_userID.data = id;
@@ -134,7 +134,6 @@ public class UserManager {
                 Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
-
         }
         return false;
     }
@@ -158,7 +157,7 @@ public class UserManager {
      */
     public boolean login(User user) {
         try {
-            ResultSet rs = tableManager.getRowByPrimaryKey(user.getUserID());
+            ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
             if (rs.next()) {
                 if (rs.getString("Password") == user.getPassword()) {
                     return true;
