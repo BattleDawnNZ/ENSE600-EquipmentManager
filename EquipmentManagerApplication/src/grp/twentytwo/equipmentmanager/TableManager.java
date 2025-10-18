@@ -230,7 +230,7 @@ public class TableManager {
     }
 
     /**
-     * Searches a column for any partial instance of 'value'
+     * Searches a column for any partial instance of 'value'. Case in-sensitive
      *
      * @param columnName
      * @param value
@@ -240,7 +240,7 @@ public class TableManager {
         if (!verifyColumnName(columnName)) {
             throw new InvalidColumnNameException();
         }
-        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " LIKE '" + value + "'"; // %%
+        String sql_query = "SELECT * FROM " + tableName + " WHERE LOWER (" + columnName + ") LIKE LOWER('%" + value + "%')"; // %%
         return dbManager.queryDB(sql_query);
     }
 
