@@ -7,8 +7,12 @@ package grp.twentytwo.equipmentmanager;
  */
 public class Employee extends User {
 
+    public Employee(String userID, String name, String password) {
+        super(userID, name, SecurityLevels.EMPLOYEE, password);
+    }
+
     public Employee(String userID, String name) {
-	super(userID, name, SecurityLevels.EMPLOYEE);
+        super(userID, name, SecurityLevels.EMPLOYEE, null);
     }
 
 }

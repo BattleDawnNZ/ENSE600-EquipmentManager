@@ -24,9 +24,9 @@ public class TestData {
         m.locationManager.addLocation("Workshop 2");
         m.locationManager.addLocation("Electrical Lab 1");
 
-        m.userManager.addUser("111", "Bob", SecurityLevels.MANAGER);
-        m.userManager.addUser("222", "Sally", SecurityLevels.EMPLOYEE);
-        m.userManager.addUser("333", "Fred", SecurityLevels.GUEST);
+        m.userManager.addUser(new Manager("111", "Bob", "123123"));
+        m.userManager.addUser(new Employee("222", "Sally", "123123"));
+        m.userManager.addUser(new Guest("333", "Fred", "123123"));
 
         m.itemManager.addItem(new Item("R9000 Universal Laser Cutter", "Workshop 1", "Manufacturing/Cutting"));
         m.itemManager.addItem(new Item("Ender 3D Printer", "Workshop 2", "Manufacturing/Additive"));

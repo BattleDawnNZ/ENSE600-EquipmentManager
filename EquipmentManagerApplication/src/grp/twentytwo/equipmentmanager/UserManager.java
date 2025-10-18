@@ -25,8 +25,7 @@ public class UserManager {
     private Column column_userID = new Column("UserID", "VARCHAR(12) not NULL", "");
     private Column column_name = new Column("Name", "VARCHAR(30)", "");
     private Column column_securityLevel = new Column("SecurityLevel", "VARCHAR(15)", "");
-
-    private User activeUser; // Stores the active user object
+    private Column column_password = new Column("Password", "VARCHAR(15)", "");
 
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
@@ -47,6 +46,7 @@ public class UserManager {
         columnData.add(column_userID);
         columnData.add(column_name);
         columnData.add(column_securityLevel);
+        columnData.add(column_password);
 
         // Initialise Table
         tableManager = new TableManager(dbManager, tableName, columnData, column_userID);
@@ -86,17 +86,16 @@ public class UserManager {
 
     /**
      *
-     * @param userID
-     * @param name
-     * @param level
+     * @param user
      * @return true if created (did not previously exist)
      */
-    public boolean addUser(String userID, String name, SecurityLevels level) {
+    public boolean addUser(User user) {
 
-        if (!tableManager.verifyPrimaryKey(userID)) { // Ensure user is new
-            column_userID.data = userID;
-            column_name.data = name;
-            column_securityLevel.data = level.toString();
+        if (!tableManager.verifyPrimaryKey(user.getUserID())) { // Ensure user is new
+            column_userID.data = user.getUserID();
+            column_name.data = user.getName();
+            column_securityLevel.data = user.getSecurityLevel().toString();
+            column_password.data = user.getPassword();
 
             try {
                 tableManager.createRow(columnData);
@@ -122,6 +121,11 @@ public class UserManager {
             column_userID.data = id;
             column_name.data = user.getName();
             column_securityLevel.data = user.getSecurityLevel().toString();
+            try {
+                column_password.data = tableManager.getRowByPrimaryKey(id).getString("Password");
+            } catch (SQLException ex) {
+                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             try {
                 tableManager.updateRowByPrimaryKey(columnData);
@@ -137,14 +141,6 @@ public class UserManager {
 
     /**
      *
-     * @return the User object for the active user
-     */
-    public User getActiveUser() {
-        return activeUser;
-    }
-
-    /**
-     *
      * @param userID
      * @return true if the user was removed successfully (or false if they
      * already do not exist)
@@ -156,27 +152,23 @@ public class UserManager {
     /**
      * Login a user
      *
-     * @param userID
-     * @return whether the login was successful (false if the user id was not
-     * found in the system)
+     * @param user
+     * @return whether the id and password are valid (false if the user id was
+     * not found in the system or password was incorrect for the user)
      */
-    public boolean login(String userID) {
-        if (tableManager.verifyPrimaryKey(userID)) {
-            activeUser = getUserFromID(userID); // Save the current user
-            return true;
-        } else {
+    public boolean login(User user) {
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(user.getUserID());
+            if (rs.next()) {
+                if (rs.getString("Password") == user.getPassword()) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-    }
-
-    /**
-     * Logout the current user
-     *
-     * @return if the logout was successful
-     */
-    public boolean logout() {
-        activeUser = null; // Save the current user
-        return true;
     }
 
     /**

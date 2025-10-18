@@ -7,8 +7,12 @@ package grp.twentytwo.equipmentmanager;
  */
 public class Guest extends User {
 
+    public Guest(String userID, String name, String password) {
+        super(userID, name, SecurityLevels.GUEST, password);
+    }
+
     public Guest(String userID, String name) {
-	super(userID, name, SecurityLevels.GUEST);
+        super(userID, name, SecurityLevels.GUEST, null);
     }
 
 }

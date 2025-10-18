@@ -10,15 +10,17 @@ public abstract class User {
     private final String userID; // Cannot be changed once initialised
     private String name;
     protected SecurityLevels securityLevel;
+    protected String password;
 
     public static enum SecurityLevels {
         GUEST, EMPLOYEE, MANAGER
     };
 
-    public User(String userID, String name, SecurityLevels securityLevel) {
+    public User(String userID, String name, SecurityLevels securityLevel, String password) {
         this.userID = userID;
         this.name = name;
         this.securityLevel = securityLevel;
+        this.password = password;
     }
 
     public String getUserID() {
@@ -39,6 +41,10 @@ public abstract class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPassword() { // Unofficial password. Used only for the user entry. Actual password remains in the DB.
+        return this.password;
     }
 
     @Override
