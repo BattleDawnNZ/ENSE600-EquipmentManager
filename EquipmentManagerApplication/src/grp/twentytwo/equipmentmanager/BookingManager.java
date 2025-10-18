@@ -81,22 +81,22 @@ public class BookingManager {
     /**
      * Creates a new booking.
      *
-     * @param userID The booking users ID.
-     * @param itemID The ID of the item being booked.
-     * @param bookedDate The date of the booking.
-     * @param returnDate The return date of the booking.
-     * @return true if the booking was valid and created.
+     * @param booking
+     * @return true if the booking was valid, did not clash with other bookings
+     * and was created.
      */
-    public boolean issueItem(String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) {
-        String bookingID = tableManager.getNextPrimaryKeyId();
-
-        // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
-        // If this is not desired then it should be checked application-layer.
+    public boolean issueItem(Booking booking) {
+        ArrayList<Booking> itemBookings = getBookingsForItem(booking.getItemID());
+        for (Booking b : itemBookings) { // Checking booking does not clash with other bookings
+            if (booking.overlaps(b)) {
+                return false;
+            }
+        }
         column_bookingID.data = tableManager.getNextPrimaryKeyId();
-        column_userID.data = userID;
-        column_itemID.data = itemID;
-        column_bookedDate.data = bookedDate.format(formatter);
-        column_returnDate.data = returnDate.format(formatter);
+        column_userID.data = booking.getUserID();
+        column_itemID.data = booking.getItemID();
+        column_bookedDate.data = booking.getBookedDate().format(formatter);
+        column_returnDate.data = booking.getReturnDate().format(formatter);
 
         try {
             tableManager.createRow(columnData);
