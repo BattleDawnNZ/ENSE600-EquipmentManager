@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  * Manages all locations, adding locations, moving items, and validating
  * locations.
  *
- * @author fmw5088
+ * @author ppj1707
  */
 public class LocationManager {
 
@@ -29,11 +29,12 @@ public class LocationManager {
         LocationManager lm = new LocationManager(dbManager);
         lm.printTable();
         //Location loc = new Location("000001", "Workshop1");
+        System.out.println(lm.isValidLocationName("Workshop "));
 
         //lm.addLocation("WORKSHOP3");
         //lm.removeLocation(loc);
         //System.out.println(lm.getLocationFromID("000001"));
-        System.out.println(lm.searchLocationsByName(""));
+        //System.out.println(lm.searchLocationsByName("W"));
         lm.printTable();
         //System.out.println(lm.getLocationFromName("WORKSHOP 12").getId()); //System.out.println(lm.getLocationFromID("000004"));
         //System.out.println(lm.isValidLocationName("WORKSHOP3"));
@@ -48,9 +49,6 @@ public class LocationManager {
         columns.add(column_primaryKey);
         columns.add(column_locationName);
         tableManager = new TableManager(dbManager, tableName, columns, column_primaryKey);
-
-        // Add test data to table
-        //dbManager.updateDB("INSERT INTO LOCATIONTABLE VALUES ('000001', 'Workshop1')");
     }
 
     /**
@@ -106,12 +104,14 @@ public class LocationManager {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("Name", locationName);
-            return (getLocationObjectsFromResultSet(rs) != null);
+            if (getLocationObjectsFromResultSet(rs).size() > 0) {
+                return true;
+            }
+            return false;
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-
     }
 
     public boolean addLocation(String name) {
