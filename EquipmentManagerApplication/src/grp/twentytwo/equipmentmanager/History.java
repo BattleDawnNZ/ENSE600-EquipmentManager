@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Represents an event in an items history.
  */
-class History {
+public class History {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
