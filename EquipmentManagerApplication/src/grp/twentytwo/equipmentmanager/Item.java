@@ -84,8 +84,7 @@ public class Item {
         return location;
     }
 
-    void setLocation(String newLocation) {
-        String oldLocation = location;
+    public void setLocation(String newLocation) {
         location = newLocation;
         //addHistory("Moved from " + oldLocation + " to " + newLocation + ".");
     }
