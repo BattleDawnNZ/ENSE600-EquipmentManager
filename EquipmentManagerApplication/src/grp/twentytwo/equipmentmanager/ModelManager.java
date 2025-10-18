@@ -2,7 +2,6 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.guiapplication.Speaker;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +23,7 @@ public class ModelManager {
     ItemManager itemManager;
     UserManager userManager;
     BookingManager bookingManager;
+    HistoryManager historyManager;
 
     public ModelManager() {
 	modelError = new Speaker<>();
@@ -36,6 +36,7 @@ public class ModelManager {
 	    itemManager = new ItemManager(databaseManager, locationManager);
 	    userManager = new UserManager(databaseManager);
 	    bookingManager = new BookingManager(itemManager, databaseManager);
+	    historyManager = new HistoryManager(databaseManager);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -129,6 +130,41 @@ public class ModelManager {
 	return bookings;
     }
 
+    public void addNote(String itemID, String note) {
+	try {
+	    Item item = itemManager.getItemFromID(itemID);
+	    itemManager.updateItem(item);
+	    historyManager.addHistory(new History(itemID, "Note Added by User: " + activeUser.getID() + ", Note: " + note));
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void flagItemForCalibration(String itemID) {
+	try {
+	    Item item = itemManager.getItemFromID(itemID);
+	    item.flagForCalibration();
+	    itemManager.updateItem(item);
+	    historyManager.addHistory(new History(itemID, "Flagged for Calibration by User: " + activeUser.getID()));
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void calibrateItem(String itemID) {
+	try {
+	    Item item = itemManager.getItemFromID(itemID);
+	    item.calibrate();
+	    itemManager.updateItem(item);
+	    historyManager.addHistory(new History(itemID, "Calibrated by User: " + activeUser.getID()));
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     // User Functions ----------------------------------------------------------
     public User getNewUser() {
 	return new Manager("", "");
@@ -145,13 +181,10 @@ public class ModelManager {
 	return user;
     }
 
-    public ArrayList<String> searchForUsers(String searchQuery) {
-	ArrayList<String> users = new ArrayList<>();
+    public LinkedHashSet<String> searchForUsers(String searchQuery) {
+	LinkedHashSet<String> users = new LinkedHashSet<>();
 	try {
-	    // Todo add proper search fro users
-	    users.add("000001");
-	    users.add("000002");
-	    users.add("000003");
+	    users = userManager.searchForUsers(searchQuery);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
