@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  */
 public class ModelManager {
 
+    private User activeUser = null;
+
     public Speaker<Exception> modelError;
 
     DatabaseManager databaseManager;
@@ -41,13 +43,19 @@ public class ModelManager {
     public boolean login(User user) {
 	boolean success = false;
 	try {
-	    System.out.println("User ID: " + user.getID() + ", User Password: " + user.password);
 	    success = userManager.login(user);
+	    if (success) {
+		activeUser = getUser(user.getID());
+	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
 	return success;
+    }
+
+    public void logout() {
+	activeUser = null;
     }
 
     // Item Functions ----------------------------------------------------------
