@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class Booking {
 
     private final String id;
+
     private String userID;
     private String itemID;
     private LocalDateTime bookedDate;
@@ -64,6 +65,10 @@ public class Booking {
         return userID;
     }
 
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     /**
      *
      * @param userID The User ID in Question
@@ -81,6 +86,10 @@ public class Booking {
         return itemID;
     }
 
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
+    }
+
     /**
      *
      * @return The date of the booking
@@ -89,12 +98,20 @@ public class Booking {
         return bookedDate;
     }
 
+    public void setBookedDate(LocalDateTime bookedDate) {
+        this.bookedDate = bookedDate;
+    }
+
     /**
      *
      * @return The return date of the booking.
      */
     public LocalDateTime getReturnDate() {
         return returnDate;
+    }
+
+    public void setReturnDate(LocalDateTime returnDate) {
+        this.returnDate = returnDate;
     }
 
     public boolean overlaps(Booking other) {
