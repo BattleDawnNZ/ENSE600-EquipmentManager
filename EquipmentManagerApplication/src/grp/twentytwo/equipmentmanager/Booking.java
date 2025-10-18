@@ -1,5 +1,6 @@
 package grp.twentytwo.equipmentmanager;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -106,8 +107,8 @@ public class Booking {
      * @return true if a given date is outside the booked date range (inclusive
      * of booking start/end days)
      */
-    public boolean isOutsideBookedDate(LocalDateTime date) {
-        return (date.isBefore(this.bookedDate.plusDays(1)) || date.isEqual(this.bookedDate) || date.isEqual(this.returnDate) || date.isAfter(this.returnDate));
+    public boolean isOutsideBookedDate(LocalDate date) {
+        return !(date.isAfter(this.bookedDate.toLocalDate()) && date.isBefore(this.returnDate.toLocalDate()));
     }
 
     /**
@@ -120,21 +121,6 @@ public class Booking {
         return (dateTime.isBefore(this.bookedDate) || dateTime.isEqual(this.bookedDate) || dateTime.isEqual(this.returnDate) || dateTime.isAfter(this.returnDate));
     }
 
-    // Test Code for vetoing DatTimes
-//	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-//	ZonedDateTime bookedDate = LocalDateTime.parse("13-10-2025 02:30:00", formatter).atZone(ZoneId.systemDefault());
-//	ZonedDateTime returnDate = LocalDateTime.parse("13-11-2025 04:30:00", formatter).atZone(ZoneId.systemDefault());
-//	Booking testBooking = new Booking("0", "0", "0", bookedDate, returnDate);
-//	DatePickerSettings datePickerSettings = dateTimePicker1.datePicker.getSettings();
-//	datePickerSettings.setVetoPolicy((LocalDate localDate) -> {
-//	    ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
-//	    return ();
-//	});
-//	TimePickerSettings timePickerSettings = dateTimePicker1.timePicker.getSettings();
-//	timePickerSettings.setVetoPolicy((LocalTime localTime) -> {
-//	    ZonedDateTime zonedDate = dateTimePicker1.datePicker.getDate().atTime(localTime).atZone(ZoneId.systemDefault());
-//	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
-//	});
     @Override
     public String toString() {
         return "Booking ID: " + id + ", User ID: " + userID + ", Item ID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
