@@ -53,6 +53,7 @@ public class ItemManager {
         ///item.setLocation("WORKSHOP3");
         //um.updateItem(item);
         um.printTable();
+        System.out.println(um.getItemsForLocation("Wor"));
         //System.out.println(um.getItemFromID("MA1"));
     }
 
@@ -79,8 +80,8 @@ public class ItemManager {
     }
 
     /**
-     * Returns an item from the items HashMap. This should only be used if you
-     * have the exact ID, otherwise use getItemsFromID.
+     * Returns an item. This should only be used if you have the exact ID,
+     * otherwise use search.
      *
      * @param itemID The desired items ID.
      * @return The desired item.
@@ -91,6 +92,24 @@ public class ItemManager {
             return getItemObjectsFromResultSet(rs).getFirst();
         } catch (NoSuchElementException e) {
             System.out.println("InvalidID");
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param locationName
+     * @return Items for a specified location name
+     */
+    public ArrayList<Item> getItemsForLocation(String locationName) {
+        try {
+            ResultSet rs = tableManager.getRowByColumnValue("Location", locationName);
+            return getItemObjectsFromResultSet(rs);
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
