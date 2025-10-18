@@ -112,8 +112,6 @@ public class BookingManager {
      */
     public boolean returnItem(String bookingID) {
         return tableManager.deleteRowByPrimaryKey(bookingID);
-
-        //!!!!!!!!!!!!!!!!!!!!!bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
     }
 
     /**
@@ -171,13 +169,13 @@ public class BookingManager {
 //    }
     /**
      *
-     * @param itemID
+     * @param bookingID
      * @return All bookings for the item.
      */
-    public ArrayList<Booking> getBookingsForItem(String itemID) {
+    public ArrayList<Booking> getBookingsForItem(String bookingID) {
         ResultSet rs;
         try {
-            rs = tableManager.getRowByColumnValue("ItemID", itemID);
+            rs = tableManager.getRowByColumnValue("BookingID", bookingID);
             return getBookingObjectsFromResultSet(rs);
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
