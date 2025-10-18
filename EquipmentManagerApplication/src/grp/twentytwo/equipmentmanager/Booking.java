@@ -29,7 +29,10 @@ public class Booking {
      * @param bookedDate the date of the booking
      * @param returnDate the return date of the booking
      */
-    Booking(String id, String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) {
+    Booking(String id, String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) throws InvalidBookingRangeException {
+        if (bookedDate.isAfter(returnDate)) {
+            throw new InvalidBookingRangeException();
+        }
         this.id = id;
         this.userID = userID;
         this.itemID = itemID;
@@ -45,7 +48,7 @@ public class Booking {
      * @param bookedDate
      * @param returnDate
      */
-    public Booking(String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) {
+    public Booking(String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) throws InvalidBookingRangeException {
         this(null, userID, itemID, bookedDate, returnDate);
     }
 
@@ -115,7 +118,7 @@ public class Booking {
     }
 
     public boolean overlaps(Booking other) {
-        return !(returnDate.isBefore(other.bookedDate) || bookedDate.isAfter(other.returnDate));
+        return ((this.bookedDate.isBefore(other.returnDate) || this.bookedDate.isEqual(other.returnDate)) && (this.returnDate.isAfter(other.bookedDate) || this.returnDate.isEqual(other.bookedDate)));
     }
 
     /**
