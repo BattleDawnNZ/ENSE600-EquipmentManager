@@ -101,8 +101,12 @@ public class Booking {
         return bookedDate;
     }
 
-    public void setBookedDate(LocalDateTime bookedDate) {
-        this.bookedDate = bookedDate;
+    public void setBookedDate(LocalDateTime bookedDate) throws InvalidBookingRangeException {
+        if (bookedDate.isAfter(this.returnDate)) {
+            throw new InvalidBookingRangeException();
+        } else {
+            this.bookedDate = bookedDate;
+        }
     }
 
     /**
@@ -113,12 +117,25 @@ public class Booking {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDateTime returnDate) {
-        this.returnDate = returnDate;
+    public void setReturnDate(LocalDateTime returnDate) throws InvalidBookingRangeException {
+        if (returnDate.isBefore(this.bookedDate)) {
+            throw new InvalidBookingRangeException();
+        } else {
+            this.returnDate = returnDate;
+        }
+    }
+
+    public void setBookingRange(LocalDateTime bookedDate, LocalDateTime returnDate) throws InvalidBookingRangeException {
+        if (bookedDate.isAfter(returnDate)) {
+            throw new InvalidBookingRangeException();
+        } else {
+            this.bookedDate = bookedDate;
+            this.returnDate = returnDate;
+        }
     }
 
     public boolean overlaps(Booking other) {
-        return ((this.bookedDate.isBefore(other.returnDate) || this.bookedDate.isEqual(other.returnDate)) && (this.returnDate.isAfter(other.bookedDate) || this.returnDate.isEqual(other.bookedDate)));
+        return ((this.bookedDate.isBefore(other.returnDate)) && (this.returnDate.isAfter(other.bookedDate)));
     }
 
     /**
