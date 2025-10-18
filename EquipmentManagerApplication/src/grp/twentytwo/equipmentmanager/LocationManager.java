@@ -3,6 +3,7 @@ package grp.twentytwo.equipmentmanager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,9 +33,10 @@ public class LocationManager {
         //lm.addLocation("WORKSHOP3");
         //lm.removeLocation(loc);
         //System.out.println(lm.getLocationFromID("000001"));
+        System.out.println(lm.searchLocationsByName(""));
         lm.printTable();
-        //System.out.println(lm.getLocationFromID("000004"));
-        System.out.println(lm.isValidLocationName("WORKSHOP3"));
+        //System.out.println(lm.getLocationFromName("WORKSHOP 12").getId()); //System.out.println(lm.getLocationFromID("000004"));
+        //System.out.println(lm.isValidLocationName("WORKSHOP3"));
     }
 
     public LocationManager(DatabaseManager databaseManager) {
@@ -57,8 +59,13 @@ public class LocationManager {
      * @return a Location object (if the id string exists) else, null
      */
     public Location getLocationFromID(String locationID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
-        return getLocationObjectFromResultSet(rs);
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
+            return getLocationObjectsFromResultSet(rs).getFirst();
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        }
     }
 
     /**
@@ -68,7 +75,26 @@ public class LocationManager {
      */
     public boolean isValidLocationID(String locationID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
-        return (getLocationObjectFromResultSet(rs) != null);
+        return (getLocationObjectsFromResultSet(rs) != null);
+    }
+
+    /**
+     *
+     * @param locationName
+     * @return true if the item exists
+     */
+    public Location getLocationFromName(String locationName) {
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByColumnValue("Name", locationName);
+            return getLocationObjectsFromResultSet(rs).getFirst();
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (NoSuchElementException e) {
+            System.out.println("Invalid Name");
+            return null;
+        }
     }
 
     /**
@@ -80,7 +106,7 @@ public class LocationManager {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("Name", locationName);
-            return (getLocationObjectFromResultSet(rs) != null);
+            return (getLocationObjectsFromResultSet(rs) != null);
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -100,7 +126,6 @@ public class LocationManager {
             System.out.println("Error: Invalid Column Name!");
         }
         return false; // Location already exists
-
     }
 
     /**
@@ -109,8 +134,31 @@ public class LocationManager {
      * @return true if the location was removed successfully (or false if it
      * already does not exist)
      */
-    public boolean removeLocation(Location location) {
-        return tableManager.deleteRowByPrimaryKey(location.getId());
+    public boolean removeLocation(Location locationID) {
+        return tableManager.deleteRowByPrimaryKey(locationID.getId());
+    }
+
+    /**
+     * Returns an ArrayList of locations that partial match the partial name (if
+     * blank all locations will be returned)
+     *
+     * @param locationName The desired locations partial name.
+     * @return A list of location IDs that match.
+     */
+    public ArrayList<String> searchLocationsByName(String locationName) {
+        ArrayList<String> validLocations = new ArrayList<>();
+        ResultSet rs;
+        try {
+            rs = tableManager.searchColumn("Name", locationName);
+            while (rs.next()) {
+                validLocations.add(rs.getString("Name"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return validLocations;
     }
 
     /**
@@ -125,15 +173,15 @@ public class LocationManager {
      * @param resultSet
      * @return a user object
      */
-    private Location getLocationObjectFromResultSet(ResultSet resultSet) {
+    private ArrayList<Location> getLocationObjectsFromResultSet(ResultSet resultSet) {
         try {
-            if (resultSet.next()) { // Location exists
+            ArrayList<Location> locationObjects = new ArrayList<>();
+            while (resultSet.next()) { // Location exists
                 String locationID = resultSet.getString("LocationID");
                 String name = resultSet.getString("Name");
-                return (new Location(locationID, name));
-            } else {
-                return null;
+                locationObjects.add(new Location(locationID, name));
             }
+            return locationObjects;
         } catch (SQLException ex) {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
