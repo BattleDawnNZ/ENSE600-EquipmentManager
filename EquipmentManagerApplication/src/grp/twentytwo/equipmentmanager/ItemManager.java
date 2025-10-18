@@ -324,7 +324,7 @@ public class ItemManager {
                 String location = resultSet.getString("Location");
                 String statusString = resultSet.getString("Status");
                 Status status = null;
-                if (statusString != null) {
+                if (statusString != null && !statusString.isBlank()) {
                     status = Status.valueOf(statusString);
                 }
                 String type = resultSet.getString("Type");
