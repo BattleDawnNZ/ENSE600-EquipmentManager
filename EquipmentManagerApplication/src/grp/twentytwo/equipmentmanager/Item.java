@@ -144,6 +144,15 @@ public class Item {
      * @return LastCalibration as a String object
      */
     public String getLastCalibrationAsString() {
+        return lastCalibration.format(formatter);
+    }
+
+    /**
+     *
+     * @return LastCalibration as a formatted String (States uncalibrated if
+     * null)
+     */
+    public String getLastCalibrationFormatted() {
         return ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter));
     }
 
