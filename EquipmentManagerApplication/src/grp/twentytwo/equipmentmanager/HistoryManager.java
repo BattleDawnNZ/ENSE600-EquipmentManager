@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,7 +102,7 @@ public class HistoryManager {
             if (resultSet.next()) { // User exists
                 String historyID = resultSet.getString("HistoryID");
                 String description = resultSet.getString("Description");
-                ZonedDateTime timestamp = ZonedDateTime.parse(resultSet.getString("Timestamp"), formatter);
+                ZonedDateTime timestamp = LocalDateTime.parse(resultSet.getString("Timestamp"), formatter).atZone(ZoneId.systemDefault());
                 String itemID = resultSet.getString("ItemID");
                 return (new History(historyID, itemID, timestamp, description));
             } else {

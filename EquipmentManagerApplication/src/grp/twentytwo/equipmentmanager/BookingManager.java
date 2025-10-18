@@ -2,9 +2,12 @@ package grp.twentytwo.equipmentmanager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +44,7 @@ public class BookingManager {
         //um.saveUser(user);
         um.printTable();
         System.out.println(um.getBookingFromID("000001"));
+        System.out.println(um.getBookingsForItem("000001"));
     }
 
     public BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
@@ -67,8 +71,13 @@ public class BookingManager {
      * @return the booking with the corresponding booking ID.
      */
     public Booking getBookingFromID(String bookingID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
-        return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
+            return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        }
     }
 
     /**
@@ -86,7 +95,6 @@ public class BookingManager {
         // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
         // If this is not desired then it should be checked application-layer.
         column_bookingID.data = tableManager.getNextPrimaryKeyId();
-
         column_userID.data = userID;
         column_itemID.data = itemID;
         column_bookedDate.data = bookedDate.format(formatter);
@@ -135,8 +143,9 @@ public class BookingManager {
                 String bookingID = resultSet.getString("BookingID");
                 String userID = resultSet.getString("UserID");
                 String itemID = resultSet.getString("ItemID");
-                ZonedDateTime bookedDate = ZonedDateTime.parse(resultSet.getString("BookedDate"), formatter);
-                ZonedDateTime returnDate = ZonedDateTime.parse(resultSet.getString("ReturnDate"), formatter);
+                System.out.println(resultSet.getString("BookedDate"));
+                ZonedDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter).atZone(ZoneId.systemDefault());
+                ZonedDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter).atZone(ZoneId.systemDefault());
                 bookingList.add(new Booking(bookingID, userID, itemID, bookedDate, returnDate));
             }
             return bookingList;
@@ -169,13 +178,13 @@ public class BookingManager {
 //    }
     /**
      *
-     * @param bookingID
+     * @param itemID
      * @return All bookings for the item.
      */
-    public ArrayList<Booking> getBookingsForItem(String bookingID) {
+    public ArrayList<Booking> getBookingsForItem(String itemID) {
         ResultSet rs;
         try {
-            rs = tableManager.getRowByColumnValue("BookingID", bookingID);
+            rs = tableManager.getRowByColumnValue("ItemID", itemID);
             return getBookingObjectsFromResultSet(rs);
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
