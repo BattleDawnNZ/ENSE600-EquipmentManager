@@ -144,7 +144,7 @@ public class Item {
      * @return LastCalibration as a String object
      */
     public String getLastCalibrationAsString() {
-        return lastCalibration.format(formatter);
+        return ((lastCalibration == null) ? null : lastCalibration.format(formatter));
     }
 
     /**
