@@ -34,7 +34,7 @@ public class View extends javax.swing.JFrame {
     // <editor-fold desc="Speakers">
     public Speaker<ActionEvent> login;
     public Speaker<ActionEvent> addItem;
-    public Speaker<ActionEvent> bookItem;
+    public Speaker<String> bookItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
     public Speaker<String> editItem;
@@ -131,7 +131,7 @@ public class View extends javax.swing.JFrame {
 	});
 	// Item Booking
 	button_bookItem.addActionListener((ActionEvent e) -> {
-	    clearBookItemDialog();
+	    setupBookItemDialog();
 	    dialog_bookItem.setVisible(true);
 	});
 	ActionListener closeBookItem = (ActionEvent e) -> {
@@ -139,7 +139,9 @@ public class View extends javax.swing.JFrame {
 	};
 	button_bookItemCancel.addActionListener(closeBookItem);
 	bookItem = new Speaker<>();
-	button_bookItemConfirm.addActionListener(bookItem.passthrough());
+	button_bookItemConfirm.addActionListener((ActionEvent e) -> {
+	    bookItem.notifyListeners(text_itemID.getText());
+	});
 	button_bookItemConfirm.addActionListener(closeBookItem);
 	// Test Code for vetoing DateTimes
 //	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -286,7 +288,7 @@ public class View extends javax.swing.JFrame {
 	    }
 	    return true;
 	});
-	dateTimePicker_test.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	dateTimePicker_bookItemBookedDate.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
 	    for (Booking booking : newList) {
 		if (!booking.isOutsideBookedDate(localDate)) {
 		    return false;
@@ -294,8 +296,25 @@ public class View extends javax.swing.JFrame {
 	    }
 	    return true;
 	});
-	dateTimePicker_test.timePicker.getSettings().setVetoPolicy((LocalTime localTime) -> {
-	    LocalDateTime localDateTime = dateTimePicker_test.datePicker.getDate().atTime(localTime);
+	dateTimePicker_bookItemReturnDate.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    for (Booking booking : newList) {
+		if (!booking.isOutsideBookedDate(localDate)) {
+		    return false;
+		}
+	    }
+	    return true;
+	});
+	dateTimePicker_bookItemBookedDate.timePicker.getSettings().setVetoPolicy((LocalTime localTime) -> {
+	    LocalDateTime localDateTime = dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(localTime);
+	    for (Booking booking : newList) {
+		if (!booking.isOutsideBookedDateAndTime(localDateTime)) {
+		    return false;
+		}
+	    }
+	    return true;
+	});
+	dateTimePicker_bookItemReturnDate.timePicker.getSettings().setVetoPolicy((LocalTime localTime) -> {
+	    LocalDateTime localDateTime = dateTimePicker_bookItemReturnDate.datePicker.getDate().atTime(localTime);
 	    for (Booking booking : newList) {
 		if (!booking.isOutsideBookedDateAndTime(localDateTime)) {
 		    return false;
@@ -337,7 +356,12 @@ public class View extends javax.swing.JFrame {
 	}
     }
 
-    public void clearBookItemDialog() {
+    public void setNewBookingDetails(Booking booking) {
+	booking.setBookedDate(dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(dateTimePicker_bookItemBookedDate.timePicker.getTime()));
+	booking.setReturnDate(dateTimePicker_bookItemReturnDate.datePicker.getDate().atTime(dateTimePicker_bookItemReturnDate.timePicker.getTime()));
+    }
+
+    public void setupBookItemDialog() {
 	dateTimePicker_bookItemBookedDate.clear();
 	dateTimePicker_bookItemReturnDate.clear();
     }

@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.equipmentmanagerapplication.Speaker;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -87,6 +88,22 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
 	return items;
+    }
+
+    public Booking getNewBooking() {
+	return new Booking(activeUser.getID(), "", null, null);
+    }
+
+    public boolean AddBooking(Booking booking) {
+	boolean success = false;
+	try {
+	    // Todo Add feedback to user on failedd issuing of item. Fix Overlap Function to allow back to back bookings.
+	    success = bookingManager.issueItem(booking);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+	return success;
     }
 
     public Booking getBooking(String bookingID) {
