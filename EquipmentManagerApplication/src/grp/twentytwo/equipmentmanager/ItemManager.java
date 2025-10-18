@@ -43,7 +43,7 @@ public class ItemManager {
         LocationManager lManager = new LocationManager(dbManager);
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
-        //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        //System.out.println(um.searchForItems("0").toString()); //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
@@ -229,7 +229,8 @@ public class ItemManager {
         ArrayList<String> validItems = new ArrayList<>();
         ResultSet rs;
         try {
-            rs = tableManager.searchColumn("Type", partName);
+            rs = tableManager.searchColumn("Name", partName);
+            System.out.println(rs.next());
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }
@@ -285,7 +286,6 @@ public class ItemManager {
         validItems.addAll(searchItemsByName(searchString));
         validItems.addAll(searchItemsByType(searchString));
         return validItems;
-
     }
 
     /**
