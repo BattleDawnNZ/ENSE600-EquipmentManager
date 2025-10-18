@@ -113,7 +113,6 @@ public class View extends javax.swing.JFrame {
 		String selectedValue = list_itemSearchResults.getSelectedValue();
 		if (selectedValue != null) {
 		    viewItem.notifyListeners(selectedValue);
-		    System.out.println("Selected Item " + selectedValue);
 		}
 	    }
 	});
@@ -125,7 +124,6 @@ public class View extends javax.swing.JFrame {
 		list_itemBookings.clearSelection();
 		if (selectedValue != null) {
 		    viewBooking.notifyListeners(selectedValue);
-		    System.out.println("Selected Booking " + selectedValue);
 		}
 	    }
 	});
@@ -174,7 +172,6 @@ public class View extends javax.swing.JFrame {
 		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		    String selectedValue = list_userSearchResults.getSelectedValue();
 		    viewUser.notifyListeners(selectedValue);
-		    System.out.println("Selected User " + selectedValue);
 		}
 	    }
 	});
@@ -209,7 +206,6 @@ public class View extends javax.swing.JFrame {
 		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		    String selectedValue = list_locationSearchResults.getSelectedValue();
 		    viewLocation.notifyListeners(selectedValue);
-		    System.out.println("Selected Location " + selectedValue);
 		}
 	    }
 	});
@@ -367,7 +363,7 @@ public class View extends javax.swing.JFrame {
     }
 
     // User Functions ----------------------------------------------------------
-    public void setUserSearchResults(List<String> newList) {
+    public void setUserSearchResults(LinkedHashSet<String> newList) {
 	DefaultListModel<String> userListModel = new DefaultListModel<>();
 	userListModel.addAll(newList);
 	list_userSearchResults.setModel(userListModel);
@@ -484,13 +480,15 @@ public class View extends javax.swing.JFrame {
         panel_itemView = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         button_editItem = new javax.swing.JButton();
+        button_removeItem = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
         button_bookItem = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jSplitPane3 = new javax.swing.JSplitPane();
+        button_returnItem = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        button_addNote = new javax.swing.JButton();
+        button_flagForCalibration = new javax.swing.JButton();
+        button_calibrateItem = new javax.swing.JButton();
+        button_viewHistory = new javax.swing.JButton();
         panel_itemDetails = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -511,7 +509,6 @@ public class View extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         text_lastCalibration = new javax.swing.JTextField();
         check_needsCalibration = new javax.swing.JCheckBox();
-        dateTimePicker_test = new com.github.lgooddatepicker.components.DateTimePicker();
         panel_itemBookings = new javax.swing.JPanel();
         calendar_itemBookings = new com.github.lgooddatepicker.components.CalendarPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -526,13 +523,8 @@ public class View extends javax.swing.JFrame {
         list_userSearchResults = new javax.swing.JList<>();
         panel_userView = new javax.swing.JPanel();
         toolbar_userTools = new javax.swing.JToolBar();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
+        button_editUser = new javax.swing.JButton();
+        button_removeUser = new javax.swing.JButton();
         panel_userDetails = new javax.swing.JScrollPane();
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -552,13 +544,8 @@ public class View extends javax.swing.JFrame {
         list_locationSearchResults = new javax.swing.JList<>();
         panel_locationView = new javax.swing.JPanel();
         toolbar_locationTools = new javax.swing.JToolBar();
-        jButton15 = new javax.swing.JButton();
-        jButton16 = new javax.swing.JButton();
-        jButton17 = new javax.swing.JButton();
-        jButton18 = new javax.swing.JButton();
-        jButton19 = new javax.swing.JButton();
-        jButton20 = new javax.swing.JButton();
-        jButton21 = new javax.swing.JButton();
+        button_editLocation = new javax.swing.JButton();
+        button_removeLocation = new javax.swing.JButton();
         panel_locationDetails = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
@@ -957,45 +944,51 @@ public class View extends javax.swing.JFrame {
         button_editItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(button_editItem);
 
+        button_removeItem.setText("Remove Item");
+        button_removeItem.setFocusable(false);
+        button_removeItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_removeItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_removeItem);
+        jToolBar1.add(jSeparator1);
+
         button_bookItem.setText("Book Item");
         button_bookItem.setFocusable(false);
         button_bookItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         button_bookItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(button_bookItem);
 
-        jButton3.setText("jButton3");
-        jButton3.setFocusable(false);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton3);
+        button_returnItem.setText("Return Item");
+        button_returnItem.setFocusable(false);
+        button_returnItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_returnItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_returnItem);
+        jToolBar1.add(jSeparator2);
 
-        jButton4.setText("jButton4");
-        jButton4.setFocusable(false);
-        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton4);
+        button_addNote.setText("Add Note");
+        button_addNote.setFocusable(false);
+        button_addNote.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_addNote.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_addNote);
 
-        jButton5.setText("jButton5");
-        jButton5.setFocusable(false);
-        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton5);
+        button_flagForCalibration.setText("Flag for Calibration");
+        button_flagForCalibration.setFocusable(false);
+        button_flagForCalibration.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_flagForCalibration.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_flagForCalibration);
 
-        jButton6.setText("jButton6");
-        jButton6.setFocusable(false);
-        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton6);
+        button_calibrateItem.setText("Calibrate Item");
+        button_calibrateItem.setFocusable(false);
+        button_calibrateItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_calibrateItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_calibrateItem);
 
-        jButton7.setText("jButton7");
-        jButton7.setFocusable(false);
-        jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton7);
+        button_viewHistory.setText("View History");
+        button_viewHistory.setFocusable(false);
+        button_viewHistory.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_viewHistory.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_viewHistory);
 
         panel_itemView.add(jToolBar1, java.awt.BorderLayout.PAGE_END);
-
-        jSplitPane3.setResizeWeight(1.0);
 
         panel_itemDetails.setMinimumSize(new java.awt.Dimension(321, 16));
 
@@ -1125,14 +1118,10 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel1.add(check_needsCalibration, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
-        jPanel1.add(dateTimePicker_test, gridBagConstraints);
 
         panel_itemDetails.setViewportView(jPanel1);
 
-        jSplitPane3.setLeftComponent(panel_itemDetails);
+        panel_itemView.add(panel_itemDetails, java.awt.BorderLayout.CENTER);
 
         panel_itemBookings.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1156,9 +1145,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(2, 7, 2, 7);
         panel_itemBookings.add(jLabel8, gridBagConstraints);
 
-        jSplitPane3.setRightComponent(panel_itemBookings);
-
-        panel_itemView.add(jSplitPane3, java.awt.BorderLayout.CENTER);
+        panel_itemView.add(panel_itemBookings, java.awt.BorderLayout.LINE_END);
 
         tab_items.setRightComponent(panel_itemView);
 
@@ -1207,47 +1194,17 @@ public class View extends javax.swing.JFrame {
         toolbar_userTools.setFloatable(false);
         toolbar_userTools.setRollover(true);
 
-        jButton8.setText("jButton1");
-        jButton8.setFocusable(false);
-        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton8);
+        button_editUser.setText("Edit User");
+        button_editUser.setFocusable(false);
+        button_editUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_editUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_userTools.add(button_editUser);
 
-        jButton9.setText("jButton2");
-        jButton9.setFocusable(false);
-        jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton9);
-
-        jButton10.setText("jButton3");
-        jButton10.setFocusable(false);
-        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton10);
-
-        jButton11.setText("jButton4");
-        jButton11.setFocusable(false);
-        jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton11.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton11);
-
-        jButton12.setText("jButton5");
-        jButton12.setFocusable(false);
-        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton12);
-
-        jButton13.setText("jButton6");
-        jButton13.setFocusable(false);
-        jButton13.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton13);
-
-        jButton14.setText("jButton7");
-        jButton14.setFocusable(false);
-        jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(jButton14);
+        button_removeUser.setText("Remove User");
+        button_removeUser.setFocusable(false);
+        button_removeUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_removeUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_userTools.add(button_removeUser);
 
         panel_userView.add(toolbar_userTools, java.awt.BorderLayout.PAGE_END);
 
@@ -1275,7 +1232,6 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(jLabel12, gridBagConstraints);
 
         text_userID.setEditable(false);
-        text_userID.setText("jTextField1");
         text_userID.setPreferredSize(new java.awt.Dimension(232, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1283,7 +1239,6 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(text_userID, gridBagConstraints);
 
         text_userName.setEditable(false);
-        text_userName.setText("jTextField3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -1303,7 +1258,6 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(filler4, gridBagConstraints);
 
         text_userSecurityLevel.setEditable(false);
-        text_userSecurityLevel.setText("jTextField1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -1361,47 +1315,17 @@ public class View extends javax.swing.JFrame {
         toolbar_locationTools.setFloatable(false);
         toolbar_locationTools.setRollover(true);
 
-        jButton15.setText("jButton1");
-        jButton15.setFocusable(false);
-        jButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton15);
+        button_editLocation.setText("Edit Location");
+        button_editLocation.setFocusable(false);
+        button_editLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_editLocation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(button_editLocation);
 
-        jButton16.setText("jButton2");
-        jButton16.setFocusable(false);
-        jButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton16);
-
-        jButton17.setText("jButton3");
-        jButton17.setFocusable(false);
-        jButton17.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton17.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton17);
-
-        jButton18.setText("jButton4");
-        jButton18.setFocusable(false);
-        jButton18.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton18.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton18);
-
-        jButton19.setText("jButton5");
-        jButton19.setFocusable(false);
-        jButton19.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton19.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton19);
-
-        jButton20.setText("jButton6");
-        jButton20.setFocusable(false);
-        jButton20.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton20.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton20);
-
-        jButton21.setText("jButton7");
-        jButton21.setFocusable(false);
-        jButton21.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton21.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(jButton21);
+        button_removeLocation.setText("Remove Location");
+        button_removeLocation.setFocusable(false);
+        button_removeLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_removeLocation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_locationTools.add(button_removeLocation);
 
         panel_locationView.add(toolbar_locationTools, java.awt.BorderLayout.PAGE_END);
 
@@ -1469,24 +1393,33 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_addLocation;
     private javax.swing.JButton button_addLocationCancel;
     private javax.swing.JButton button_addLocationConfirm;
+    private javax.swing.JButton button_addNote;
     private javax.swing.JButton button_addUser;
     private javax.swing.JButton button_bookItem;
     private javax.swing.JButton button_bookItemCancel;
     private javax.swing.JButton button_bookItemConfirm;
+    private javax.swing.JButton button_calibrateItem;
     private javax.swing.JButton button_editItem;
     private javax.swing.JButton button_editItemCancel;
     private javax.swing.JButton button_editItemConfirm;
+    private javax.swing.JButton button_editLocation;
+    private javax.swing.JButton button_editUser;
+    private javax.swing.JButton button_flagForCalibration;
     private javax.swing.JButton button_login;
+    private javax.swing.JButton button_removeItem;
+    private javax.swing.JButton button_removeLocation;
+    private javax.swing.JButton button_removeUser;
+    private javax.swing.JButton button_returnItem;
     private javax.swing.JButton button_searchItem;
     private javax.swing.JButton button_searchLocation;
     private javax.swing.JButton button_searchUser;
+    private javax.swing.JButton button_viewHistory;
     private com.github.lgooddatepicker.components.CalendarPanel calendarPanel1;
     private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
     private javax.swing.JCheckBox check_needsCalibration;
     private javax.swing.JComboBox<String> combo_editingItemStatus;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
-    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_test;
     private javax.swing.JDialog dialog_addItem;
     private javax.swing.JDialog dialog_addLocation;
     private javax.swing.JDialog dialog_bookItem;
@@ -1511,25 +1444,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.Box.Filler filler4;
     private javax.swing.Box.Filler filler5;
     private javax.swing.Box.Filler filler6;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton16;
-    private javax.swing.JButton jButton17;
-    private javax.swing.JButton jButton18;
-    private javax.swing.JButton jButton19;
-    private javax.swing.JButton jButton20;
-    private javax.swing.JButton jButton21;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1575,8 +1489,9 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;
