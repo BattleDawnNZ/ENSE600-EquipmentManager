@@ -4,6 +4,7 @@ import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,7 @@ public class UserManager {
         //um.saveUser(user);
         //um.printTable();
         //System.out.println(um.getUserFromID("000004"));
+        //System.out.println(um.searchForUsers("Gue").toString());
     }
 
     public UserManager(DatabaseManager databaseManager) {
@@ -149,6 +151,103 @@ public class UserManager {
     }
 
     /**
+     * Returns an ArrayList of users that partial match the partial userID from
+     * the (if blank all items will be returned)
+     *
+     * @param userID The desired users partial ID.
+     * @return A list of item IDs that match.
+     */
+    public ArrayList<String> searchUsersByID(String userID) {
+        if (userID.isBlank()) {
+            return tableManager.getAllPrimaryKeys();
+        }
+        ArrayList<String> validItems = new ArrayList<>();
+        ResultSet rs;
+        try {
+            rs = tableManager.searchColumn("UserID", userID);
+            while (rs.next()) {
+                validItems.add(rs.getString("UserID"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return validItems;
+    }
+
+    /**
+     * Returns an ArrayList of users that partial match the partial user Name
+     * (if blank all users will be returned)
+     *
+     * @param userName The desired users partial name.
+     * @return A list of user IDs that match.
+     */
+    public ArrayList<String> searchUsersByName(String userName) {
+        if (userName.isBlank()) {
+            return tableManager.getAllPrimaryKeys();
+        }
+        ArrayList<String> validItems = new ArrayList<>();
+        ResultSet rs;
+        try {
+            rs = tableManager.searchColumn("Name", userName);
+            while (rs.next()) {
+                validItems.add(rs.getString("UserID"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return validItems;
+    }
+
+    /**
+     * Returns an ArrayList of users that partial match the partial security
+     * level (if blank all users will be returned)
+     *
+     * @param securityLevel The desired users partial security level.
+     * @return A list of item IDs that match.
+     */
+    public ArrayList<String> searchUsersBySecurityLevel(String securityLevel) {
+        try {
+            if (securityLevel.isBlank()) {
+                return tableManager.getAllPrimaryKeys();
+            }
+            ArrayList<String> validItems = new ArrayList<>();
+            ResultSet rs;
+
+            rs = tableManager.searchColumn("SecurityLevel", securityLevel);
+
+            while (rs.next()) {
+                validItems.add(rs.getString("UserID"));
+            }
+            return validItems;
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param searchString
+     * @return an ArrayList of users that partial match the partial
+     * securityLevel, name, or id (if blank all items will be returned)
+     */
+    public LinkedHashSet<String> searchForUsers(String searchString) {
+
+        LinkedHashSet<String> validItems = new LinkedHashSet<>(); // Hashset forces duplicates to be removed. Preserves order for priority
+
+        validItems.addAll(searchUsersByID(searchString));
+        validItems.addAll(searchUsersByName(searchString));
+        validItems.addAll(searchUsersBySecurityLevel(searchString));
+        return validItems;
+    }
+
+    /**
      * Login a user
      *
      * @param user
@@ -159,7 +258,7 @@ public class UserManager {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
             if (rs.next()) {
-                if (rs.getString("Password") == user.getPassword()) {
+                if (rs.getString("Password").equals(user.getPassword())) {
                     return true;
                 }
             }

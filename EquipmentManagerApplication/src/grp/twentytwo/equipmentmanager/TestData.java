@@ -11,9 +11,9 @@ public class TestData {
     private static ModelManager m = new ModelManager();
 
     public static void main(String[] args) {
-        TestData.m.SetupManagers();
+        TestData.m.setupManagers();
         TestData.dropTables();
-        TestData.m.SetupManagers();
+        TestData.m.setupManagers();
         TestData.generate();
         TestData.printAll();
     }
