@@ -99,7 +99,7 @@ public class ItemManager {
      */
     public String addItem(Item item) {
 
-        if (locationManager.isValidLocationID(item.getLocation())) {
+        if (locationManager.isValidLocationName(item.getLocation())) {
             column_itemID.data = tableManager.getNextPrimaryKeyId();
             column_name.data = item.getName();
             column_description.data = item.getDescription();
