@@ -43,7 +43,7 @@ public class ItemManager {
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
         //System.out.println(um.searchForItems("0").toString()); //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
-        um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
         ///item.setLocation("WORKSHOP3");
@@ -99,23 +99,25 @@ public class ItemManager {
      * @param type The items type.
      * @return The Item ID of the Item Added.
      */
-    public String addItem(String name, String location, String type) {
+    public String addItem(Item item) {
 
-        if (!locationManager.isValidLocationName(location)) {
-            return null;
+        if (locationManager.isValidLocationID(item.getLocation())) {
+            column_itemID.data = tableManager.getNextPrimaryKeyId();
+            column_name.data = item.getName();
+            column_description.data = item.getDescription();
+            column_location.data = item.getLocation();
+            column_type.data = item.getType();
+            column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
+            column_lastCalibration.data = item.getLastCalibrationAsString();
+            try {
+                tableManager.createRow(columnData);
+                return column_itemID.data; // Item id
+            } catch (InvalidColumnNameException ex) {
+                Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
         }
-        String itemID = generateItemID(type);
-        column_itemID.data = itemID;
-        column_name.data = name;
-        column_location.data = location;
-        column_type.data = type;
-        try {
-            tableManager.createRow(columnData);
-            return itemID;
-        } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+        return null;
     }
 
     /**
