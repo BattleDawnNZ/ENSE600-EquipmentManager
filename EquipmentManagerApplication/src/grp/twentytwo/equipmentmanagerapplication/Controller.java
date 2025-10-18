@@ -17,8 +17,13 @@ public class Controller {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-	ModelManager model = new ModelManager();
 	View view = new View();
+	ModelManager model = new ModelManager();
+	// Errors
+	model.modelError.addListener((Exception err) -> {
+	    view.showError(err);
+	});
+	model.SetupManagers();
 
 	//<editor-fold desc="Initializing connections between View and Model and vice versa">
 	//<editor-fold desc="Login Page">
