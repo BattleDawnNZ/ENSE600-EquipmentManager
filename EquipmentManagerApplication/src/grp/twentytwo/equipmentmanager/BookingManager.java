@@ -167,13 +167,6 @@ public class BookingManager {
         return (booking != null && booking.isOwnedBy(userID));
     }
 
-//    /**
-//     *
-//     * @return An ArrayList of the bookings.
-//     */
-//    public ArrayList<Booking> getBookings() {
-//        return (ArrayList<Booking>) bookings.values();
-//    }
     /**
      *
      * @param itemID

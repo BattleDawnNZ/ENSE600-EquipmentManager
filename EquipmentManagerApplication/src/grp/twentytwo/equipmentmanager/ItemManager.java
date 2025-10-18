@@ -277,7 +277,7 @@ public class ItemManager {
      * Returns an ArrayList of items that partial match the partial partType,
      * name, or id (if blank all items will be returned)
      *
-     * @param partType
+     * @param searchString
      * @return
      */
     public LinkedHashSet<String> searchForItems(String searchString) {

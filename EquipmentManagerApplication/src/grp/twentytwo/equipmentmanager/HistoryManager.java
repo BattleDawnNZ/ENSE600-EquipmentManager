@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +47,24 @@ public class HistoryManager {
      */
     public History getHistoryFromID(String historyID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
-        return getHistoryObjectFromResultSet(rs);
+        return getHistoryObjectsFromResultSet(rs).getFirst();
+    }
+
+    /**
+     *
+     * @param itemID
+     * @return All history for the item.
+     */
+    public ArrayList<History> getHistoryForItem(String itemID) {
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByColumnValue("ItemID", itemID);
+            return getHistoryObjectsFromResultSet(rs);
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     /**
@@ -58,7 +74,7 @@ public class HistoryManager {
      */
     public boolean isValidHistoryID(String historyID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
-        return (getHistoryObjectFromResultSet(rs) != null);
+        return (getHistoryObjectsFromResultSet(rs) != null);
     }
 
     public boolean addHistory(History history) {
@@ -76,15 +92,6 @@ public class HistoryManager {
     }
 
     /**
-     *
-     * @param history
-     * @return true if the history entry was saved successfully
-     */
-    public boolean removeLocation(History history) {
-        return tableManager.deleteRowByPrimaryKey(history.getID());
-    }
-
-    /**
      * Print the entire history table to the console
      */
     public void printTable() {
@@ -96,17 +103,17 @@ public class HistoryManager {
      * @param resultSet
      * @return a user object
      */
-    private History getHistoryObjectFromResultSet(ResultSet resultSet) {
+    private ArrayList<History> getHistoryObjectsFromResultSet(ResultSet resultSet) {
         try {
-            if (resultSet.next()) { // User exists
+            ArrayList<History> historyObjects = new ArrayList<History>();
+            while (resultSet.next()) { // User exists
                 String historyID = resultSet.getString("HistoryID");
                 String description = resultSet.getString("Description");
                 LocalDateTime timestamp = LocalDateTime.parse(resultSet.getString("Timestamp"), formatter);
                 String itemID = resultSet.getString("ItemID");
-                return (new History(historyID, itemID, timestamp, description));
-            } else {
-                return null;
+                historyObjects.add(new History(historyID, itemID, timestamp, description));
             }
+            return historyObjects;
         } catch (SQLException ex) {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;

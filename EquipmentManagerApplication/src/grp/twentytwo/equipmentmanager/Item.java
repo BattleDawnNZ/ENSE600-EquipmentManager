@@ -155,21 +155,6 @@ public class Item {
         return ((lastCalibration == null) ? "Uncalibrated" : lastCalibration.format(formatter));
     }
 
-//    /**
-//     *
-//     * @param description
-//     */
-//    void addHistory(String description) {
-//        History entry = new History(description);
-//        history.add(entry);
-//    }
-//    /**
-//     *
-//     * @return An array copy of the items history.
-//     */
-//    public History[] getHistory() {
-//        return history.toArray(History[]::new);
-//    }
     /**
      *
      * @return a string representing the object.
