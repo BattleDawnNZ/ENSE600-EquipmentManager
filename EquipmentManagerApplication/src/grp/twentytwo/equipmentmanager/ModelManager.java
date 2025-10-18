@@ -41,7 +41,7 @@ public class ModelManager {
     public boolean login(User user) {
 	boolean success = false;
 	try {
-	    System.out.println("");
+	    System.out.println("User ID: " + user.getID() + ", User Password: " + user.password);
 	    success = userManager.login(user);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);

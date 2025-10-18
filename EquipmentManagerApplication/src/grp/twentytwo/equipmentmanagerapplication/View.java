@@ -6,11 +6,20 @@ package grp.twentytwo.equipmentmanagerapplication;
 
 import grp.twentytwo.equipmentmanager.Booking;
 import grp.twentytwo.equipmentmanager.Item;
+import grp.twentytwo.equipmentmanager.Location;
+import grp.twentytwo.equipmentmanager.ModelManager;
 import grp.twentytwo.equipmentmanager.User;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -24,11 +33,19 @@ public class View extends javax.swing.JFrame {
 
     // <editor-fold desc="Speakers">
     public Speaker<ActionEvent> login;
+    public Speaker<ActionEvent> addItem;
+    public Speaker<ActionEvent> bookItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
+    public Speaker<String> editItem;
+    public Speaker<String> viewBooking;
 
     public Speaker<String> searchForUser;
     public Speaker<String> viewUser;
+
+    public Speaker<ActionEvent> addLocation;
+    public Speaker<String> searchForLocation;
+    public Speaker<String> viewLocation;
     // </editor-fold>
 
     /**
@@ -58,44 +75,73 @@ public class View extends javax.swing.JFrame {
 	initComponents();
 
 	// Login
-	login = new Speaker(button_login);
+	login = new Speaker<>(button_login);
 
 	// Item Tab ------------------------------------------------------------
+	// Item editing
+	editItem = new Speaker<>();
+	button_editItem.addActionListener((ActionEvent e) -> {
+	    editItem.notifyListeners(text_itemID.getText());
+	});
+	button_editItemCancel.addActionListener((ActionEvent e) -> {
+	    dialog_editItem.setVisible(false);
+	});
+	// Item Searching
+	searchForItem = new Speaker<>();
+	ActionListener searchItemListener = (ActionEvent e) -> {
+	    String searchString = field_searchItem.getText();
+	    searchForItem.notifyListeners(searchString);
+	};
+	button_searchItem.addActionListener(searchItemListener);
+	field_searchItem.addActionListener(searchItemListener);
 	// Item Adding
 	button_addItem.addActionListener((ActionEvent e) -> {
 	    clearAddItemDialog();
 	    dialog_addItem.setVisible(true);
 	});
-	button_addItemCancel.addActionListener((ActionEvent e) -> {
+	ActionListener closeAddItem = (ActionEvent e) -> {
 	    dialog_addItem.setVisible(false);
-	});
-	// Item Searching
-	searchForItem = new Speaker<>();
-	ActionListener searchItemListener = new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		String searchString = field_searchItem.getText();
-		if (!searchString.isBlank()) {
-		    searchForItem.notifyListeners(searchString);
-		}
-	    }
 	};
-	button_searchItem.addActionListener(searchItemListener);
-	field_searchItem.addActionListener(searchItemListener);
+	button_addItemCancel.addActionListener(closeAddItem);
+	addItem = new Speaker<>();
+	button_addItemConfirm.addActionListener(addItem.passthrough());
+	button_addItemConfirm.addActionListener(closeAddItem);
 	// Item Selection
 	viewItem = new Speaker<>();
-	list_itemSearchResults.addListSelectionListener(new ListSelectionListener() {
-	    @Override
-	    public void valueChanged(ListSelectionEvent e) {
-		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
-		    String selectedValue = list_itemSearchResults.getSelectedValue();
+	list_itemSearchResults.addListSelectionListener((ListSelectionEvent e) -> {
+	    if (!e.getValueIsAdjusting()) { // Avoid duplicate events
+		String selectedValue = list_itemSearchResults.getSelectedValue();
+		if (selectedValue != null) {
 		    viewItem.notifyListeners(selectedValue);
-		    System.out.println("Selected: " + selectedValue);
+		    System.out.println("Selected Item " + selectedValue);
 		}
 	    }
 	});
-
-	// Test Code for vetoing DatTimes
+	// Item Preview Bookings
+	viewBooking = new Speaker<>();
+	list_itemBookings.addListSelectionListener((ListSelectionEvent e) -> {
+	    if (!e.getValueIsAdjusting()) { // Avoid duplicate events
+		String selectedValue = list_itemBookings.getSelectedValue();
+		list_itemBookings.clearSelection();
+		if (selectedValue != null) {
+		    viewBooking.notifyListeners(selectedValue);
+		    System.out.println("Selected Booking " + selectedValue);
+		}
+	    }
+	});
+	// Item Booking
+	button_bookItem.addActionListener((ActionEvent e) -> {
+	    clearBookItemDialog();
+	    dialog_bookItem.setVisible(true);
+	});
+	ActionListener closeBookItem = (ActionEvent e) -> {
+	    dialog_bookItem.setVisible(false);
+	};
+	button_bookItemCancel.addActionListener(closeBookItem);
+	bookItem = new Speaker<>();
+	button_bookItemConfirm.addActionListener(bookItem.passthrough());
+	button_bookItemConfirm.addActionListener(closeBookItem);
+	// Test Code for vetoing DateTimes
 //	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 //	ZonedDateTime bookedDate = LocalDateTime.parse("13-10-2025 02:30:00", formatter).atZone(ZoneId.systemDefault());
 //	ZonedDateTime returnDate = LocalDateTime.parse("13-11-2025 04:30:00", formatter).atZone(ZoneId.systemDefault());
@@ -111,17 +157,14 @@ public class View extends javax.swing.JFrame {
 //	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
 //	});
 	// User Tab ------------------------------------------------------------
-	// Item Searching
+	// User Searching
 	searchForUser = new Speaker<>();
-	ActionListener searchUserListener = new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		searchForUser.notifyListeners(field_searchUser.getText());
-	    }
+	ActionListener searchUserListener = (ActionEvent e) -> {
+	    searchForUser.notifyListeners(field_searchUser.getText());
 	};
 	button_searchUser.addActionListener(searchUserListener);
 	field_searchUser.addActionListener(searchUserListener);
-	// Item Selection
+	// User Selection
 	viewUser = new Speaker<>();
 	list_userSearchResults.addListSelectionListener(new ListSelectionListener() {
 	    @Override
@@ -129,7 +172,42 @@ public class View extends javax.swing.JFrame {
 		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		    String selectedValue = list_userSearchResults.getSelectedValue();
 		    viewUser.notifyListeners(selectedValue);
-		    System.out.println("Selected: " + selectedValue);
+		    System.out.println("Selected User " + selectedValue);
+		}
+	    }
+	});
+	// Location Tab --------------------------------------------------------
+	// Location Searching
+	searchForLocation = new Speaker<>();
+	ActionListener searchLocationListener = new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		searchForLocation.notifyListeners(field_searchLocation.getText());
+	    }
+	};
+	button_searchLocation.addActionListener(searchLocationListener);
+	field_searchLocation.addActionListener(searchLocationListener);
+	// Location Adding
+	button_addLocation.addActionListener((ActionEvent e) -> {
+	    clearAddLocationDialog();
+	    dialog_addLocation.setVisible(true);
+	});
+	ActionListener closeAddLocation = (ActionEvent e) -> {
+	    dialog_addLocation.setVisible(false);
+	};
+	button_addLocationCancel.addActionListener(closeAddLocation);
+	addLocation = new Speaker<>();
+	button_addLocationConfirm.addActionListener(addLocation.passthrough());
+	button_addLocationConfirm.addActionListener(closeAddLocation);
+	// Location Selection
+	viewLocation = new Speaker<>();
+	list_locationSearchResults.addListSelectionListener(new ListSelectionListener() {
+	    @Override
+	    public void valueChanged(ListSelectionEvent e) {
+		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
+		    String selectedValue = list_locationSearchResults.getSelectedValue();
+		    viewLocation.notifyListeners(selectedValue);
+		    System.out.println("Selected Location " + selectedValue);
 		}
 	    }
 	});
@@ -141,6 +219,16 @@ public class View extends javax.swing.JFrame {
     }
 
     // Login -------------------------------------------------------------------
+    public User getLoginDetails(User user) {
+	user.setID(field_loginUserID.getText());
+	String password = "";
+	for (char c : field_loginPassword.getPassword()) {
+	    password += c;
+	}
+	user.setPassword(password);
+	return user;
+    }
+
     public void login(boolean successful) {
 	if (successful) {
 	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
@@ -152,33 +240,106 @@ public class View extends javax.swing.JFrame {
 	field_addItemName.setText("");
 	field_addItemLocation.setText("");
 	field_addItemType.setText("");
-	dialog_addItem.setVisible(false);
+    }
+
+    public void setNewItemDetails(Item item) {
+	item.setName(field_addItemName.getText());
+	item.setLocation(field_addItemLocation.getText());
+	item.setType(field_addItemType.getText());
     }
 
     public void setItemSearchResults(LinkedHashSet<String> newList) {
-	DefaultListModel<String> model = new DefaultListModel<>();
-	model.clear();
-	model.addAll(newList);
-	list_itemSearchResults.setModel(model);
+	DefaultListModel<String> items = new DefaultListModel<>();
+	items.addAll(newList);
+	list_itemSearchResults.setModel(items);
     }
 
     public void setItemPreview(Item itemData) {
 	try {
-	    text_itemID.setText(itemData.getID());
-	    text_itemName.setText(itemData.getName());
-	    text_itemDescription.setText(itemData.getDescription());
-	    text_itemLocation.setText(itemData.getLocation());
-	    text_itemStatus.setText(itemData.getStatus().toString());
-	    text_itemType.setText(itemData.getType());
-	    text_lastCalibration.setText(itemData.getLastCalibration() != null ? itemData.getLastCalibration().toString() : "Uncalibrated");
-	    check_needsCalibration.setSelected(itemData.getNeedsCalibration());
+	    if (itemData != null) {
+		text_itemID.setText(itemData.getID());
+		text_itemName.setText(itemData.getName());
+		text_itemDescription.setText(itemData.getDescription());
+		text_itemLocation.setText(itemData.getLocation());
+		text_itemStatus.setText(itemData.getStatus().toString());
+		text_itemType.setText(itemData.getType());
+		text_lastCalibration.setText(itemData.getLastCalibrationFormatted());
+		check_needsCalibration.setSelected(itemData.getNeedsCalibration());
+	    }
 	} catch (Exception err) {
 	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
 
     public void setItemBookings(List<Booking> newList) {
-	// Todo Apply All Bookings To The Booking List.
+	DefaultListModel<String> bookings = new DefaultListModel<>();
+	for (Booking booking : newList) {
+	    bookings.addElement(booking.getID());
+	}
+	list_itemBookings.setModel(bookings);
+	calendar_itemBookings.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    for (Booking booking : newList) {
+		if (!booking.isOutsideBookedDate(localDate)) {
+		    return false;
+		}
+	    }
+	    return true;
+	});
+	dateTimePicker_test.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    for (Booking booking : newList) {
+		if (!booking.isOutsideBookedDate(localDate)) {
+		    return false;
+		}
+	    }
+	    return true;
+	});
+	dateTimePicker_test.timePicker.getSettings().setVetoPolicy((LocalTime localTime) -> {
+	    LocalDateTime localDateTime = dateTimePicker_test.datePicker.getDate().atTime(localTime);
+	    for (Booking booking : newList) {
+		if (!booking.isOutsideBookedDateAndTime(localDateTime)) {
+		    return false;
+		}
+	    }
+	    return true;
+	});
+    }
+
+    public void setBookingPreview(Booking booking) {
+	try {
+	    if (booking != null) {
+		calendar_itemBookings.setSelectedDate(booking.getBookedDate().toLocalDate());
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void setItemEditingPreview(Item itemData) {
+	try {
+	    if (itemData != null) {
+		field_editingItemName.setText(itemData.getName());
+		field_editingItemDescription.setText(itemData.getDescription());
+		field_editingItemLocation.setText(itemData.getLocation());
+		DefaultComboBoxModel<String> statuses = new DefaultComboBoxModel<>();
+		for (Item.Status status : Item.Status.values()) {
+		    statuses.addElement(status.toString());
+		}
+		combo_editingItemStatus.setModel(statuses);
+		combo_editingItemStatus.setSelectedIndex(itemData.getStatus().ordinal());
+		field_editingItemType.setText(itemData.getType());
+		dialog_editItem.setVisible(true);
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void clearBookItemDialog() {
+	dateTimePicker_bookItemBookedDate.clear();
+	dateTimePicker_bookItemReturnDate.clear();
     }
 
     // User Functions ----------------------------------------------------------
@@ -189,23 +350,38 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setUserPreview(User userData) {
-	text_userID.setText(userData.getUserID());
+	text_userID.setText(userData.getID());
 	text_userName.setText(userData.getName());
 	text_userSecurityLevel.setText(userData.getSecurityLevel().toString());
     }
 
     // Location Functions ------------------------------------------------------
-//    public void setLocationSearchResults(List<String> newList) {
-//	DefaultListModel<String> userListModel = new DefaultListModel<>();
-//	userListModel.addAll(newList);
-//	list_userSearchResults.setModel(userListModel);
-//    }
-//
-//    public void setLocationPreview(Location locationData) {
-//	text_userID.setText(locationData.getUserID());
-//	text_userName.setText(locationData.getName());
-//	text_userSecurityLevel.setText(locationData.getSecurityLevel().toString());
-//    }
+    public void clearAddLocationDialog() {
+	field_addLocationName.setText("");
+    }
+
+    public String getNewLocationDetails() {
+	return field_addLocationName.getText();
+    }
+
+    public void setLocationSearchResults(List<String> newList) {
+	DefaultListModel<String> locations = new DefaultListModel<>();
+	locations.addAll(newList);
+	list_locationSearchResults.setModel(locations);
+    }
+
+    public void setLocationPreview(Location locationData) {
+	try {
+	    if (locationData != null) {
+		text_locationID.setText(locationData.getId());
+		text_locationName.setText(locationData.getName());
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -233,12 +409,44 @@ public class View extends javax.swing.JFrame {
         field_addItemType = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         button_addItemCancel = new javax.swing.JButton();
-        button_addItemAdd = new javax.swing.JButton();
+        button_addItemConfirm = new javax.swing.JButton();
+        dialog_editItem = new javax.swing.JDialog();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        field_editingItemName = new javax.swing.JTextField();
+        field_editingItemLocation = new javax.swing.JTextField();
+        field_editingItemType = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        field_editingItemDescription = new javax.swing.JTextArea();
+        combo_editingItemStatus = new javax.swing.JComboBox<>();
+        jPanel9 = new javax.swing.JPanel();
+        button_editItemCancel = new javax.swing.JButton();
+        button_editItemConfirm = new javax.swing.JButton();
+        dialog_addLocation = new javax.swing.JDialog();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        field_addLocationName = new javax.swing.JTextField();
+        jPanel10 = new javax.swing.JPanel();
+        button_addLocationCancel = new javax.swing.JButton();
+        button_addLocationConfirm = new javax.swing.JButton();
+        dialog_bookItem = new javax.swing.JDialog();
+        jPanel11 = new javax.swing.JPanel();
+        dateTimePicker_bookItemBookedDate = new com.github.lgooddatepicker.components.DateTimePicker();
+        dateTimePicker_bookItemReturnDate = new com.github.lgooddatepicker.components.DateTimePicker();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jPanel12 = new javax.swing.JPanel();
+        button_bookItemCancel = new javax.swing.JButton();
+        button_bookItemConfirm = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
         label_password = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        field_loginUserID = new javax.swing.JTextField();
         label_username = new javax.swing.JLabel();
         panel_main = new javax.swing.JPanel();
         tabs_application = new javax.swing.JTabbedPane();
@@ -251,8 +459,8 @@ public class View extends javax.swing.JFrame {
         list_itemSearchResults = new javax.swing.JList<>();
         panel_itemView = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        button_editItem = new javax.swing.JButton();
+        button_bookItem = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
@@ -279,11 +487,11 @@ public class View extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         text_lastCalibration = new javax.swing.JTextField();
         check_needsCalibration = new javax.swing.JCheckBox();
-        dateTimePicker1 = new com.github.lgooddatepicker.components.DateTimePicker();
+        dateTimePicker_test = new com.github.lgooddatepicker.components.DateTimePicker();
         panel_itemBookings = new javax.swing.JPanel();
-        calendarPanel2 = new com.github.lgooddatepicker.components.CalendarPanel();
+        calendar_itemBookings = new com.github.lgooddatepicker.components.CalendarPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        list_itemBookings = new javax.swing.JList<>();
         jLabel8 = new javax.swing.JLabel();
         tab_users = new javax.swing.JSplitPane();
         panel_userSearch = new javax.swing.JPanel();
@@ -427,12 +635,197 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         jPanel7.add(button_addItemCancel, gridBagConstraints);
 
-        button_addItemAdd.setText("Add");
+        button_addItemConfirm.setText("Confirm");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel7.add(button_addItemAdd, gridBagConstraints);
+        jPanel7.add(button_addItemConfirm, gridBagConstraints);
 
         dialog_addItem.getContentPane().add(jPanel7, java.awt.BorderLayout.PAGE_END);
+
+        dialog_editItem.setTitle("Edit Item");
+        dialog_editItem.setMinimumSize(new java.awt.Dimension(400, 300));
+        dialog_editItem.setModal(true);
+
+        jPanel6.setLayout(new java.awt.GridBagLayout());
+
+        jLabel19.setText("Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel6.add(jLabel19, gridBagConstraints);
+
+        jLabel20.setText("Description:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel6.add(jLabel20, gridBagConstraints);
+
+        jLabel21.setText("Location:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel6.add(jLabel21, gridBagConstraints);
+
+        jLabel22.setText("Status:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel6.add(jLabel22, gridBagConstraints);
+
+        jLabel23.setText("Type:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel6.add(jLabel23, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel6.add(field_editingItemName, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel6.add(field_editingItemLocation, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel6.add(field_editingItemType, gridBagConstraints);
+
+        field_editingItemDescription.setColumns(20);
+        field_editingItemDescription.setRows(5);
+        jScrollPane2.setViewportView(field_editingItemDescription);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        jPanel6.add(jScrollPane2, gridBagConstraints);
+
+        combo_editingItemStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        combo_editingItemStatus.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel6.add(combo_editingItemStatus, gridBagConstraints);
+
+        dialog_editItem.getContentPane().add(jPanel6, java.awt.BorderLayout.CENTER);
+
+        jPanel9.setLayout(new java.awt.GridBagLayout());
+
+        button_editItemCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel9.add(button_editItemCancel, gridBagConstraints);
+
+        button_editItemConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel9.add(button_editItemConfirm, gridBagConstraints);
+
+        dialog_editItem.getContentPane().add(jPanel9, java.awt.BorderLayout.PAGE_END);
+
+        dialog_addLocation.setTitle("Add Item");
+        dialog_addLocation.setAlwaysOnTop(true);
+        dialog_addLocation.setMinimumSize(new java.awt.Dimension(300, 200));
+        dialog_addLocation.setModal(true);
+        dialog_addLocation.setResizable(false);
+
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
+        jLabel18.setText("Name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel8.add(jLabel18, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel8.add(field_addLocationName, gridBagConstraints);
+
+        dialog_addLocation.getContentPane().add(jPanel8, java.awt.BorderLayout.CENTER);
+
+        jPanel10.setLayout(new java.awt.GridBagLayout());
+
+        button_addLocationCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel10.add(button_addLocationCancel, gridBagConstraints);
+
+        button_addLocationConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel10.add(button_addLocationConfirm, gridBagConstraints);
+
+        dialog_addLocation.getContentPane().add(jPanel10, java.awt.BorderLayout.PAGE_END);
+
+        dialog_bookItem.setTitle("Book Item");
+        dialog_bookItem.setAlwaysOnTop(true);
+        dialog_bookItem.setMinimumSize(new java.awt.Dimension(400, 200));
+        dialog_bookItem.setModal(true);
+        dialog_bookItem.setResizable(false);
+
+        jPanel11.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        jPanel11.add(dateTimePicker_bookItemBookedDate, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        jPanel11.add(dateTimePicker_bookItemReturnDate, gridBagConstraints);
+
+        jLabel25.setText("Book From");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel11.add(jLabel25, gridBagConstraints);
+
+        jLabel26.setText("Until");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel11.add(jLabel26, gridBagConstraints);
+
+        dialog_bookItem.getContentPane().add(jPanel11, java.awt.BorderLayout.CENTER);
+
+        jPanel12.setLayout(new java.awt.GridBagLayout());
+
+        button_bookItemCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel12.add(button_bookItemCancel, gridBagConstraints);
+
+        button_bookItemConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel12.add(button_bookItemConfirm, gridBagConstraints);
+
+        dialog_bookItem.getContentPane().add(jPanel12, java.awt.BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
@@ -444,12 +837,15 @@ public class View extends javax.swing.JFrame {
         getContentPane().setLayout(new java.awt.CardLayout());
 
         panel_login.setLayout(new java.awt.GridBagLayout());
+
+        field_loginPassword.setText("123123");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 100;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        panel_login.add(jPasswordField1, gridBagConstraints);
+        panel_login.add(field_loginPassword, gridBagConstraints);
 
         button_login.setText("Login");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -463,19 +859,25 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
         panel_login.add(label_password, gridBagConstraints);
+
+        field_loginUserID.setText("111");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 100;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        panel_login.add(jTextField2, gridBagConstraints);
+        panel_login.add(field_loginUserID, gridBagConstraints);
 
-        label_username.setText("Username");
+        label_username.setText("User ID");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
         panel_login.add(label_username, gridBagConstraints);
 
@@ -508,11 +910,6 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
         panel_itemSearch.add(button_searchItem, gridBagConstraints);
 
-        list_itemSearchResults.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane3.setViewportView(list_itemSearchResults);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -531,17 +928,17 @@ public class View extends javax.swing.JFrame {
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        jButton1.setText("jButton1");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        button_editItem.setText("Edit Item");
+        button_editItem.setFocusable(false);
+        button_editItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_editItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_editItem);
 
-        jButton2.setText("jButton2");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton2);
+        button_bookItem.setText("Book Item");
+        button_bookItem.setFocusable(false);
+        button_bookItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_bookItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_bookItem);
 
         jButton3.setText("jButton3");
         jButton3.setFocusable(false);
@@ -622,14 +1019,12 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(jLabel6, gridBagConstraints);
 
         text_itemID.setEditable(false);
-        text_itemID.setText("jTextField1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel1.add(text_itemID, gridBagConstraints);
 
         text_itemName.setEditable(false);
-        text_itemName.setText("jTextField3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -638,7 +1033,6 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemName, gridBagConstraints);
 
         text_itemLocation.setEditable(false);
-        text_itemLocation.setText("jTextField5");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -647,7 +1041,6 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemLocation, gridBagConstraints);
 
         text_itemStatus.setEditable(false);
-        text_itemStatus.setText("jTextField6");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -656,7 +1049,6 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemStatus, gridBagConstraints);
 
         text_itemType.setEditable(false);
-        text_itemType.setText("jTextField7");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -695,7 +1087,6 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(jLabel9, gridBagConstraints);
 
         text_lastCalibration.setEditable(false);
-        text_lastCalibration.setText("jTextField3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
@@ -714,7 +1105,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 9;
-        jPanel1.add(dateTimePicker1, gridBagConstraints);
+        jPanel1.add(dateTimePicker_test, gridBagConstraints);
 
         panel_itemDetails.setViewportView(jPanel1);
 
@@ -723,14 +1114,9 @@ public class View extends javax.swing.JFrame {
         panel_itemBookings.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        panel_itemBookings.add(calendarPanel2, gridBagConstraints);
+        panel_itemBookings.add(calendar_itemBookings, gridBagConstraints);
 
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane5.setViewportView(jList2);
+        jScrollPane5.setViewportView(list_itemBookings);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -780,11 +1166,6 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
         panel_userSearch.add(button_searchUser, gridBagConstraints);
 
-        list_userSearchResults.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "User 1", "User 2", "User 3", "User 4", "User 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane6.setViewportView(list_userSearchResults);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -916,15 +1297,15 @@ public class View extends javax.swing.JFrame {
 
         panel_locationSearch.setLayout(new java.awt.GridBagLayout());
 
-        field_searchLocation.setToolTipText("Input a string to search for a list of corresponding users.");
         field_searchLocation.setMinimumSize(new java.awt.Dimension(100, 22));
+        field_searchLocation.setToolTipText("Input a string to search for a list of corresponding users.");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
         panel_locationSearch.add(field_searchLocation, gridBagConstraints);
 
-        button_addLocation.setText("Add User");
+        button_addLocation.setText("Add Location");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -939,11 +1320,6 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
         panel_locationSearch.add(button_searchLocation, gridBagConstraints);
 
-        list_locationSearchResults.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "User 1", "User 2", "User 3", "User 4", "User 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane7.setViewportView(list_locationSearchResults);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1023,7 +1399,6 @@ public class View extends javax.swing.JFrame {
         jPanel4.add(jLabel14, gridBagConstraints);
 
         text_locationID.setEditable(false);
-        text_locationID.setText("jTextField1");
         text_locationID.setPreferredSize(new java.awt.Dimension(232, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1031,7 +1406,6 @@ public class View extends javax.swing.JFrame {
         jPanel4.add(text_locationID, gridBagConstraints);
 
         text_locationName.setEditable(false);
-        text_locationName.setText("jTextField3");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -1067,23 +1441,44 @@ public class View extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_addItem;
-    private javax.swing.JButton button_addItemAdd;
     private javax.swing.JButton button_addItemCancel;
+    private javax.swing.JButton button_addItemConfirm;
     private javax.swing.JButton button_addLocation;
+    private javax.swing.JButton button_addLocationCancel;
+    private javax.swing.JButton button_addLocationConfirm;
     private javax.swing.JButton button_addUser;
+    private javax.swing.JButton button_bookItem;
+    private javax.swing.JButton button_bookItemCancel;
+    private javax.swing.JButton button_bookItemConfirm;
+    private javax.swing.JButton button_editItem;
+    private javax.swing.JButton button_editItemCancel;
+    private javax.swing.JButton button_editItemConfirm;
     private javax.swing.JButton button_login;
     private javax.swing.JButton button_searchItem;
     private javax.swing.JButton button_searchLocation;
     private javax.swing.JButton button_searchUser;
     private com.github.lgooddatepicker.components.CalendarPanel calendarPanel1;
-    private com.github.lgooddatepicker.components.CalendarPanel calendarPanel2;
+    private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
     private javax.swing.JCheckBox check_needsCalibration;
-    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker1;
+    private javax.swing.JComboBox<String> combo_editingItemStatus;
+    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
+    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
+    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_test;
     private javax.swing.JDialog dialog_addItem;
+    private javax.swing.JDialog dialog_addLocation;
+    private javax.swing.JDialog dialog_bookItem;
+    private javax.swing.JDialog dialog_editItem;
     private javax.swing.JDialog dialog_viewBookings;
     private javax.swing.JTextField field_addItemLocation;
     private javax.swing.JTextField field_addItemName;
     private javax.swing.JTextField field_addItemType;
+    private javax.swing.JTextField field_addLocationName;
+    private javax.swing.JTextArea field_editingItemDescription;
+    private javax.swing.JTextField field_editingItemLocation;
+    private javax.swing.JTextField field_editingItemName;
+    private javax.swing.JTextField field_editingItemType;
+    private javax.swing.JPasswordField field_loginPassword;
+    private javax.swing.JTextField field_loginUserID;
     private javax.swing.JTextField field_searchItem;
     private javax.swing.JTextField field_searchLocation;
     private javax.swing.JTextField field_searchUser;
@@ -1093,7 +1488,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.Box.Filler filler4;
     private javax.swing.Box.Filler filler5;
     private javax.swing.Box.Filler filler6;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
@@ -1104,7 +1498,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton19;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton21;
     private javax.swing.JButton jButton3;
@@ -1123,7 +1516,15 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1132,15 +1533,20 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
@@ -1148,10 +1554,10 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;
+    private javax.swing.JList<String> list_itemBookings;
     private javax.swing.JList<String> list_itemSearchResults;
     private javax.swing.JList<String> list_locationSearchResults;
     private javax.swing.JList<String> list_userSearchResults;
