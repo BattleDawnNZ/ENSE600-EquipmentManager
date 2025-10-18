@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,8 +47,13 @@ public class HistoryManager {
      * @return a History object (if the id string exists) else, null
      */
     public History getHistoryFromID(String historyID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
-        return getHistoryObjectsFromResultSet(rs).getFirst();
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
+            return getHistoryObjectsFromResultSet(rs).getFirst();
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        }
     }
 
     /**

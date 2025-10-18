@@ -162,9 +162,14 @@ public class BookingManager {
      * @return true if the booking exists and is owned by the User.
      */
     public boolean verifyBookingOwner(String bookingID, String userID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
-        Booking booking = getBookingObjectsFromResultSet(rs).getFirst();
-        return (booking != null && booking.isOwnedBy(userID));
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
+            Booking booking = getBookingObjectsFromResultSet(rs).getFirst();
+            return (booking != null && booking.isOwnedBy(userID));
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return false;
+        }
     }
 
     /**
