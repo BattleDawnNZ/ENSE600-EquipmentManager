@@ -32,11 +32,11 @@ public class UserManager {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         UserManager um = new UserManager(dbManager);
         um.printTable();
-        User user = new Manager("000004", "Alice");
+        //User user = new Manager("000004", "Alice");
         //um.removeUser("000004");
         //um.saveUser(user);
-        um.printTable();
-        System.out.println(um.getUserFromID("000004"));
+        //um.printTable();
+        //System.out.println(um.getUserFromID("000004"));
     }
 
     public UserManager(DatabaseManager databaseManager) {
@@ -50,11 +50,6 @@ public class UserManager {
 
         // Initialise Table
         tableManager = new TableManager(dbManager, tableName, columnData, column_userID);
-
-        // Add test data to table
-        dbManager.updateDB("INSERT INTO USERTABLE VALUES ('000001', 'Bob', 'MANAGER'), "
-                + "('000002', 'Sally', 'EMPLOYEE'), "
-                + "('000003', 'Fred', 'GUEST')");
     }
 
     /**

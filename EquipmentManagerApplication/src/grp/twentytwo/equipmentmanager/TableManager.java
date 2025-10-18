@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,6 +28,7 @@ public class TableManager {
     private PreparedStatement st_updateRowByPrimaryKey;
     private PreparedStatement st_createRowByPrimaryKey;
     private PreparedStatement st_createTable;
+    private PreparedStatement st_dropTable;
     private PreparedStatement st_getMaxPrimaryKey;
 
     public TableManager(DatabaseManager dbManager, String tableName, ArrayList<Column> columns, Column primaryKey) {
@@ -36,9 +36,15 @@ public class TableManager {
         this.tableName = tableName;
         this.primaryKey = primaryKey;
         this.allColumns = columns;
-        this.valueColumns = (ArrayList<Column>) this.allColumns.clone();
+        this.valueColumns = new ArrayList<Column>() {
+        };
         if (!columns.contains(primaryKey)) {
             allColumns.add(primaryKey); // Add primary key if not given
+        }
+        for (int i = 1; i < allColumns.size(); i++) {
+            if (allColumns.get(i) != primaryKey) {
+                valueColumns.add(allColumns.get(i));
+            }
         }
         valueColumns.remove(primaryKey); // Excludes column with primary key
 
@@ -186,6 +192,29 @@ public class TableManager {
 
     }
 
+    private boolean dropTableIfExists() {
+
+        String sql_createTable = "DROP TABLE " + tableName;
+        try {
+            st_dropTable = conn.prepareStatement(sql_createTable);
+        } catch (SQLException ex) {
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (dbManager.checkTableExists(tableName)) {
+            System.out.println(tableName + " table exists. Dropping table.");
+            try {
+                // Create table. Assign primary key to prevent duplicates
+                st_dropTable.execute();
+                return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+
+    }
+
     public void printTable() {
         try {
             System.out.println("Table Data:");
@@ -225,7 +254,8 @@ public class TableManager {
         if (!verifyColumnName(columnName)) {
             throw new InvalidColumnNameException();
         }
-        String sql_query = "SELECT * FROM " + tableName + " WHERE " + columnName + " = '" + value + "'";
+        String sql_query = "SELECT * FROM " + tableName + " WHERE UPPER(" + columnName + ") = UPPER('" + value + "')";
+        System.out.println(sql_query);
         return dbManager.queryDB(sql_query);
     }
 

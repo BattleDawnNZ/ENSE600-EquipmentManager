@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -131,14 +132,21 @@ public class DatabaseManager {
         }
     }
 
-    public boolean dropTable(String table) {
-        if (checkTableExists(table)) {
-            updateDB("DROP TABLE " + table);
-        }
-        if (!checkTableExists(table)) {
-            return true;
+    public boolean dropTableIfExists(String tableName) {
+        try {
+            PreparedStatement st_dropTable = conn.prepareStatement("DROP TABLE " + tableName);
+            if (checkTableExists(tableName)) {
+                System.out.println(tableName + " table exists. Dropping table.");
+                // Create table. Assign primary key to prevent duplicates
+                updateDB("DROP TABLE " + tableName);
+                return true;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            return false;
         }
         return false;
+
     }
 
 }

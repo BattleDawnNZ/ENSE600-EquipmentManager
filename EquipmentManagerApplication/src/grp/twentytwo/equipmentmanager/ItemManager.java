@@ -30,7 +30,7 @@ public class ItemManager {
     private Column column_itemID = new Column("ItemID", "VARCHAR(12) not NULL", "");
     private Column column_name = new Column("Name", "VARCHAR(30) not NULL", "");
     private Column column_description = new Column("Description", "VARCHAR(200)", "");
-    private Column column_location = new Column("Location", "VARCHAR(12)", "");
+    private Column column_location = new Column("Location", "VARCHAR(30)", "");
     private Column column_status = new Column("Status", "VARCHAR(14)", "");
     private Column column_type = new Column("Type", "VARCHAR(40)", "");
     private Column column_calibrationFlag = new Column("CalibrationFlag", "VARCHAR(6)", "");
@@ -98,7 +98,7 @@ public class ItemManager {
      * @return The Item ID of the Item Added.
      */
     public String addItem(Item item) {
-
+        System.out.println(item.getLocation());
         if (locationManager.isValidLocationName(item.getLocation())) {
             column_itemID.data = tableManager.getNextPrimaryKeyId();
             column_name.data = item.getName();
@@ -115,6 +115,8 @@ public class ItemManager {
                 Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
             }
+        } else {
+            System.out.println("Invalid Location Name");
         }
         return null;
     }
@@ -231,7 +233,6 @@ public class ItemManager {
         ResultSet rs;
         try {
             rs = tableManager.searchColumn("Name", partName);
-            System.out.println(rs.next());
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }

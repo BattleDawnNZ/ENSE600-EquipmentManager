@@ -27,10 +27,10 @@ public class LocationManager {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         LocationManager lm = new LocationManager(dbManager);
         lm.printTable();
-        Location loc = new Location("000001", "Workshop1");
+        //Location loc = new Location("000001", "Workshop1");
 
-        lm.addLocation("WORKSHOP3");
-        lm.removeLocation(loc);
+        //lm.addLocation("WORKSHOP3");
+        //lm.removeLocation(loc);
         //System.out.println(lm.getLocationFromID("000001"));
         lm.printTable();
         //System.out.println(lm.getLocationFromID("000004"));
@@ -48,7 +48,7 @@ public class LocationManager {
         tableManager = new TableManager(dbManager, tableName, columns, column_primaryKey);
 
         // Add test data to table
-        dbManager.updateDB("INSERT INTO LOCATIONTABLE VALUES ('000001', 'Workshop1')");
+        //dbManager.updateDB("INSERT INTO LOCATIONTABLE VALUES ('000001', 'Workshop1')");
     }
 
     /**
@@ -73,7 +73,7 @@ public class LocationManager {
 
     /**
      *
-     * @param locationID
+     * @param locationName
      * @return true if the item exists
      */
     public boolean isValidLocationName(String locationName) {
@@ -90,14 +90,12 @@ public class LocationManager {
 
     public boolean addLocation(String name) {
         try {
-            if (!tableManager.getRowByColumnValue("Name", name).next()) { // Ensure Location is new
+            if (!isValidLocationName(name)) { // Ensure Location is new
                 column_primaryKey.data = tableManager.getNextPrimaryKeyId();
                 column_locationName.data = name.toUpperCase();
                 tableManager.createRow(columns);
                 return true; // Location created
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException e) {
             System.out.println("Error: Invalid Column Name!");
         }
@@ -129,7 +127,7 @@ public class LocationManager {
      */
     private Location getLocationObjectFromResultSet(ResultSet resultSet) {
         try {
-            if (resultSet.next()) { // User exists
+            if (resultSet.next()) { // Location exists
                 String locationID = resultSet.getString("LocationID");
                 String name = resultSet.getString("Name");
                 return (new Location(locationID, name));
@@ -137,7 +135,7 @@ public class LocationManager {
                 return null;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
