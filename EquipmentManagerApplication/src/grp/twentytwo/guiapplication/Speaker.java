@@ -1,4 +1,4 @@
-package grp.twentytwo.equipmentmanagerapplication;
+package grp.twentytwo.guiapplication;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

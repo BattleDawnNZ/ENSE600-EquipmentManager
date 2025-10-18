@@ -1,5 +1,6 @@
-package grp.twentytwo.equipmentmanager;
+package grp.twentytwo.database;
 
+import grp.twentytwo.equipmentmanager.UserManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -101,7 +102,6 @@ public class TableManager {
             st_deleteRowByPrimaryKey = conn.prepareStatement(sql_deleteRowByPrimaryKey);
             st_createRowByPrimaryKey = conn.prepareStatement(sql_createRowByPrimaryKey);
             st_updateRowByPrimaryKey = conn.prepareStatement(sql_updateRowByPrimaryKey);
-
             st_getMaxPrimaryKey = conn.prepareStatement(sql_getMaxPrimaryKey);
         } catch (SQLException ex) {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -265,6 +265,7 @@ public class TableManager {
      * @param columnName
      * @param value
      * @return
+     * @throws grp.twentytwo.database.InvalidColumnNameException
      */
     public ResultSet searchColumn(String columnName, String value) throws InvalidColumnNameException {
         if (!verifyColumnName(columnName)) {
@@ -334,19 +335,5 @@ public class TableManager {
             }
         }
         return false;
-    }
-}
-
-/**
- * Custom exception used for invalid data input
- *
- * @author ppj1707
- */
-class InvalidColumnNameException extends Exception {
-
-    private static final String message = "Invalid column names. They do not match the format used to initialise the table.\n";
-
-    public InvalidColumnNameException() {
-        super(message);
     }
 }

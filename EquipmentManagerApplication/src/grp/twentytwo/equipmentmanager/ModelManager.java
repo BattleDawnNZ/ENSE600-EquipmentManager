@@ -1,6 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
-import grp.twentytwo.equipmentmanagerapplication.Speaker;
+import grp.twentytwo.database.DatabaseManager;
+import grp.twentytwo.guiapplication.Speaker;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

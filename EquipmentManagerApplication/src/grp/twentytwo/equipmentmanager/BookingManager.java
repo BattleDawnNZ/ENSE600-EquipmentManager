@@ -1,5 +1,9 @@
 package grp.twentytwo.equipmentmanager;
 
+import grp.twentytwo.database.DatabaseManager;
+import grp.twentytwo.database.Column;
+import grp.twentytwo.database.TableManager;
+import grp.twentytwo.database.InvalidColumnNameException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;

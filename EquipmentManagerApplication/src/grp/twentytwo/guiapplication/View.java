@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package grp.twentytwo.equipmentmanagerapplication;
+package grp.twentytwo.guiapplication;
 
 import grp.twentytwo.equipmentmanager.Booking;
 import grp.twentytwo.equipmentmanager.Item;
@@ -857,7 +857,6 @@ public class View extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(400, 300));
         setName("applicationFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(1000, 600));
         getContentPane().setLayout(new java.awt.CardLayout());
 
         panel_login.setLayout(new java.awt.GridBagLayout());

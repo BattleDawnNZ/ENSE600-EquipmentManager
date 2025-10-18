@@ -1,5 +1,9 @@
 package grp.twentytwo.equipmentmanager;
 
+import grp.twentytwo.database.DatabaseManager;
+import grp.twentytwo.database.Column;
+import grp.twentytwo.database.TableManager;
+import grp.twentytwo.database.InvalidColumnNameException;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,7 +41,7 @@ public class UserManager {
         //um.saveUser(user);
         //um.printTable();
         //System.out.println(um.getUserFromID("000004"));
-        //System.out.println(um.searchForUsers("Gue").toString());
+        System.out.println(um.searchForUsers("Gue").toString());
     }
 
     public UserManager(DatabaseManager databaseManager) {

@@ -1,4 +1,4 @@
-package grp.twentytwo.equipmentmanager;
+package grp.twentytwo.database;
 
 /**
  *

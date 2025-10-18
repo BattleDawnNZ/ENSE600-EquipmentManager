@@ -1,4 +1,4 @@
-package grp.twentytwo.equipmentmanagerapplication;
+package grp.twentytwo.guiapplication;
 
 import grp.twentytwo.equipmentmanager.Booking;
 import grp.twentytwo.equipmentmanager.Item;

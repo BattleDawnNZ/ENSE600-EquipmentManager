@@ -1,4 +1,4 @@
-package grp.twentytwo.equipmentmanager;
+package grp.twentytwo.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
