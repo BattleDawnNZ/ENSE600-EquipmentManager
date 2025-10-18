@@ -45,8 +45,8 @@ public class BookingManager {
         //um.removeUser("000004");
         //um.saveUser(user);
         um.printTable();
-        System.out.println(um.getBookingFromID("000001"));
-        System.out.println(um.getBookingsForItem("000001"));
+//        System.out.println(um.getBookingFromID("000001"));
+//        System.out.println(um.getBookingsForItem("000001"));
     }
 
     public BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
@@ -72,7 +72,7 @@ public class BookingManager {
      * @param bookingID The booking ID of the booking requested.
      * @return the booking with the corresponding booking ID.
      */
-    public Booking getBookingFromID(String bookingID) {
+    public Booking getBookingFromID(String bookingID) throws InvalidBookingRangeException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
             return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
@@ -89,7 +89,7 @@ public class BookingManager {
      * @return true if the booking was valid, did not clash with other bookings
      * and was created.
      */
-    public boolean issueItem(Booking booking) {
+    public boolean issueItem(Booking booking) throws InvalidBookingRangeException {
         ArrayList<Booking> itemBookings = getBookingsForItem(booking.getItemID());
         for (Booking b : itemBookings) { // Checking booking does not clash with other bookings
             if (booking.overlaps(b)) {
@@ -136,7 +136,7 @@ public class BookingManager {
      * @param resultSet
      * @return a user object
      */
-    private ArrayList<Booking> getBookingObjectsFromResultSet(ResultSet resultSet) {
+    private ArrayList<Booking> getBookingObjectsFromResultSet(ResultSet resultSet) throws InvalidBookingRangeException {
         ArrayList<Booking> bookingList = new ArrayList<Booking>();
 
         try {
@@ -148,6 +148,7 @@ public class BookingManager {
                 System.out.println(resultSet.getString("BookedDate"));
                 LocalDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter);
                 LocalDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter);
+
                 bookingList.add(new Booking(bookingID, userID, itemID, bookedDate, returnDate));
             }
             return bookingList;
@@ -165,7 +166,7 @@ public class BookingManager {
      * @param userID The User to check ownership
      * @return true if the booking exists and is owned by the User.
      */
-    public boolean verifyBookingOwner(String bookingID, String userID) {
+    public boolean verifyBookingOwner(String bookingID, String userID) throws InvalidBookingRangeException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
             Booking booking = getBookingObjectsFromResultSet(rs).getFirst();
@@ -181,7 +182,7 @@ public class BookingManager {
      * @param itemID
      * @return All bookings for the item.
      */
-    public ArrayList<Booking> getBookingsForItem(String itemID) {
+    public ArrayList<Booking> getBookingsForItem(String itemID) throws InvalidBookingRangeException {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("ItemID", itemID);
@@ -198,7 +199,7 @@ public class BookingManager {
      * @param userID
      * @return All bookings for the user.
      */
-    public ArrayList<Booking> getBookingsForUser(String userID) {
+    public ArrayList<Booking> getBookingsForUser(String userID) throws InvalidBookingRangeException {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("UserID", userID);
