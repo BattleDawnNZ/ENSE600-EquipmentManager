@@ -14,22 +14,22 @@ import java.util.logging.Logger;
  * @author fmw5088
  */
 public class ModelManager {
-    
+
     private User activeUser = null;
-    
+
     public Speaker<Exception> modelError;
-    
+
     DatabaseManager databaseManager;
     LocationManager locationManager;
     ItemManager itemManager;
     UserManager userManager;
     BookingManager bookingManager;
     HistoryManager historyManager;
-    
+
     public ModelManager() {
 	modelError = new Speaker<>();
     }
-    
+
     public void setupManagers() {
 	try {
 	    databaseManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
@@ -43,7 +43,7 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-    
+
     public boolean login(User user) {
 	boolean success = false;
 	try {
@@ -57,7 +57,7 @@ public class ModelManager {
 	}
 	return success;
     }
-    
+
     public void logout() {
 	activeUser = null;
     }
@@ -66,11 +66,11 @@ public class ModelManager {
     public Item getNewItem() {
 	return new Item("", "", "");
     }
-    
+
     public void AddItem(Item item) {
 	itemManager.addItem(item);
     }
-    
+
     public Item getItem(String itemID) {
 	Item item = null;
 	try {
@@ -81,7 +81,7 @@ public class ModelManager {
 	}
 	return item;
     }
-    
+
     public LinkedHashSet<String> searchForItems(String searchQuery) {
 	LinkedHashSet<String> items = null;
 	try {
@@ -92,7 +92,7 @@ public class ModelManager {
 	}
 	return items;
     }
-    
+
     public Booking getNewBooking() {
 	try {
 	    return new Booking(activeUser.getID(), "", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
@@ -102,7 +102,7 @@ public class ModelManager {
 	}
 	return null;
     }
-    
+
     public boolean AddBooking(Booking booking) {
 	boolean success = false;
 	try {
@@ -114,7 +114,7 @@ public class ModelManager {
 	}
 	return success;
     }
-    
+
     public Booking getBooking(String bookingID) {
 	Booking booking = null;
 	try {
@@ -125,7 +125,7 @@ public class ModelManager {
 	}
 	return booking;
     }
-    
+
     public List<Booking> getBookingsForItem(String itemID) {
 	ArrayList<Booking> bookings = null;
 	try {
@@ -136,7 +136,7 @@ public class ModelManager {
 	}
 	return bookings;
     }
-    
+
     public void addNote(String itemID, String note) {
 	try {
 	    Item item = itemManager.getItemFromID(itemID);
@@ -147,7 +147,7 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-    
+
     public void flagItemForCalibration(String itemID) {
 	try {
 	    Item item = itemManager.getItemFromID(itemID);
@@ -159,7 +159,7 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-    
+
     public void calibrateItem(String itemID) {
 	try {
 	    Item item = itemManager.getItemFromID(itemID);
@@ -171,7 +171,7 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-    
+
     public ArrayList<History> getHistoryForItem(String itemID) {
 	return historyManager.getHistoryForItem(itemID);
     }
@@ -180,7 +180,7 @@ public class ModelManager {
     public User getNewUser() {
 	return new Manager("", "");
     }
-    
+
     public User getUser(String userID) {
 	User user = null;
 	try {
@@ -191,7 +191,7 @@ public class ModelManager {
 	}
 	return user;
     }
-    
+
     public LinkedHashSet<String> searchForUsers(String searchQuery) {
 	LinkedHashSet<String> users = new LinkedHashSet<>();
 	try {
@@ -207,7 +207,7 @@ public class ModelManager {
     public void AddLocation(String locationName) {
 	locationManager.addLocation(locationName);
     }
-    
+
     public Location getLocation(String locationName) {
 	Location location = null;
 	try {
@@ -218,7 +218,7 @@ public class ModelManager {
 	}
 	return location;
     }
-    
+
     public ArrayList<String> searchForLocations(String searchQuery) {
 	ArrayList<String> locations = new ArrayList<>();
 	try {

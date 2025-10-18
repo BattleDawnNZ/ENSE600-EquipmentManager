@@ -40,6 +40,9 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> viewItem;
     public Speaker<String> editItem;
     public Speaker<String> viewBooking;
+    public Speaker<String> addNote;
+    public Speaker<String> flagItem;
+    public Speaker<String> calibrateItem;
     public Speaker<String> viewHistory;
 
     public Speaker<String> searchForUser;
@@ -83,7 +86,7 @@ public class View extends javax.swing.JFrame {
 	// Item editing
 	editItem = new Speaker<>();
 	button_editItem.addActionListener((ActionEvent e) -> {
-	    editItem.notifyListeners(text_itemID.getText());
+	    editItem.notifyListeners(currentItemID());
 	});
 	button_editItemCancel.addActionListener((ActionEvent e) -> {
 	    dialog_editItem.setVisible(false);
@@ -140,13 +143,39 @@ public class View extends javax.swing.JFrame {
 	button_bookItemCancel.addActionListener(closeBookItem);
 	bookItem = new Speaker<>();
 	button_bookItemConfirm.addActionListener((ActionEvent e) -> {
-	    bookItem.notifyListeners(text_itemID.getText());
+	    bookItem.notifyListeners(currentItemID());
 	});
 	button_bookItemConfirm.addActionListener(closeBookItem);
+	// Item Note
+	button_addNote.addActionListener((ActionEvent e) -> {
+	    clearAddNoteDialog();
+	    dialog_addNote.setVisible(true);
+	});
+	ActionListener closeAddNote = (ActionEvent e) -> {
+	    dialog_addNote.setVisible(false);
+	};
+	button_addNoteCancel.addActionListener(closeAddNote);
+	addNote = new Speaker<>();
+	button_addNoteConfirm.addActionListener((ActionEvent e) -> {
+	    addNote.notifyListeners(currentItemID());
+	});
+	button_addNoteConfirm.addActionListener(closeAddNote);
+	// Item Maintenance
 
+	flagItem = new Speaker<>();
+	button_flagForCalibration.addActionListener((ActionEvent e) -> {
+	    flagItem.notifyListeners(currentItemID());
+	});
+
+	calibrateItem = new Speaker<>();
+	button_calibrateItem.addActionListener((ActionEvent e) -> {
+	    calibrateItem.notifyListeners(currentItemID());
+	});
+
+	// Item History
 	viewHistory = new Speaker<>();
 	button_viewHistory.addActionListener((ActionEvent e) -> {
-	    viewHistory.notifyListeners(text_itemID.getText());
+	    viewHistory.notifyListeners(currentItemID());
 	    dialog_viewHistory.setVisible(true);
 	});
 	button_viewHistoryClose.addActionListener((ActionEvent e) -> {
@@ -245,6 +274,10 @@ public class View extends javax.swing.JFrame {
     }
 
     // Item Functions ----------------------------------------------------------
+    public String currentItemID() {
+	return text_itemID.getText();
+    }
+
     public void clearAddItemDialog() {
 	field_addItemName.setText("");
 	field_addItemLocation.setText("");
@@ -373,6 +406,14 @@ public class View extends javax.swing.JFrame {
 	dateTimePicker_bookItemReturnDate.clear();
     }
 
+    public void clearAddNoteDialog() {
+	field_addNote.setText("");
+    }
+
+    public String getNote() {
+	return field_addNote.getText();
+    }
+
     public void setupViewHistoryDialog(ArrayList<History> newList) {
 	DefaultListModel<String> history = new DefaultListModel<>();
 	for (History h : newList) {
@@ -480,6 +521,13 @@ public class View extends javax.swing.JFrame {
         list_viewHistory = new javax.swing.JList<>();
         jPanel14 = new javax.swing.JPanel();
         button_viewHistoryClose = new javax.swing.JButton();
+        dialog_addNote = new javax.swing.JDialog();
+        jPanel15 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        field_addNote = new javax.swing.JTextArea();
+        jPanel16 = new javax.swing.JPanel();
+        button_addNoteCancel = new javax.swing.JButton();
+        button_addNoteConfirm = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
         field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -850,6 +898,41 @@ public class View extends javax.swing.JFrame {
         jPanel14.add(button_viewHistoryClose, gridBagConstraints);
 
         dialog_viewHistory.getContentPane().add(jPanel14, java.awt.BorderLayout.PAGE_END);
+
+        dialog_addNote.setTitle("Add Note");
+        dialog_addNote.setMinimumSize(new java.awt.Dimension(400, 300));
+        dialog_addNote.setModal(true);
+
+        jPanel15.setLayout(new java.awt.GridBagLayout());
+
+        field_addNote.setColumns(20);
+        field_addNote.setRows(5);
+        jScrollPane4.setViewportView(field_addNote);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        jPanel15.add(jScrollPane4, gridBagConstraints);
+
+        dialog_addNote.getContentPane().add(jPanel15, java.awt.BorderLayout.CENTER);
+
+        jPanel16.setLayout(new java.awt.GridBagLayout());
+
+        button_addNoteCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel16.add(button_addNoteCancel, gridBagConstraints);
+
+        button_addNoteConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel16.add(button_addNoteConfirm, gridBagConstraints);
+
+        dialog_addNote.getContentPane().add(jPanel16, java.awt.BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
@@ -1410,6 +1493,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_addLocationCancel;
     private javax.swing.JButton button_addLocationConfirm;
     private javax.swing.JButton button_addNote;
+    private javax.swing.JButton button_addNoteCancel;
+    private javax.swing.JButton button_addNoteConfirm;
     private javax.swing.JButton button_addUser;
     private javax.swing.JButton button_bookItem;
     private javax.swing.JButton button_bookItemCancel;
@@ -1438,6 +1523,7 @@ public class View extends javax.swing.JFrame {
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
     private javax.swing.JDialog dialog_addItem;
     private javax.swing.JDialog dialog_addLocation;
+    private javax.swing.JDialog dialog_addNote;
     private javax.swing.JDialog dialog_bookItem;
     private javax.swing.JDialog dialog_editItem;
     private javax.swing.JDialog dialog_viewHistory;
@@ -1445,6 +1531,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_addItemName;
     private javax.swing.JTextField field_addItemType;
     private javax.swing.JTextField field_addLocationName;
+    private javax.swing.JTextArea field_addNote;
     private javax.swing.JTextArea field_editingItemDescription;
     private javax.swing.JTextField field_editingItemLocation;
     private javax.swing.JTextField field_editingItemName;
@@ -1490,6 +1577,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1500,6 +1589,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;

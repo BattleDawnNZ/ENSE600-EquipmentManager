@@ -56,12 +56,25 @@ public class Controller {
 	view.viewBooking.addListener((String bookingID) -> {
 	    view.setBookingPreview(model.getBooking(bookingID));
 	});
-	// Item Book
+	// Item Booking
 	view.bookItem.addListener((String itemID) -> {
 	    Booking booking = model.getNewBooking();
 	    booking.setItemID(itemID);
 	    view.setNewBookingDetails(booking);
 	    model.AddBooking(booking);
+	});
+	// Item Maintenance
+	view.addNote.addListener((String itemID) -> {
+	    model.addNote(itemID, view.getNote());
+	});
+	view.flagItem.addListener((String itemID) -> {
+	    model.flagItemForCalibration(itemID);
+	});
+	view.calibrateItem.addListener((String itemID) -> {
+	    model.calibrateItem(itemID);
+	});
+	view.viewHistory.addListener((String itemID) -> {
+	    view.setupViewHistoryDialog(model.getHistoryForItem(itemID));
 	});
 	//</editor-fold>
 	//<editor-fold desc="Users Tab">----------------------------------------
