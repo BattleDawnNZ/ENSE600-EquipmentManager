@@ -94,9 +94,7 @@ public class ItemManager {
     /**
      * Adds a new item to the items HashMap.
      *
-     * @param name The items name.
-     * @param location The items location
-     * @param type The items type.
+     * @param item An item object. Id will be ignored
      * @return The Item ID of the Item Added.
      */
     public String addItem(Item item) {
@@ -106,6 +104,7 @@ public class ItemManager {
             column_name.data = item.getName();
             column_description.data = item.getDescription();
             column_location.data = item.getLocation();
+            column_status.data = item.getStatus().toString();
             column_type.data = item.getType();
             column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
             column_lastCalibration.data = item.getLastCalibrationAsString();
@@ -152,6 +151,7 @@ public class ItemManager {
             column_name.data = item.getName();
             column_description.data = item.getDescription();
             column_location.data = item.getLocation();
+            column_status.data = item.getStatus().toString();
             column_type.data = item.getType();
             column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
             column_lastCalibration.data = item.getLastCalibrationAsString();
@@ -324,7 +324,7 @@ public class ItemManager {
                 String location = resultSet.getString("Location");
                 String statusString = resultSet.getString("Status");
                 Status status = null;
-                if (statusString != null) {
+                if (statusString != null && !statusString.isBlank()) {
                     status = Status.valueOf(statusString);
                 }
                 String type = resultSet.getString("Type");
