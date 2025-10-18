@@ -397,8 +397,14 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setNewBookingDetails(Booking booking) {
-	booking.setBookedDate(dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(dateTimePicker_bookItemBookedDate.timePicker.getTime()));
-	booking.setReturnDate(dateTimePicker_bookItemReturnDate.datePicker.getDate().atTime(dateTimePicker_bookItemReturnDate.timePicker.getTime()));
+	try {
+	    LocalDateTime bookedDate = dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(dateTimePicker_bookItemBookedDate.timePicker.getTime());
+	    LocalDateTime returnDate = dateTimePicker_bookItemReturnDate.datePicker.getDate().atTime(dateTimePicker_bookItemReturnDate.timePicker.getTime());
+	    booking.setBookingRange(bookedDate, returnDate);
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public void setupBookItemDialog() {
