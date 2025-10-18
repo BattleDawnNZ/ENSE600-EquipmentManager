@@ -1,6 +1,6 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -14,41 +14,50 @@ class History {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    /**
-     *
-     * @return The time stamp for when this event happened.
-     */
-    private ZonedDateTime timestamp;
+    private final String id; // Unique identifier for the history 
+    private final String itemID; // Asociated item the history is for
+    private final LocalDateTime timestamp; // The time stamp for when this event happened.
+    private final String description; // The description of the event.
 
     /**
      *
-     * @return The description of the event.
+     * Package private constructor for official objects
      */
-    private String description;
-
-    /**
-     *
-     * @param description What happened.
-     */
-    History(String description) {
-        this.timestamp = ZonedDateTime.now();
+    History(String id, String itemID, LocalDateTime timestamp, String description) {
+        this.id = id;
+        this.itemID = itemID;
+        this.timestamp = timestamp;
         this.description = description;
     }
 
     /**
+     * Public constructor for new (unsaved) history objects
      *
-     * @return The time stamp for when this event happened.
+     * @param itemID
+     * @param description
      */
-    public ZonedDateTime getTimestamp() {
-        return timestamp;
+    public History(String itemID, String description) {
+        this(null, itemID, LocalDateTime.now(), description);
+    }
+
+    public String getID() {
+        return this.id;
     }
 
     /**
      *
-     * @return The description of the event.
+     * @return The time stamp for when this event happened.
      */
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public String getItemID() {
+        return this.itemID;
     }
 
     /**

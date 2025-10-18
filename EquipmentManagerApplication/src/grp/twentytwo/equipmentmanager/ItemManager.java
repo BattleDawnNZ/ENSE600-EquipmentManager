@@ -3,19 +3,18 @@ package grp.twentytwo.equipmentmanager;
 import grp.twentytwo.equipmentmanager.Item.Status;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-////////////////!!!!!!!!!!!!!! search case sensitive???
 
 /**
  * Manages item operations such as adding, removing, generating IDs, and
  * retrieving items from the HashMap.
  *
- * @author fmw5088
+ * @author ppj1707
  */
 public class ItemManager {
 
@@ -44,7 +43,7 @@ public class ItemManager {
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
         //System.out.println(um.searchForItems("0").toString()); //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
-        //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
         ///item.setLocation("WORKSHOP3");
@@ -329,9 +328,9 @@ public class ItemManager {
                 String type = resultSet.getString("Type");
                 boolean calibrationFlag = resultSet.getBoolean("CalibrationFlag");
                 String calibrationDateString = resultSet.getString("LastCalibration");
-                ZonedDateTime lastCalibration = null;
+                LocalDateTime lastCalibration = null;
                 if (calibrationDateString != null) {
-                    lastCalibration = ZonedDateTime.parse(calibrationDateString, Item.getDateTimeFormatter());
+                    lastCalibration = LocalDateTime.parse(calibrationDateString, Item.getDateTimeFormatter());
                 }
                 itemList.add(new Item(itemID, name, description, location, status, type, calibrationFlag, lastCalibration));
             }

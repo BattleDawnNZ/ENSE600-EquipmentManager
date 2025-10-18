@@ -2,9 +2,10 @@ package grp.twentytwo.equipmentmanager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +42,7 @@ public class BookingManager {
         //um.saveUser(user);
         um.printTable();
         System.out.println(um.getBookingFromID("000001"));
+        System.out.println(um.getBookingsForItem("000001"));
     }
 
     public BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
@@ -67,8 +69,13 @@ public class BookingManager {
      * @return the booking with the corresponding booking ID.
      */
     public Booking getBookingFromID(String bookingID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
-        return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
+        try {
+            ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
+            return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
+        } catch (NoSuchElementException e) {
+            System.out.println("InvalidID");
+            return null;
+        }
     }
 
     /**
@@ -80,13 +87,12 @@ public class BookingManager {
      * @param returnDate The return date of the booking.
      * @return true if the booking was valid and created.
      */
-    public boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public boolean issueItem(String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) {
         String bookingID = tableManager.getNextPrimaryKeyId();
 
         // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
         // If this is not desired then it should be checked application-layer.
         column_bookingID.data = tableManager.getNextPrimaryKeyId();
-
         column_userID.data = userID;
         column_itemID.data = itemID;
         column_bookedDate.data = bookedDate.format(formatter);
@@ -112,8 +118,6 @@ public class BookingManager {
      */
     public boolean returnItem(String bookingID) {
         return tableManager.deleteRowByPrimaryKey(bookingID);
-
-        //!!!!!!!!!!!!!!!!!!!!!bookedItem.addHistory("(Booking ID: " + bookingID + ") Returned by " + booking.getUserID());
     }
 
     /**
@@ -137,8 +141,9 @@ public class BookingManager {
                 String bookingID = resultSet.getString("BookingID");
                 String userID = resultSet.getString("UserID");
                 String itemID = resultSet.getString("ItemID");
-                ZonedDateTime bookedDate = ZonedDateTime.parse(resultSet.getString("BookedDate"), formatter);
-                ZonedDateTime returnDate = ZonedDateTime.parse(resultSet.getString("ReturnDate"), formatter);
+                System.out.println(resultSet.getString("BookedDate"));
+                LocalDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter);
+                LocalDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter);
                 bookingList.add(new Booking(bookingID, userID, itemID, bookedDate, returnDate));
             }
             return bookingList;
