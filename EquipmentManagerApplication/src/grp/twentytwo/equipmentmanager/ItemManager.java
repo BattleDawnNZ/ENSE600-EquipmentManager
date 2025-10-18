@@ -331,7 +331,7 @@ public class ItemManager {
                 boolean calibrationFlag = resultSet.getBoolean("CalibrationFlag");
                 String calibrationDateString = resultSet.getString("LastCalibration");
                 LocalDateTime lastCalibration = null;
-                if (calibrationDateString != null) {
+                if (calibrationDateString != null && !calibrationDateString.isBlank()) {
                     lastCalibration = LocalDateTime.parse(calibrationDateString, Item.getDateTimeFormatter());
                 }
                 itemList.add(new Item(itemID, name, description, location, status, type, calibrationFlag, lastCalibration));
