@@ -3,6 +3,7 @@ package grp.twentytwo.equipmentmanager;
 import grp.twentytwo.equipmentmanagerapplication.Speaker;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,34 +19,45 @@ public class ModelManager {
     LocationManager locationManager;
     ItemManager itemManager;
     UserManager userManager;
+    BookingManager bookingManager;
 
     public ModelManager() {
 	modelError = new Speaker<>();
     }
 
-    public void SetupManagers() {
+    public void setupManagers() {
 	try {
 	    databaseManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
 	    locationManager = new LocationManager(databaseManager);
 	    itemManager = new ItemManager(databaseManager, locationManager);
 	    userManager = new UserManager(databaseManager);
+	    bookingManager = new BookingManager(itemManager, databaseManager);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
 
-    public boolean login() {
+    public boolean login(User user) {
 	boolean success = false;
 	try {
-	    success = true;
+	    System.out.println("");
+	    success = userManager.login(user);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
 	return success;
     }
+
     // Item Functions ----------------------------------------------------------
+    public Item getNewItem() {
+	return new Item("", "", "");
+    }
+
+    public void AddItem(Item item) {
+	itemManager.addItem(item);
+    }
 
     public Item getItem(String itemID) {
 	Item item = null;
@@ -69,16 +81,33 @@ public class ModelManager {
 	return items;
     }
 
-    public void getItemBookings(String itemID) {
+    public Booking getBooking(String bookingID) {
+	Booking booking = null;
 	try {
-	    // get a list of all bookings for the item.
+	    booking = bookingManager.getBookingFromID(bookingID);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
+	return booking;
+    }
+
+    public List<Booking> getBookingsForItem(String itemID) {
+	ArrayList<Booking> bookings = null;
+	try {
+	    bookings = bookingManager.getBookingsForItem(itemID);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+	return bookings;
     }
 
     // User Functions ----------------------------------------------------------
+    public User getNewUser() {
+	return new Manager("", "");
+    }
+
     public User getUser(String userID) {
 	User user = null;
 	try {
@@ -91,16 +120,43 @@ public class ModelManager {
     }
 
     public ArrayList<String> searchForUsers(String searchQuery) {
-	ArrayList<String> test = new ArrayList<>();
+	ArrayList<String> users = new ArrayList<>();
 	try {
-	    test.add(searchQuery);
-	    for (int i = 0; i < 10; i++) {
-		test.add(searchQuery.substring(0, 2) + "0" + i);
-	    }
+	    // Todo add proper search fro users
+	    users.add("000001");
+	    users.add("000002");
+	    users.add("000003");
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
-	return test;
+	return users;
+    }
+
+    // Location Functions ------------------------------------------------------
+    public void AddLocation(String locationName) {
+	locationManager.addLocation(locationName);
+    }
+
+    public Location getLocation(String locationName) {
+	Location location = null;
+	try {
+	    location = locationManager.getLocationFromName(locationName);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+	return location;
+    }
+
+    public ArrayList<String> searchForLocations(String searchQuery) {
+	ArrayList<String> locations = new ArrayList<>();
+	try {
+	    locations = locationManager.searchLocationsByName(searchQuery);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+	return locations;
     }
 }
