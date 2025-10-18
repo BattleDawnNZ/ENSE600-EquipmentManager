@@ -73,7 +73,7 @@ public class LocationManager {
      */
     public boolean isValidLocationID(String locationID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
-        return (getLocationObjectsFromResultSet(rs) != null);
+        return (!getLocationObjectsFromResultSet(rs).isEmpty());
     }
 
     /**

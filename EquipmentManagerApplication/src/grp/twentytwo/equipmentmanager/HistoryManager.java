@@ -80,7 +80,7 @@ public class HistoryManager {
      */
     public boolean isValidHistoryID(String historyID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
-        return (getHistoryObjectsFromResultSet(rs) != null);
+        return ((getHistoryObjectsFromResultSet(rs).size()) > 0);
     }
 
     public boolean addHistory(History history) {
