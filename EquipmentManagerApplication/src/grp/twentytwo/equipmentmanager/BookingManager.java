@@ -3,8 +3,6 @@ package grp.twentytwo.equipmentmanager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -89,7 +87,7 @@ public class BookingManager {
      * @param returnDate The return date of the booking.
      * @return true if the booking was valid and created.
      */
-    public boolean issueItem(String userID, String itemID, ZonedDateTime bookedDate, ZonedDateTime returnDate) {
+    public boolean issueItem(String userID, String itemID, LocalDateTime bookedDate, LocalDateTime returnDate) {
         String bookingID = tableManager.getNextPrimaryKeyId();
 
         // Note. The format must be correct, but this allows bookings that overlap timeslots for the same item. 
@@ -144,8 +142,8 @@ public class BookingManager {
                 String userID = resultSet.getString("UserID");
                 String itemID = resultSet.getString("ItemID");
                 System.out.println(resultSet.getString("BookedDate"));
-                ZonedDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter).atZone(ZoneId.systemDefault());
-                ZonedDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter).atZone(ZoneId.systemDefault());
+                LocalDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter);
+                LocalDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter);
                 bookingList.add(new Booking(bookingID, userID, itemID, bookedDate, returnDate));
             }
             return bookingList;

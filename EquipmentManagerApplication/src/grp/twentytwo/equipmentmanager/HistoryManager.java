@@ -2,7 +2,6 @@ package grp.twentytwo.equipmentmanager;
 
 import java.util.ArrayList;
 import java.sql.ResultSet;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -102,7 +101,7 @@ public class HistoryManager {
             if (resultSet.next()) { // User exists
                 String historyID = resultSet.getString("HistoryID");
                 String description = resultSet.getString("Description");
-                ZonedDateTime timestamp = LocalDateTime.parse(resultSet.getString("Timestamp"), formatter).atZone(ZoneId.systemDefault());
+                LocalDateTime timestamp = LocalDateTime.parse(resultSet.getString("Timestamp"), formatter);
                 String itemID = resultSet.getString("ItemID");
                 return (new History(historyID, itemID, timestamp, description));
             } else {

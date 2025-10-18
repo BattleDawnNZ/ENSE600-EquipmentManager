@@ -4,8 +4,6 @@ import grp.twentytwo.equipmentmanager.Item.Status;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
@@ -330,9 +328,9 @@ public class ItemManager {
                 String type = resultSet.getString("Type");
                 boolean calibrationFlag = resultSet.getBoolean("CalibrationFlag");
                 String calibrationDateString = resultSet.getString("LastCalibration");
-                ZonedDateTime lastCalibration = null;
+                LocalDateTime lastCalibration = null;
                 if (calibrationDateString != null) {
-                    lastCalibration = LocalDateTime.parse(calibrationDateString, Item.getDateTimeFormatter()).atZone(ZoneId.systemDefault());
+                    lastCalibration = LocalDateTime.parse(calibrationDateString, Item.getDateTimeFormatter());
                 }
                 itemList.add(new Item(itemID, name, description, location, status, type, calibrationFlag, lastCalibration));
             }

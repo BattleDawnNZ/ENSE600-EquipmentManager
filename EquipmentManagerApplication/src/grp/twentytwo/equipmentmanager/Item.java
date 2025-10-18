@@ -1,7 +1,7 @@
 package grp.twentytwo.equipmentmanager;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -20,7 +20,7 @@ public class Item {
 
     //private ArrayList<History> history;
     private boolean needsCalibration;
-    private ZonedDateTime lastCalibration;
+    private LocalDateTime lastCalibration;
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -37,7 +37,7 @@ public class Item {
      * @param needsCalibration
      * @param lastCalibration
      */
-    Item(String id, String name, String description, String location, Status status, String type, boolean needsCalibration, ZonedDateTime lastCalibration) {
+    Item(String id, String name, String description, String location, Status status, String type, boolean needsCalibration, LocalDateTime lastCalibration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -127,7 +127,7 @@ public class Item {
      */
     void calibrate() {
         needsCalibration = false;
-        lastCalibration = ZonedDateTime.now();
+        lastCalibration = LocalDateTime.now();
         //addHistory("Calibrated.");
     }
 
@@ -135,7 +135,7 @@ public class Item {
      *
      * @return LastCalibration as a ZonedDateTime object
      */
-    public ZonedDateTime getLastCalibration() {
+    public LocalDateTime getLastCalibration() {
         return lastCalibration;
     }
 

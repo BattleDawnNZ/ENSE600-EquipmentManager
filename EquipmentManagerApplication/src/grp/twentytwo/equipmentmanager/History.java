@@ -1,6 +1,6 @@
 package grp.twentytwo.equipmentmanager;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -16,14 +16,14 @@ class History {
 
     private final String id; // Unique identifier for the history 
     private final String itemID; // Asociated item the history is for
-    private final ZonedDateTime timestamp; // The time stamp for when this event happened.
+    private final LocalDateTime timestamp; // The time stamp for when this event happened.
     private final String description; // The description of the event.
 
     /**
      *
      * Package private constructor for official objects
      */
-    History(String id, String itemID, ZonedDateTime timestamp, String description) {
+    History(String id, String itemID, LocalDateTime timestamp, String description) {
         this.id = id;
         this.itemID = itemID;
         this.timestamp = timestamp;
@@ -37,7 +37,7 @@ class History {
      * @param description
      */
     public History(String itemID, String description) {
-        this(null, itemID, ZonedDateTime.now(), description);
+        this(null, itemID, LocalDateTime.now(), description);
     }
 
     public String getID() {
@@ -48,7 +48,7 @@ class History {
      *
      * @return The time stamp for when this event happened.
      */
-    public ZonedDateTime getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
