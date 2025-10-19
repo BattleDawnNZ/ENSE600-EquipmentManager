@@ -154,7 +154,7 @@ class ItemManager {
         String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            if (locationManager.isValidLocationID(item.getLocation())) {
+            if (locationManager.isValidLocationName(item.getLocation())) {
                 return saveItem(item);
             }
         }
