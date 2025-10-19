@@ -1,6 +1,9 @@
 package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,19 +36,31 @@ public class TestData {
         m.itemManager.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
         m.itemManager.addItem(new Item("Soldering Iron", "Electrical Lab 1", "Electrical/Soldering"));
 
+        LocalDateTime dateBooked = LocalDateTime.of(2025, 10, 5, 8, 0); // 5/10/2025 8:00am 
+        LocalDateTime dateReturned = LocalDateTime.of(2025, 10, 5, 8, 30); // 5/10/2025 8:30am
+        try {
+            m.bookingManager.issueItem(new Booking("111", "MC0", dateBooked, dateReturned));
+            m.bookingManager.issueItem(new Booking("111", "MC0", dateReturned.plusDays(2), dateReturned.plusDays(3)));
+            m.bookingManager.issueItem(new Booking("222", "EM1", dateBooked, dateReturned));
+            m.bookingManager.issueItem(new Booking("222", "ES1", dateBooked, dateReturned));
+        } catch (InvalidBookingRangeException ex) {
+            Logger.getLogger(TestData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public static void printAll() {
         m.itemManager.printTable();
         m.locationManager.printTable();
         m.userManager.printTable();
+        m.bookingManager.printTable();
 
     }
 
     public static void dropTables() {
         //m.databaseManager.dropTableIfExists("HISTORYTABLE");
+        m.databaseManager.dropTableIfExists("BOOKINGTABLE");
         m.databaseManager.dropTableIfExists("LOCATIONTABLE");
-        //m.databaseManager.dropTableIfExists("BOOKINGTABLE");
         m.databaseManager.dropTableIfExists("ITEMTABLE");
         m.databaseManager.dropTableIfExists("USERTABLE");
         m = new ModelManager();

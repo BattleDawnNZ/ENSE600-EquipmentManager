@@ -63,8 +63,6 @@ class BookingManager {
         // Initialise Table
         tableManager = new TableManager(dbManager, tableName, columnData, column_bookingID);
 
-        // Add test data to table
-        dbManager.updateDB("INSERT INTO BOOKINGTABLE VALUES ('1', '000001', '000001', '03-10-2025 14:20', '06-11-2025 15:30')");
     }
 
     /**
