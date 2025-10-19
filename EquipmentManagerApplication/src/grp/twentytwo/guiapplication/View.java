@@ -453,9 +453,14 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setLocationSearchResults(List<String> newList) {
-	DefaultListModel<String> locations = new DefaultListModel<>();
-	locations.addAll(newList);
-	list_locationSearchResults.setModel(locations);
+	try {
+	    DefaultListModel<String> locations = new DefaultListModel<>();
+	    locations.addAll(newList);
+	    list_locationSearchResults.setModel(locations);
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public void setLocationPreview(Location locationData) {
@@ -464,6 +469,17 @@ public class View extends javax.swing.JFrame {
 		text_locationID.setText(locationData.getId());
 		text_locationName.setText(locationData.getName());
 	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void setLocationItemsPreview(ArrayList<String> newList) {
+	try {
+	    DefaultListModel<String> locations = new DefaultListModel<>();
+	    locations.addAll(newList);
+	    list_locationItemsPreview.setModel(locations);
 	} catch (Exception err) {
 	    showError(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -628,6 +644,9 @@ public class View extends javax.swing.JFrame {
         text_locationName = new javax.swing.JTextField();
         filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jScrollPane9 = new javax.swing.JScrollPane();
+        list_locationItemsPreview = new javax.swing.JList<>();
+        jLabel7 = new javax.swing.JLabel();
 
         dialog_addItem.setTitle("Add Item");
         dialog_addItem.setAlwaysOnTop(true);
@@ -1443,6 +1462,7 @@ public class View extends javax.swing.JFrame {
         jLabel13.setText("ID:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         jPanel4.add(jLabel13, gridBagConstraints);
 
         jLabel14.setText("Name:");
@@ -1450,6 +1470,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         jPanel4.add(jLabel14, gridBagConstraints);
 
         text_locationID.setEditable(false);
@@ -1477,6 +1498,24 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.1;
         jPanel4.add(filler6, gridBagConstraints);
+
+        list_locationItemsPreview.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane9.setViewportView(list_locationItemsPreview);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.1;
+        jPanel4.add(jScrollPane9, gridBagConstraints);
+
+        jLabel7.setText("Item IDs:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        jPanel4.add(jLabel7, gridBagConstraints);
 
         panel_locationDetails.setViewportView(jPanel4);
 
@@ -1577,6 +1616,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -1602,6 +1642,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
@@ -1609,6 +1650,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel label_username;
     private javax.swing.JList<String> list_itemBookings;
     private javax.swing.JList<String> list_itemSearchResults;
+    private javax.swing.JList<String> list_locationItemsPreview;
     private javax.swing.JList<String> list_locationSearchResults;
     private javax.swing.JList<String> list_userSearchResults;
     private javax.swing.JList<String> list_viewHistory;

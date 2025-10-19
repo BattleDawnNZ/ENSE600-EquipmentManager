@@ -93,6 +93,10 @@ public class ModelManager {
 	return items;
     }
 
+    public ArrayList<String> getItemsForLocation(String location) {
+	return itemManager.getItemsForLocation(location);
+    }
+
     public Booking getNewBooking() {
 	try {
 	    return new Booking(activeUser.getID(), "", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
@@ -106,7 +110,7 @@ public class ModelManager {
     public boolean AddBooking(Booking booking) {
 	boolean success = false;
 	try {
-	    // Todo Add feedback to user on failedd issuing of item. Fix Overlap Function to allow back to back bookings.
+	    // Todo Add feedback to user on failed issuing of item. Fix Overlap Function to allow back to back bookings.
 	    success = bookingManager.issueItem(booking);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);

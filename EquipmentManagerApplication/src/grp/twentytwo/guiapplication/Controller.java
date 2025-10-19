@@ -100,6 +100,7 @@ public class Controller {
 	// Location Preview
 	view.viewLocation.addListener((String locationName) -> {
 	    view.setLocationPreview(model.getLocation(locationName));
+	    view.setLocationItemsPreview(model.getItemsForLocation(locationName));
 	});
 	//</editor-fold>
 	//</editor-fold>
