@@ -46,14 +46,17 @@ class ItemManager {
         LocationManager lManager = new LocationManager(dbManager);
         ItemManager um = new ItemManager(dbManager, lManager);
         um.printTable();
-        //System.out.println(um.searchForItems("0").toString()); //Item item = new Item("MA1", "3D Printer", "WORKSHOP3", "Manufacturing/Additive");
+        //System.out.println(um.searchForItems("0").toString()); 
+        Item item = um.getItemFromID("MC0");
+        item.setLocation("Electrical Lab 1");
         //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
         ///item.setLocation("WORKSHOP3");
-        //um.updateItem(item);
+
+        um.updateItem(item);
         um.printTable();
-        System.out.println(um.getItemsForLocation("Wor"));
+        //System.out.println(um.getItemsForLocation("Wor"));
         //System.out.println(um.getItemFromID("MA1"));
     }
 
