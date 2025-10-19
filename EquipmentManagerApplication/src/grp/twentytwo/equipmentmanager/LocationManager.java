@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,22 +32,22 @@ class LocationManager {
     private Column column_locationName = new Column("Name", "VARCHAR(30)", "");
 
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        LocationManager lm = new LocationManager(dbManager);
-        lm.printTable();
-        //Location loc = new Location("000001", "Workshop1");
-        System.out.println(lm.isValidLocationName("Workshop "));
-
-        //lm.addLocation("WORKSHOP3");
-        //lm.removeLocation(loc);
-        //System.out.println(lm.getLocationFromID("000001"));
-        //System.out.println(lm.searchLocationsByName("W"));
-        lm.printTable();
-        //System.out.println(lm.getLocationFromName("WORKSHOP 12").getId()); //System.out.println(lm.getLocationFromID("000004"));
-        //System.out.println(lm.isValidLocationName("WORKSHOP3"));
+//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+//        LocationManager lm = new LocationManager(dbManager);
+//        lm.printTable();
+//        //Location loc = new Location("000001", "Workshop1");
+//        System.out.println(lm.isValidLocationName("Workshop "));
+//
+//        //lm.addLocation("WORKSHOP3");
+//        //lm.removeLocation(loc);
+//        //System.out.println(lm.getLocationFromID("000001"));
+//        //System.out.println(lm.searchLocationsByName("W"));
+//        lm.printTable();
+//        //System.out.println(lm.getLocationFromName("WORKSHOP 12").getId()); //System.out.println(lm.getLocationFromID("000004"));
+//        //System.out.println(lm.isValidLocationName("WORKSHOP3"));
     }
 
-    LocationManager(DatabaseManager databaseManager) {
+    LocationManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
 
         this.dbManager = databaseManager;
 
@@ -60,7 +63,7 @@ class LocationManager {
      * @param locationID
      * @return a Location object (if the id string exists) else, null
      */
-    Location getLocationFromID(String locationID) {
+    Location getLocationFromID(String locationID) throws UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
             return getLocationObjectsFromResultSet(rs).getFirst();
@@ -76,8 +79,15 @@ class LocationManager {
      * @return true if the item exists
      */
     boolean isValidLocationID(String locationID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
-        return (!getLocationObjectsFromResultSet(rs).isEmpty());
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByPrimaryKey(locationID);
+            return (!getLocationObjectsFromResultSet(rs).isEmpty());
+        } catch (UnfoundPrimaryKeyException ex) {
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
     }
 
     /**
@@ -118,7 +128,7 @@ class LocationManager {
         }
     }
 
-    boolean addLocation(String name) {
+    boolean addLocation(String name) throws PrimaryKeyClashException {
         try {
             if (!isValidLocationName(name)) { // Ensure Location is new
                 column_primaryKey.data = tableManager.getNextPrimaryKeyId();
@@ -138,7 +148,7 @@ class LocationManager {
      * @return true if the location was removed successfully (or false if it
      * already does not exist)
      */
-    boolean removeLocation(String locationID) {
+    boolean removeLocation(String locationID) throws UnfoundPrimaryKeyException {
         return tableManager.deleteRowByPrimaryKey(locationID);
     }
 

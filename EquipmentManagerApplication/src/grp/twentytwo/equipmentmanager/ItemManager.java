@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.Item.Status;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,25 +42,25 @@ class ItemManager {
     private Column column_lastCalibration = new Column("LastCalibration", "VARCHAR(20)", "");
 
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        //DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         //dbManager.dropTable("ITEMTABLE");
-        ItemManager um = new ItemManager(dbManager);
-        um.printTable();
+        //ItemManager um = new ItemManager(dbManager);
+        //um.printTable();
         //System.out.println(um.searchForItems("0").toString()); 
-        Item item = um.getItemFromID("MC0");
-        item.setLocation("Electrical Lab 1");
+        //Item item = um.getItemFromID("MC0");
+        //item.setLocation("Electrical Lab 1");
         //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
         ///item.setLocation("WORKSHOP3");
 
-        um.updateItem(item);
-        um.printTable();
+        //um.updateItem(item);
+        //um.printTable();
         //System.out.println(um.getItemsForLocation("Wor"));
         //System.out.println(um.getItemFromID("MA1"));
     }
 
-    ItemManager(DatabaseManager databaseManager) {
+    ItemManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
         // Define Table Parameters
         columnData = new ArrayList<Column>();
@@ -85,7 +88,7 @@ class ItemManager {
      * @param itemID The desired items ID.
      * @return The desired item.
      */
-    Item getItemFromID(String itemID) {
+    Item getItemFromID(String itemID) throws UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
             return getItemObjectsFromResultSet(rs).getFirst();
@@ -124,7 +127,7 @@ class ItemManager {
      * @param item An item object. Id will be ignored
      * @return The Item ID of the Item Added.
      */
-    String addItem(Item item) {
+    String addItem(Item item) throws PrimaryKeyClashException {
         System.out.println(item.getLocation());
         column_itemID.data = generateItemID(item.getType());
         column_name.data = item.getName();
@@ -148,7 +151,7 @@ class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    boolean updateItem(Item item) {
+    boolean updateItem(Item item) throws UnfoundPrimaryKeyException {
 
         String id = item.getID();
 
@@ -164,7 +167,7 @@ class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    boolean saveItem(Item item) {
+    boolean saveItem(Item item) throws UnfoundPrimaryKeyException {
 
         String id = item.getID();
 
@@ -208,7 +211,7 @@ class ItemManager {
      * @param itemID The ID of the item to be removed.
      * @return true if the item existed.
      */
-    boolean removeItem(String itemID) {
+    boolean removeItem(String itemID) throws UnfoundPrimaryKeyException {
         return tableManager.deleteRowByPrimaryKey(itemID);
     }
 
