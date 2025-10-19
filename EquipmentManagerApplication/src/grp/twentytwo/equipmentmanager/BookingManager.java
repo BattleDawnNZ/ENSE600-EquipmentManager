@@ -96,7 +96,8 @@ class BookingManager {
                 return false;
             }
         }
-        column_bookingID.data = tableManager.getNextPrimaryKeyId();
+        booking.setID(tableManager.getNextPrimaryKeyId());
+        column_bookingID.data = booking.getID();
         column_userID.data = booking.getUserID();
         column_itemID.data = booking.getItemID();
         column_bookedDate.data = booking.getBookedDate().format(formatter);

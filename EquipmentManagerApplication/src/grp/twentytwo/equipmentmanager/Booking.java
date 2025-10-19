@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Booking {
 
-    private final String id;
+    private String id;
 
     private String userID;
     private String itemID;
@@ -58,6 +58,14 @@ public class Booking {
      */
     public String getID() {
         return id;
+    }
+
+    /**
+     *
+     * @return The bookings ID
+     */
+    void setID(String id) {
+        this.id = id;
     }
 
     /**
