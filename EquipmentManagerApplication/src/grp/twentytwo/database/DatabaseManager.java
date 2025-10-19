@@ -17,8 +17,8 @@ public class DatabaseManager {
     private final String USERNAME; // DB username
     private final String PASSWORD; //DB password
     private final String URL;  // url of the DB host (add ;create=true to create db)   "jdbc:derby://localhost:1527/BookStoreDB"
-    Connection conn;
-    Statement batchStatement = null;
+    private Connection conn;
+    private Statement batchStatement = null;
 
     public DatabaseManager(String username, String password, String url) {
         this.URL = url;
@@ -35,12 +35,12 @@ public class DatabaseManager {
 
     }
 
-    public Connection getConnection() {
+    Connection getConnection() {
         return this.conn;
     }
 
     //Establish connection
-    public void establishConnection() {
+    private void establishConnection() {
         if (this.conn == null) {
             try {
                 conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -51,7 +51,7 @@ public class DatabaseManager {
         }
     }
 
-    public void closeConnections() {
+    void closeConnections() {
         if (conn != null) {
             try {
                 conn.close();
@@ -61,7 +61,7 @@ public class DatabaseManager {
         }
     }
 
-    public ResultSet queryDB(String sql) {
+    ResultSet queryDB(String sql) {
 
         Connection connection = this.conn;
         Statement statement = null;
@@ -77,7 +77,7 @@ public class DatabaseManager {
         return resultSet;
     }
 
-    public void updateDB(String sql) {
+    void updateDB(String sql) {
 
         Connection connection = this.conn;
         Statement statement = null;
@@ -96,7 +96,7 @@ public class DatabaseManager {
         }
     }
 
-    public void addToBatch(String sql) {
+    void addToBatch(String sql) {
         try {
             batchStatement.addBatch(sql);
         } catch (SQLException ex) {
@@ -104,7 +104,7 @@ public class DatabaseManager {
         }
     }
 
-    public void executeBatch() {
+    void executeBatch() {
         try {
             batchStatement.executeBatch();
 
@@ -132,7 +132,7 @@ public class DatabaseManager {
         }
     }
 
-    public boolean dropTableIfExists(String tableName) {
+    public boolean dropTableIfExists(String tableName) { // USED FOR TESTING PURPOSES
         try {
             PreparedStatement st_dropTable = conn.prepareStatement("DROP TABLE " + tableName);
             if (checkTableExists(tableName)) {

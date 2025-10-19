@@ -18,7 +18,7 @@ public class Location {
         this(null, name);
     }
 
-    public String getId() {
+    public String getID() {
         return id;
     }
 

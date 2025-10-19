@@ -138,8 +138,8 @@ class LocationManager {
      * @return true if the location was removed successfully (or false if it
      * already does not exist)
      */
-    boolean removeLocation(Location locationID) {
-        return tableManager.deleteRowByPrimaryKey(locationID.getId());
+    boolean removeLocation(String locationID) {
+        return tableManager.deleteRowByPrimaryKey(locationID);
     }
 
     /**
