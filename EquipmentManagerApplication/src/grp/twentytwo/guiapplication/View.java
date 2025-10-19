@@ -51,6 +51,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> viewUser;
 
     public Speaker<ActionEvent> addLocation;
+    public Speaker<String> removeLocation;
     public Speaker<String> searchForLocation;
     public Speaker<String> viewLocation;
     // </editor-fold>
@@ -101,8 +102,10 @@ public class View extends javax.swing.JFrame {
 	removeItem = new Speaker<>();
 	button_removeItem.addActionListener((ActionEvent e) -> {
 	    String itemID = currentItemID();
-	    if (getConfirmation("Remove Item", "Are you sure you want remove Item " + itemID + "?")) {
-		removeItem.notifyListeners(itemID);
+	    if (!itemID.isBlank()) {
+		if (getConfirmation("Remove Item", "Are you sure you want remove Item " + itemID + "?")) {
+		    removeItem.notifyListeners(itemID);
+		}
 	    }
 	});
 	// Item editing
@@ -211,8 +214,10 @@ public class View extends javax.swing.JFrame {
 	removeUser = new Speaker<>();
 	button_removeUser.addActionListener((ActionEvent e) -> {
 	    String userID = currentUserID();
-	    if (getConfirmation("Remove User", "Are you sure you want remove User " + userID + "?")) {
-		removeUser.notifyListeners(userID);
+	    if (!userID.isBlank()) {
+		if (getConfirmation("Remove User", "Are you sure you want remove User " + userID + "?")) {
+		    removeUser.notifyListeners(userID);
+		}
 	    }
 	});
 	// User Searching
@@ -234,16 +239,6 @@ public class View extends javax.swing.JFrame {
 	    }
 	});
 	// Location Tab --------------------------------------------------------
-	// Location Searching
-	searchForLocation = new Speaker<>();
-	ActionListener searchLocationListener = new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		searchForLocation.notifyListeners(field_searchLocation.getText());
-	    }
-	};
-	button_searchLocation.addActionListener(searchLocationListener);
-	field_searchLocation.addActionListener(searchLocationListener);
 	// Location Adding
 	button_addLocation.addActionListener((ActionEvent e) -> {
 	    clearAddLocationDialog();
@@ -256,6 +251,25 @@ public class View extends javax.swing.JFrame {
 	addLocation = new Speaker<>();
 	button_addLocationConfirm.addActionListener(addLocation.passthrough());
 	button_addLocationConfirm.addActionListener(closeAddLocation);
+	// Location Removal
+	removeLocation = new Speaker<>();
+	button_removeLocation.addActionListener((ActionEvent e) -> {
+	    if (!currentLocationID().isBlank()) {
+		if (getConfirmation("Remove Location", "Are you sure you want remove Location " + currentLocationName() + "?")) {
+		    removeLocation.notifyListeners(currentLocationID());
+		}
+	    }
+	});
+	// Location Searching
+	searchForLocation = new Speaker<>();
+	ActionListener searchLocationListener = new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		searchForLocation.notifyListeners(field_searchLocation.getText());
+	    }
+	};
+	button_searchLocation.addActionListener(searchLocationListener);
+	field_searchLocation.addActionListener(searchLocationListener);
 	// Location Selection
 	viewLocation = new Speaker<>();
 	list_locationSearchResults.addListSelectionListener(new ListSelectionListener() {
@@ -477,6 +491,14 @@ public class View extends javax.swing.JFrame {
     }
 
     // Location Functions ------------------------------------------------------
+    public String currentLocationID() {
+	return text_locationID.getText();
+    }
+
+    public String currentLocationName() {
+	return text_locationName.getText();
+    }
+
     public void clearAddLocationDialog() {
 	field_addLocationName.setText("");
     }
@@ -499,7 +521,7 @@ public class View extends javax.swing.JFrame {
     public void setLocationPreview(Location locationData) {
 	try {
 	    if (locationData != null) {
-		text_locationID.setText(locationData.getId());
+		text_locationID.setText(locationData.getID());
 		text_locationName.setText(locationData.getName());
 	    }
 	} catch (Exception err) {
@@ -667,7 +689,6 @@ public class View extends javax.swing.JFrame {
         list_locationSearchResults = new javax.swing.JList<>();
         panel_locationView = new javax.swing.JPanel();
         toolbar_locationTools = new javax.swing.JToolBar();
-        button_editLocation = new javax.swing.JButton();
         button_removeLocation = new javax.swing.JButton();
         panel_locationDetails = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
@@ -1474,12 +1495,6 @@ public class View extends javax.swing.JFrame {
         toolbar_locationTools.setFloatable(false);
         toolbar_locationTools.setRollover(true);
 
-        button_editLocation.setText("Edit Location");
-        button_editLocation.setFocusable(false);
-        button_editLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        button_editLocation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_locationTools.add(button_editLocation);
-
         button_removeLocation.setText("Remove Location");
         button_removeLocation.setFocusable(false);
         button_removeLocation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -1583,7 +1598,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_editItem;
     private javax.swing.JButton button_editItemCancel;
     private javax.swing.JButton button_editItemConfirm;
-    private javax.swing.JButton button_editLocation;
     private javax.swing.JButton button_editUser;
     private javax.swing.JButton button_flagForCalibration;
     private javax.swing.JButton button_login;

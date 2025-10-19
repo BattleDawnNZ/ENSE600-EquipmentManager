@@ -1483,14 +1483,6 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="button_editLocation">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="Edit Location"/>
-                            <Property name="focusable" type="boolean" value="false"/>
-                            <Property name="horizontalTextPosition" type="int" value="0"/>
-                            <Property name="verticalTextPosition" type="int" value="3"/>
-                          </Properties>
-                        </Component>
                         <Component class="javax.swing.JButton" name="button_removeLocation">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="Remove Location"/>

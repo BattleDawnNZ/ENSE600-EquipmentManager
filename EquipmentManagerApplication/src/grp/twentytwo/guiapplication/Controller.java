@@ -101,6 +101,10 @@ public class Controller {
 	view.addLocation.addListener((ActionEvent e) -> {
 	    model.AddLocation(view.getNewLocationDetails());
 	});
+	// Location Removal	
+	view.removeLocation.addListener((String locationID) -> {
+	    model.removeLocation(locationID);
+	});
 	// Location Search
 	view.searchForLocation.addListener((String searchString) -> {
 	    view.setLocationSearchResults(model.searchForLocations(searchString));

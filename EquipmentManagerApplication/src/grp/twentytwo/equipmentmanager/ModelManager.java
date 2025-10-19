@@ -220,6 +220,12 @@ public class ModelManager {
 	locationManager.addLocation(locationName);
     }
 
+    public void removeLocation(String locationID) {
+	if (!locationID.isBlank() && itemManager.getItemsForLocation(locationManager.getLocationFromID(locationID).getName()).isEmpty()) {
+	    locationManager.removeLocation(locationID);
+	}// Todo throw custom exception to alert user to the fact that the location currently has items stored in it.
+    }
+
     public Location getLocation(String locationName) {
 	Location location = null;
 	try {
