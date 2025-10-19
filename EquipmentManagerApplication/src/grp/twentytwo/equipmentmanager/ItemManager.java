@@ -101,17 +101,22 @@ class ItemManager {
      * @param locationName
      * @return Items for a specified location name
      */
-    ArrayList<Item> getItemsForLocation(String locationName) {
+    ArrayList<String> getItemsForLocation(String locationName) {
         try {
+            ArrayList<String> validItems = new ArrayList<>();
             ResultSet rs = tableManager.getRowByColumnValue("Location", locationName);
-            return getItemObjectsFromResultSet(rs);
+            while (rs.next()) {
+                validItems.add(rs.getString("ItemID"));
+            }
+            return validItems;
         } catch (NoSuchElementException e) {
             System.out.println("InvalidID");
-            return null;
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     /**
