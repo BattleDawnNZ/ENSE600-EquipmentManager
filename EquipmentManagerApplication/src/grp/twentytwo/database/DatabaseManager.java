@@ -20,7 +20,7 @@ public class DatabaseManager {
     private Connection conn;
     private Statement batchStatement = null;
 
-    public DatabaseManager(String username, String password, String url) {
+    public DatabaseManager(String username, String password, String url) throws DatabaseConnectionException {
         this.URL = url;
         this.USERNAME = username;
         this.PASSWORD = password;
@@ -29,7 +29,7 @@ public class DatabaseManager {
 
     // TEST CODE FOR DB CONNECTION
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:UserDB; drop=true");
+        //DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:UserDB; drop=true");
         //System.out.println(dbManager.getConnection());
         //dbManager.updateDB("DROP DATABASE UserDB");
 
@@ -40,10 +40,13 @@ public class DatabaseManager {
     }
 
     //Establish connection
-    private void establishConnection() {
+    private void establishConnection() throws DatabaseConnectionException {
         if (this.conn == null) {
             try {
                 conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+                if (conn == null) {
+                    throw new DatabaseConnectionException();
+                }
                 batchStatement = conn.createStatement();
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
