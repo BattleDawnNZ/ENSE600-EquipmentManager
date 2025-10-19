@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author ppj1707
  */
-public class ItemManager {
+class ItemManager {
 
     private final LocationManager locationManager;
 
@@ -28,8 +28,8 @@ public class ItemManager {
     private final TableManager tableManager;
 
     // Database table properties
-    String tableName = "ITEMTABLE";
-    ArrayList<Column> columnData;
+    private final String tableName = "ITEMTABLE";
+    private final ArrayList<Column> columnData;
 
     private Column column_itemID = new Column("ItemID", "VARCHAR(12) not NULL", "");
     private Column column_name = new Column("Name", "VARCHAR(30) not NULL", "");
@@ -57,7 +57,7 @@ public class ItemManager {
         //System.out.println(um.getItemFromID("MA1"));
     }
 
-    public ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
+    ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
         this.dbManager = databaseManager;
         this.locationManager = locationManager;
         // Define Table Parameters
@@ -86,7 +86,7 @@ public class ItemManager {
      * @param itemID The desired items ID.
      * @return The desired item.
      */
-    public Item getItemFromID(String itemID) {
+    Item getItemFromID(String itemID) {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
             return getItemObjectsFromResultSet(rs).getFirst();
@@ -101,17 +101,22 @@ public class ItemManager {
      * @param locationName
      * @return Items for a specified location name
      */
-    public ArrayList<Item> getItemsForLocation(String locationName) {
+    ArrayList<String> getItemsForLocation(String locationName) {
         try {
+            ArrayList<String> validItems = new ArrayList<>();
             ResultSet rs = tableManager.getRowByColumnValue("Location", locationName);
-            return getItemObjectsFromResultSet(rs);
+            while (rs.next()) {
+                validItems.add(rs.getString("ItemID"));
+            }
+            return validItems;
         } catch (NoSuchElementException e) {
             System.out.println("InvalidID");
-            return null;
         } catch (InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+        } catch (SQLException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     /**
@@ -120,7 +125,7 @@ public class ItemManager {
      * @param item An item object. Id will be ignored
      * @return The Item ID of the Item Added.
      */
-    public String addItem(Item item) {
+    String addItem(Item item) {
         System.out.println(item.getLocation());
         if (locationManager.isValidLocationName(item.getLocation())) {
             column_itemID.data = tableManager.getNextPrimaryKeyId();
@@ -149,12 +154,12 @@ public class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    public boolean updateItem(Item item) {
+    boolean updateItem(Item item) {
 
         String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            if (locationManager.isValidLocationID(item.getLocation())) {
+            if (locationManager.isValidLocationName(item.getLocation())) {
                 return saveItem(item);
             }
         }
@@ -167,7 +172,7 @@ public class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    private boolean saveItem(Item item) {
+    boolean saveItem(Item item) {
 
         String id = item.getID();
 
@@ -195,7 +200,7 @@ public class ItemManager {
      * @param type the items type.
      * @return A unique item ID.
      */
-    public String generateItemID(String type) {
+    String generateItemID(String type) {
         String newID;
         newID = "";
         for (String str : type.toUpperCase().split("/")) {
@@ -211,7 +216,7 @@ public class ItemManager {
      * @param itemID The ID of the item to be removed.
      * @return true if the item existed.
      */
-    public boolean removeItem(String itemID) {
+    boolean removeItem(String itemID) {
         return tableManager.deleteRowByPrimaryKey(itemID);
     }
 
@@ -222,7 +227,7 @@ public class ItemManager {
      * @param partID The desired items partial ID.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> searchItemsByID(String partID) {
+    ArrayList<String> searchItemsByID(String partID) {
         if (partID.isBlank()) {
             return tableManager.getAllPrimaryKeys();
         }
@@ -248,7 +253,7 @@ public class ItemManager {
      * @param partName The desired items partial name.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> searchItemsByName(String partName) {
+    ArrayList<String> searchItemsByName(String partName) {
         if (partName.isBlank()) {
             return tableManager.getAllPrimaryKeys();
         }
@@ -274,7 +279,7 @@ public class ItemManager {
      * @param partType The desired items partial type.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> searchItemsByType(String partType) {
+    ArrayList<String> searchItemsByType(String partType) {
         try {
             if (partType.isBlank()) {
                 return tableManager.getAllPrimaryKeys();
@@ -303,7 +308,7 @@ public class ItemManager {
      * @param searchString
      * @return
      */
-    public LinkedHashSet<String> searchForItems(String searchString) {
+    LinkedHashSet<String> searchForItems(String searchString) {
 
         LinkedHashSet<String> validItems = new LinkedHashSet<>(); // Hashset forces duplicates to be removed. Preserves order
 
@@ -318,14 +323,14 @@ public class ItemManager {
      * @param itemID
      * @return True if ID is valid.
      */
-    public boolean verifyID(String itemID) {
+    boolean verifyID(String itemID) {
         return tableManager.verifyPrimaryKey(itemID);
     }
 
     /**
      * Print the entire user table to the console
      */
-    public void printTable() {
+    void printTable() {
         tableManager.printTable();
     }
 
@@ -362,7 +367,7 @@ public class ItemManager {
             }
             return itemList;
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 

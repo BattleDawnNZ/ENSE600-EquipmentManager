@@ -18,14 +18,14 @@ import java.util.logging.Logger;
  *
  * @author ppj1707
  */
-public class UserManager {
+class UserManager {
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
     // Database table properties
-    String tableName = "USERTABLE";
-    ArrayList<Column> columnData;
+    private final String tableName = "USERTABLE";
+    private final ArrayList<Column> columnData;
 
     private Column column_userID = new Column("UserID", "VARCHAR(12) not NULL", "");
     private Column column_name = new Column("Name", "VARCHAR(30)", "");
@@ -44,7 +44,7 @@ public class UserManager {
         System.out.println(um.searchForUsers("Gue").toString());
     }
 
-    public UserManager(DatabaseManager databaseManager) {
+    UserManager(DatabaseManager databaseManager) {
 
         this.dbManager = databaseManager;
         // Define Table Parameters
@@ -63,7 +63,7 @@ public class UserManager {
      * @param userID
      * @return a User object (if the id string exists) else, null
      */
-    public User getUserFromID(String userID) {
+    User getUserFromID(String userID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(userID);
         return getUserObjectFromResultSet(rs);
     }
@@ -74,7 +74,7 @@ public class UserManager {
      * @param level
      * @return a user object from specified input
      */
-    private User importUser(String userID, String name, SecurityLevels level) {
+    User importUser(String userID, String name, SecurityLevels level) {
         switch (level) { // Create new user based on their security level
             case MANAGER:
                 Manager manager = new Manager(userID, name);
@@ -95,7 +95,7 @@ public class UserManager {
      * @param user
      * @return true if created (did not previously exist)
      */
-    public boolean addUser(User user) {
+    boolean addUser(User user) {
 
         if (!tableManager.verifyPrimaryKey(user.getID())) { // Ensure user is new
             column_userID.data = user.getID();
@@ -119,7 +119,7 @@ public class UserManager {
      * @param user
      * @return true if updated (User previously existed)
      */
-    public boolean updateUser(User user) {
+    boolean updateUser(User user) {
 
         String id = user.getID();
 
@@ -150,7 +150,7 @@ public class UserManager {
      * @return true if the user was removed successfully (or false if they
      * already do not exist)
      */
-    public boolean removeUser(String userID) {
+    boolean removeUser(String userID) {
         return tableManager.deleteRowByPrimaryKey(userID);
     }
 
@@ -161,7 +161,7 @@ public class UserManager {
      * @param userID The desired users partial ID.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> searchUsersByID(String userID) {
+    ArrayList<String> searchUsersByID(String userID) {
         if (userID.isBlank()) {
             return tableManager.getAllPrimaryKeys();
         }
@@ -175,7 +175,7 @@ public class UserManager {
         } catch (SQLException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
     }
@@ -187,7 +187,7 @@ public class UserManager {
      * @param userName The desired users partial name.
      * @return A list of user IDs that match.
      */
-    public ArrayList<String> searchUsersByName(String userName) {
+    ArrayList<String> searchUsersByName(String userName) {
         if (userName.isBlank()) {
             return tableManager.getAllPrimaryKeys();
         }
@@ -199,9 +199,9 @@ public class UserManager {
                 validItems.add(rs.getString("UserID"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
     }
@@ -213,7 +213,7 @@ public class UserManager {
      * @param securityLevel The desired users partial security level.
      * @return A list of item IDs that match.
      */
-    public ArrayList<String> searchUsersBySecurityLevel(String securityLevel) {
+    ArrayList<String> searchUsersBySecurityLevel(String securityLevel) {
         try {
             if (securityLevel.isBlank()) {
                 return tableManager.getAllPrimaryKeys();
@@ -228,9 +228,9 @@ public class UserManager {
             }
             return validItems;
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -241,7 +241,7 @@ public class UserManager {
      * @return an ArrayList of users that partial match the partial
      * securityLevel, name, or id (if blank all items will be returned)
      */
-    public LinkedHashSet<String> searchForUsers(String searchString) {
+    LinkedHashSet<String> searchForUsers(String searchString) {
 
         LinkedHashSet<String> validItems = new LinkedHashSet<>(); // Hashset forces duplicates to be removed. Preserves order for priority
 
@@ -258,7 +258,7 @@ public class UserManager {
      * @return whether the id and password are valid (false if the user id was
      * not found in the system or password was incorrect for the user)
      */
-    public boolean login(User user) {
+    boolean login(User user) {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
             if (rs.next()) {
@@ -276,7 +276,7 @@ public class UserManager {
     /**
      * Print the entire user table to the console
      */
-    public void printTable() {
+    void printTable() {
         tableManager.printTable();
     }
 
@@ -299,7 +299,5 @@ public class UserManager {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
     }
-
 }

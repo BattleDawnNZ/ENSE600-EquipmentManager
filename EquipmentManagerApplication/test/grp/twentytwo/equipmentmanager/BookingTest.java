@@ -8,7 +8,6 @@ import grp.twentytwo.equipmentmanager.InvalidBookingRangeException;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

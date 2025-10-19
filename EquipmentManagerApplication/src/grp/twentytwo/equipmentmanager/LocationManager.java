@@ -17,12 +17,12 @@ import java.util.logging.Logger;
  *
  * @author ppj1707
  */
-public class LocationManager {
+class LocationManager {
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
-    String tableName = "LOCATIONTABLE";
+    private final String tableName = "LOCATIONTABLE";
     private final ArrayList<Column> columns;
 
     private Column column_primaryKey = new Column("LocationID", "VARCHAR(12) not NULL", "");
@@ -44,7 +44,7 @@ public class LocationManager {
         //System.out.println(lm.isValidLocationName("WORKSHOP3"));
     }
 
-    public LocationManager(DatabaseManager databaseManager) {
+    LocationManager(DatabaseManager databaseManager) {
 
         this.dbManager = databaseManager;
 
@@ -60,7 +60,7 @@ public class LocationManager {
      * @param locationID
      * @return a Location object (if the id string exists) else, null
      */
-    public Location getLocationFromID(String locationID) {
+    Location getLocationFromID(String locationID) {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
             return getLocationObjectsFromResultSet(rs).getFirst();
@@ -75,7 +75,7 @@ public class LocationManager {
      * @param locationID
      * @return true if the item exists
      */
-    public boolean isValidLocationID(String locationID) {
+    boolean isValidLocationID(String locationID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(locationID);
         return (!getLocationObjectsFromResultSet(rs).isEmpty());
     }
@@ -85,7 +85,7 @@ public class LocationManager {
      * @param locationName
      * @return true if the item exists
      */
-    public Location getLocationFromName(String locationName) {
+    Location getLocationFromName(String locationName) {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("Name", locationName);
@@ -104,7 +104,7 @@ public class LocationManager {
      * @param locationName
      * @return true if the item exists
      */
-    public boolean isValidLocationName(String locationName) {
+    boolean isValidLocationName(String locationName) {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("Name", locationName);
@@ -118,7 +118,7 @@ public class LocationManager {
         }
     }
 
-    public boolean addLocation(String name) {
+    boolean addLocation(String name) {
         try {
             if (!isValidLocationName(name)) { // Ensure Location is new
                 column_primaryKey.data = tableManager.getNextPrimaryKeyId();
@@ -138,7 +138,7 @@ public class LocationManager {
      * @return true if the location was removed successfully (or false if it
      * already does not exist)
      */
-    public boolean removeLocation(Location locationID) {
+    boolean removeLocation(Location locationID) {
         return tableManager.deleteRowByPrimaryKey(locationID.getId());
     }
 
@@ -149,7 +149,7 @@ public class LocationManager {
      * @param locationName The desired locations partial name.
      * @return A list of location IDs that match.
      */
-    public ArrayList<String> searchLocationsByName(String locationName) {
+    ArrayList<String> searchLocationsByName(String locationName) {
         ArrayList<String> validLocations = new ArrayList<>();
         ResultSet rs;
         try {
@@ -158,9 +158,9 @@ public class LocationManager {
                 validLocations.add(rs.getString("Name"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validLocations;
     }
@@ -168,7 +168,7 @@ public class LocationManager {
     /**
      * Print the entire location table to the console
      */
-    public void printTable() {
+    void printTable() {
         tableManager.printTable();
     }
 

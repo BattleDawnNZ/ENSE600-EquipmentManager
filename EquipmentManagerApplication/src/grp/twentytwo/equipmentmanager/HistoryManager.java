@@ -17,13 +17,13 @@ import java.util.logging.Logger;
  *
  * @author ppj1707
  */
-public class HistoryManager {
+class HistoryManager {
     /// MAX 50 description
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
-    String tableName = "HISTORYTABLE";
+    private final String tableName = "HISTORYTABLE";
     private final ArrayList<Column> columnData;
 
     private Column column_historyID = new Column("HistoryID", "VARCHAR(12) not NULL", "");
@@ -33,7 +33,7 @@ public class HistoryManager {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    public HistoryManager(DatabaseManager databaseManager) {
+    HistoryManager(DatabaseManager databaseManager) {
         this.dbManager = databaseManager;
 
         // Define Table Parameters
@@ -50,7 +50,7 @@ public class HistoryManager {
      * @param historyID
      * @return a History object (if the id string exists) else, null
      */
-    public History getHistoryFromID(String historyID) {
+    History getHistoryFromID(String historyID) {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
             return getHistoryObjectsFromResultSet(rs).getFirst();
@@ -65,13 +65,13 @@ public class HistoryManager {
      * @param itemID
      * @return All history for the item.
      */
-    public ArrayList<History> getHistoryForItem(String itemID) {
+    ArrayList<History> getHistoryForItem(String itemID) {
         ResultSet rs;
         try {
             rs = tableManager.getRowByColumnValue("ItemID", itemID);
             return getHistoryObjectsFromResultSet(rs);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
@@ -82,12 +82,12 @@ public class HistoryManager {
      * @param historyID
      * @return true if the history entry exists
      */
-    public boolean isValidHistoryID(String historyID) {
+    boolean isValidHistoryID(String historyID) {
         ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
         return ((getHistoryObjectsFromResultSet(rs).size()) > 0);
     }
 
-    public boolean addHistory(History history) {
+    boolean addHistory(History history) {
         try {
             column_historyID.data = tableManager.getNextPrimaryKeyId();
             column_itemID.data = history.getItemID();
@@ -104,7 +104,7 @@ public class HistoryManager {
     /**
      * Print the entire history table to the console
      */
-    public void printTable() {
+    void printTable() {
         tableManager.printTable();
     }
 
@@ -125,7 +125,7 @@ public class HistoryManager {
             }
             return historyObjects;
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
