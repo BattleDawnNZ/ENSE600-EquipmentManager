@@ -60,8 +60,9 @@ public class Controller {
 	view.bookItem.addListener((String itemID) -> {
 	    Booking booking = model.getNewBooking();
 	    booking.setItemID(itemID);
-	    view.setNewBookingDetails(booking);
-	    model.AddBooking(booking);
+	    if (view.setNewBookingDetails(booking)) {
+		model.AddBooking(booking);
+	    }
 	});
 	// Item Maintenance
 	view.addNote.addListener((String itemID) -> {
