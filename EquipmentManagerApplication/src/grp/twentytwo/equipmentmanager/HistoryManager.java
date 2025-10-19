@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
@@ -33,7 +36,7 @@ class HistoryManager {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    HistoryManager(DatabaseManager databaseManager) {
+    HistoryManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
 
         // Define Table Parameters
@@ -50,7 +53,7 @@ class HistoryManager {
      * @param historyID
      * @return a History object (if the id string exists) else, null
      */
-    History getHistoryFromID(String historyID) {
+    History getHistoryFromID(String historyID) throws UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
             return getHistoryObjectsFromResultSet(rs).getFirst();
@@ -83,11 +86,17 @@ class HistoryManager {
      * @return true if the history entry exists
      */
     boolean isValidHistoryID(String historyID) {
-        ResultSet rs = tableManager.getRowByPrimaryKey(historyID);
-        return ((getHistoryObjectsFromResultSet(rs).size()) > 0);
+        ResultSet rs;
+        try {
+            rs = tableManager.getRowByPrimaryKey(historyID);
+            return ((getHistoryObjectsFromResultSet(rs).size()) > 0);
+        } catch (UnfoundPrimaryKeyException ex) {
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
-    boolean addHistory(History history) {
+    boolean addHistory(History history) throws PrimaryKeyClashException {
         try {
             column_historyID.data = tableManager.getNextPrimaryKeyId();
             column_itemID.data = history.getItemID();

@@ -31,7 +31,7 @@ public class TableManager {
     private PreparedStatement st_dropTable;
     private PreparedStatement st_getMaxPrimaryKey;
 
-    public TableManager(DatabaseManager dbManager, String tableName, ArrayList<Column> columns, Column primaryKey) {
+    public TableManager(DatabaseManager dbManager, String tableName, ArrayList<Column> columns, Column primaryKey) throws DatabaseConnectionException {
         this.dbManager = dbManager;
         this.tableName = tableName;
         this.primaryKey = primaryKey;
@@ -47,7 +47,6 @@ public class TableManager {
             }
         }
         valueColumns.remove(primaryKey); // Excludes column with primary key
-
         conn = dbManager.getConnection();
         System.out.println(conn);
         createTableIfNotExist();
@@ -108,38 +107,40 @@ public class TableManager {
 
     }
 
-    public ResultSet getRowByPrimaryKey(String primaryKeyValue) {
+    public ResultSet getRowByPrimaryKey(String primaryKeyValue) throws UnfoundPrimaryKeyException {
         try {
-            st_getRowByPrimaryKey.setString(1, primaryKeyValue);
-            ResultSet rs = st_getRowByPrimaryKey.executeQuery();
-            return rs;
+            if (verifyPrimaryKey(primaryKeyValue)) {
+                st_getRowByPrimaryKey.setString(1, primaryKeyValue);
+                ResultSet rs = st_getRowByPrimaryKey.executeQuery();
+                return rs;
+            } else {
+                throw new UnfoundPrimaryKeyException();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
+        return null;
     }
 
-    public boolean deleteRowByPrimaryKey(String primaryKeyValue) {
+    public boolean deleteRowByPrimaryKey(String primaryKeyValue) throws UnfoundPrimaryKeyException {
         try {
-            st_deleteRowByPrimaryKey.setString(1, primaryKeyValue);
-            st_deleteRowByPrimaryKey.executeUpdate();
-            return true;
+            if (verifyPrimaryKey(primaryKeyValue)) {
+                st_deleteRowByPrimaryKey.setString(1, primaryKeyValue);
+                st_deleteRowByPrimaryKey.executeUpdate();
+                return true;
+            } else {
+                throw new UnfoundPrimaryKeyException();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
+        return false;
     }
 
-    public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException {
+    public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException, UnfoundPrimaryKeyException {
         if (verifyDataMapping(columnData)) { // Verify the data array
-            for (Column col : columnData) {
-                if (col.getName().equals(primaryKey.getName())) {
-                    if (!verifyPrimaryKey(col.data)) {
-                        System.out.println("Returning False");
-                        return false; // Id is invalid
-                    }
-                    break;
-                }
+            if (!verifyPrimaryKey(columnData)) {
+                throw new InvalidColumnNameException();
             }
             try {
 
@@ -162,9 +163,12 @@ public class TableManager {
         return false;
     }
 
-    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException {
+    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             try {
+                if (verifyPrimaryKey(columnData)) {
+                    throw new PrimaryKeyClashException();
+                }
                 for (int i = 0; i < allColumns.size(); i++) {
                     st_createRowByPrimaryKey.setString(i + 1, columnData.get(i).data); // 
                 }
@@ -251,7 +255,8 @@ public class TableManager {
      */
     public boolean verifyPrimaryKey(String id) {
         try {
-            ResultSet rs = getRowByPrimaryKey(id);
+            st_getRowByPrimaryKey.setString(1, id);
+            ResultSet rs = st_getRowByPrimaryKey.executeQuery();
             if (rs.next()) {
                 return true;
             } else {
@@ -261,6 +266,18 @@ public class TableManager {
             System.out.println("Error: " + e);
             return false;
         }
+    }
+
+    public boolean verifyPrimaryKey(ArrayList<Column> columnData) {
+        for (Column col : columnData) {
+            if (col.getName().equals(primaryKey.getName())) {
+                if (verifyPrimaryKey(col.data)) {
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
     }
 
     public ResultSet getRowByColumnValue(String columnName, String value) throws InvalidColumnNameException {

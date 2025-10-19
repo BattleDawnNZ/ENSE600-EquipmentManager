@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -37,19 +40,18 @@ class BookingManager {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        LocationManager lManager = new LocationManager(dbManager);
-        ItemManager itemManager = new ItemManager(dbManager, lManager);
-        BookingManager um = new BookingManager(itemManager, dbManager);
-        um.printTable();
-        //um.removeUser("000004");
-        //um.saveUser(user);
-        um.printTable();
-//        System.out.println(um.getBookingFromID("000001"));
-//        System.out.println(um.getBookingsForItem("000001"));
+//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+//        LocationManager lManager = new LocationManager(dbManager);
+//        BookingManager um = new BookingManager(dbManager);
+//        um.printTable();
+//        //um.removeUser("000004");
+//        //um.saveUser(user);
+//        um.printTable();
+////        System.out.println(um.getBookingFromID("000001"));
+////        System.out.println(um.getBookingsForItem("000001"));
     }
 
-    BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
+    BookingManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
 
         // Define table parameters
@@ -70,7 +72,7 @@ class BookingManager {
      * @param bookingID The booking ID of the booking requested.
      * @return the booking with the corresponding booking ID.
      */
-    Booking getBookingFromID(String bookingID) throws InvalidBookingRangeException {
+    Booking getBookingFromID(String bookingID) throws InvalidBookingRangeException, UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
             return getBookingObjectsFromResultSet(rs).getFirst(); // Booking IDs are unique in SQL table therefore only 1 will ever be returned
@@ -87,7 +89,7 @@ class BookingManager {
      * @return true if the booking was valid, did not clash with other bookings
      * and was created.
      */
-    boolean issueItem(Booking booking) throws InvalidBookingRangeException {
+    boolean issueItem(Booking booking) throws InvalidBookingRangeException, PrimaryKeyClashException {
         ArrayList<Booking> itemBookings = getBookingsForItem(booking.getItemID());
         for (Booking b : itemBookings) { // Checking booking does not clash with other bookings
             if (booking.overlaps(b)) {
@@ -118,7 +120,7 @@ class BookingManager {
      * @return True if the booking was successfully completed. i.e. item and
      * booking both actually existed.
      */
-    boolean returnItem(String bookingID) {
+    boolean returnItem(String bookingID) throws UnfoundPrimaryKeyException {
         return tableManager.deleteRowByPrimaryKey(bookingID);
     }
 
@@ -128,7 +130,7 @@ class BookingManager {
      * @param userID The User to check ownership
      * @return true if the booking exists and is owned by the User.
      */
-    boolean verifyBookingOwner(String bookingID, String userID) throws InvalidBookingRangeException {
+    boolean verifyBookingOwner(String bookingID, String userID) throws InvalidBookingRangeException, UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(bookingID);
             Booking booking = getBookingObjectsFromResultSet(rs).getFirst();

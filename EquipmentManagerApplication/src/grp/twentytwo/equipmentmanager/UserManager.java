@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,18 +36,18 @@ class UserManager {
     private Column column_password = new Column("Password", "VARCHAR(15)", "");
 
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        UserManager um = new UserManager(dbManager);
-        um.printTable();
-        //User user = new Manager("000004", "Alice");
-        //um.removeUser("000004");
-        //um.saveUser(user);
-        //um.printTable();
-        //System.out.println(um.getUserFromID("000004"));
-        System.out.println(um.searchForUsers("Gue").toString());
+//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+//        UserManager um = new UserManager(dbManager);
+//        um.printTable();
+//        //User user = new Manager("000004", "Alice");
+//        //um.removeUser("000004");
+//        //um.saveUser(user);
+//        //um.printTable();
+//        //System.out.println(um.getUserFromID("000004"));
+//        System.out.println(um.searchForUsers("Gue").toString());
     }
 
-    UserManager(DatabaseManager databaseManager) {
+    UserManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
 
         this.dbManager = databaseManager;
         // Define Table Parameters
@@ -63,7 +66,7 @@ class UserManager {
      * @param userID
      * @return a User object (if the id string exists) else, null
      */
-    User getUserFromID(String userID) {
+    User getUserFromID(String userID) throws UnfoundPrimaryKeyException {
         ResultSet rs = tableManager.getRowByPrimaryKey(userID);
         return getUserObjectFromResultSet(rs);
     }
@@ -95,7 +98,7 @@ class UserManager {
      * @param user
      * @return true if created (did not previously exist)
      */
-    boolean addUser(User user) {
+    boolean addUser(User user) throws PrimaryKeyClashException {
 
         if (!tableManager.verifyPrimaryKey(user.getID())) { // Ensure user is new
             column_userID.data = user.getID();
@@ -119,7 +122,7 @@ class UserManager {
      * @param user
      * @return true if updated (User previously existed)
      */
-    boolean updateUser(User user) {
+    boolean updateUser(User user) throws UnfoundPrimaryKeyException {
 
         String id = user.getID();
 
@@ -150,7 +153,7 @@ class UserManager {
      * @return true if the user was removed successfully (or false if they
      * already do not exist)
      */
-    boolean removeUser(String userID) {
+    boolean removeUser(String userID) throws UnfoundPrimaryKeyException {
         return tableManager.deleteRowByPrimaryKey(userID);
     }
 
@@ -258,7 +261,7 @@ class UserManager {
      * @return whether the id and password are valid (false if the user id was
      * not found in the system or password was incorrect for the user)
      */
-    boolean login(User user) {
+    boolean login(User user) throws UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
             if (rs.next()) {

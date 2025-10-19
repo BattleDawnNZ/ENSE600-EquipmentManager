@@ -2,8 +2,11 @@ package grp.twentytwo.equipmentmanager;
 
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.database.Column;
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.PrimaryKeyClashException;
+import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.Item.Status;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,8 +25,6 @@ import java.util.logging.Logger;
  */
 class ItemManager {
 
-    private final LocationManager locationManager;
-
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
@@ -41,28 +42,26 @@ class ItemManager {
     private Column column_lastCalibration = new Column("LastCalibration", "VARCHAR(20)", "");
 
     public static void main(String[] args) {
-        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
+        //DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         //dbManager.dropTable("ITEMTABLE");
-        LocationManager lManager = new LocationManager(dbManager);
-        ItemManager um = new ItemManager(dbManager, lManager);
-        um.printTable();
+        //ItemManager um = new ItemManager(dbManager);
+        //um.printTable();
         //System.out.println(um.searchForItems("0").toString()); 
-        Item item = um.getItemFromID("MC0");
-        item.setLocation("Electrical Lab 1");
+        //Item item = um.getItemFromID("MC0");
+        //item.setLocation("Electrical Lab 1");
         //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
         //um.removeUser("000004");
         //um.saveUser(user);
         ///item.setLocation("WORKSHOP3");
 
-        um.updateItem(item);
-        um.printTable();
+        //um.updateItem(item);
+        //um.printTable();
         //System.out.println(um.getItemsForLocation("Wor"));
         //System.out.println(um.getItemFromID("MA1"));
     }
 
-    ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
+    ItemManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
-        this.locationManager = locationManager;
         // Define Table Parameters
         columnData = new ArrayList<Column>();
         columnData.add(column_itemID);
@@ -89,7 +88,7 @@ class ItemManager {
      * @param itemID The desired items ID.
      * @return The desired item.
      */
-    Item getItemFromID(String itemID) {
+    Item getItemFromID(String itemID) throws UnfoundPrimaryKeyException {
         try {
             ResultSet rs = tableManager.getRowByPrimaryKey(itemID);
             return getItemObjectsFromResultSet(rs).getFirst();
@@ -128,28 +127,23 @@ class ItemManager {
      * @param item An item object. Id will be ignored
      * @return The Item ID of the Item Added.
      */
-    String addItem(Item item) {
+    String addItem(Item item) throws PrimaryKeyClashException {
         System.out.println(item.getLocation());
-        if (locationManager.isValidLocationName(item.getLocation())) {
-            column_itemID.data = generateItemID(item.getType());
-            column_name.data = item.getName();
-            column_description.data = item.getDescription();
-            column_location.data = item.getLocation();
-            column_status.data = item.getStatus().toString();
-            column_type.data = item.getType();
-            column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
-            column_lastCalibration.data = item.getLastCalibrationAsString();
-            try {
-                tableManager.createRow(columnData);
-                return column_itemID.data; // Item id
-            } catch (InvalidColumnNameException ex) {
-                Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-        } else {
-            System.out.println("Invalid Location Name");
+        column_itemID.data = generateItemID(item.getType());
+        column_name.data = item.getName();
+        column_description.data = item.getDescription();
+        column_location.data = item.getLocation();
+        column_status.data = item.getStatus().toString();
+        column_type.data = item.getType();
+        column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
+        column_lastCalibration.data = item.getLastCalibrationAsString();
+        try {
+            tableManager.createRow(columnData);
+            return column_itemID.data; // Item id
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -157,14 +151,12 @@ class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    boolean updateItem(Item item) {
+    boolean updateItem(Item item) throws UnfoundPrimaryKeyException {
 
         String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            if (locationManager.isValidLocationName(item.getLocation())) {
-                return saveItem(item);
-            }
+            return saveItem(item);
         }
         return false;
     }
@@ -175,7 +167,7 @@ class ItemManager {
      * @param item
      * @return true if updated (Item previously existed)
      */
-    boolean saveItem(Item item) {
+    boolean saveItem(Item item) throws UnfoundPrimaryKeyException {
 
         String id = item.getID();
 
@@ -219,7 +211,7 @@ class ItemManager {
      * @param itemID The ID of the item to be removed.
      * @return true if the item existed.
      */
-    boolean removeItem(String itemID) {
+    boolean removeItem(String itemID) throws UnfoundPrimaryKeyException {
         return tableManager.deleteRowByPrimaryKey(itemID);
     }
 
