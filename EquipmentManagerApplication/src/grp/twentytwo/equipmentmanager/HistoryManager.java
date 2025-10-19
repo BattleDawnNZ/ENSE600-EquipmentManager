@@ -71,7 +71,7 @@ class HistoryManager {
             rs = tableManager.getRowByColumnValue("ItemID", itemID);
             return getHistoryObjectsFromResultSet(rs);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
@@ -125,7 +125,7 @@ class HistoryManager {
             }
             return historyObjects;
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

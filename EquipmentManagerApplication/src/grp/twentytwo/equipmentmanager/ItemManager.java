@@ -362,7 +362,7 @@ class ItemManager {
             }
             return itemList;
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 

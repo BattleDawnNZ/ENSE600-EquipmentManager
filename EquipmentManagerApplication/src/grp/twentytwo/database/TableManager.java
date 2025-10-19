@@ -1,6 +1,5 @@
 package grp.twentytwo.database;
 
-import grp.twentytwo.equipmentmanager.UserManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -104,7 +103,7 @@ public class TableManager {
             st_updateRowByPrimaryKey = conn.prepareStatement(sql_updateRowByPrimaryKey);
             st_getMaxPrimaryKey = conn.prepareStatement(sql_getMaxPrimaryKey);
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -142,7 +141,7 @@ public class TableManager {
                 st_updateRowByPrimaryKey.setString(columnData.size(), primaryKey.getName()); // Condition
                 st_updateRowByPrimaryKey.executeUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             throw new InvalidColumnNameException();
@@ -157,7 +156,7 @@ public class TableManager {
                 }
                 st_createRowByPrimaryKey.executeUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             throw new InvalidColumnNameException();
@@ -183,7 +182,7 @@ public class TableManager {
                 // Create table. Assign primary key to prevent duplicates
                 st_createTable.execute();
             } catch (SQLException ex) {
-                Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
             }
             return true;
         }
@@ -226,7 +225,7 @@ public class TableManager {
                 System.out.print("\n");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

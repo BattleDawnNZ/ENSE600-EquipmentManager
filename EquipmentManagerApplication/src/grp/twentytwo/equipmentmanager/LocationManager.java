@@ -158,9 +158,9 @@ class LocationManager {
                 validLocations.add(rs.getString("Name"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validLocations;
     }

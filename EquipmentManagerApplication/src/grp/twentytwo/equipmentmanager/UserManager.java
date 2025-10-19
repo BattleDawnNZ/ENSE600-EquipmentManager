@@ -175,7 +175,7 @@ class UserManager {
         } catch (SQLException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
     }
@@ -199,9 +199,9 @@ class UserManager {
                 validItems.add(rs.getString("UserID"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
     }
@@ -228,9 +228,9 @@ class UserManager {
             }
             return validItems;
         } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
