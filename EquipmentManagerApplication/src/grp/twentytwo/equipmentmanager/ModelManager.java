@@ -196,6 +196,10 @@ public class ModelManager {
 	return user;
     }
 
+    public void RemoveUser(String userID) {
+	userManager.removeUser(userID);
+    }
+
     public LinkedHashSet<String> searchForUsers(String searchQuery) {
 	LinkedHashSet<String> users = new LinkedHashSet<>();
 	try {

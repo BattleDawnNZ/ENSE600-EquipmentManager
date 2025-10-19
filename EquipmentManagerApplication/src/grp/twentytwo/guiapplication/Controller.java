@@ -79,6 +79,10 @@ public class Controller {
 	});
 	//</editor-fold>
 	//<editor-fold desc="Users Tab">----------------------------------------
+	// User Removal	
+	view.removeUser.addListener((String userID) -> {
+	    model.RemoveUser(userID);
+	});
 	// User Search
 	view.searchForUser.addListener((String searchString) -> {
 	    view.setUserSearchResults(model.searchForUsers(searchString));

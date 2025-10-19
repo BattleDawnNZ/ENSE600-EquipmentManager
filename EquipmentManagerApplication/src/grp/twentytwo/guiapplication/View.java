@@ -45,6 +45,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> calibrateItem;
     public Speaker<String> viewHistory;
 
+    public Speaker<String> removeUser;
     public Speaker<String> searchForUser;
     public Speaker<String> viewUser;
 
@@ -197,6 +198,14 @@ public class View extends javax.swing.JFrame {
 //	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
 //	});
 	// User Tab ------------------------------------------------------------
+	// User Removal
+	removeUser = new Speaker<>();
+	button_removeUser.addActionListener((ActionEvent e) -> {
+	    String userID = currentUserID();
+	    if (getConfirmation("Remove User", "Are you sure you want remove User " + userID + "?")) {
+		removeUser.notifyListeners(userID);
+	    }
+	});
 	// User Searching
 	searchForUser = new Speaker<>();
 	ActionListener searchUserListener = (ActionEvent e) -> {
@@ -251,9 +260,13 @@ public class View extends javax.swing.JFrame {
 	});
     }
 
-    // Errors ------------------------------------------------------------------
+    // Helper Dialogs ----------------------------------------------------------
     public void showError(Exception err) {
 	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public boolean getConfirmation(String title, String message) {
+	return JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_CANCEL_OPTION) == 0;
     }
 
     // Login -------------------------------------------------------------------
@@ -431,6 +444,10 @@ public class View extends javax.swing.JFrame {
     }
 
     // User Functions ----------------------------------------------------------
+    public String currentUserID() {
+	return text_userID.getText();
+    }
+
     public void setUserSearchResults(LinkedHashSet<String> newList) {
 	DefaultListModel<String> userListModel = new DefaultListModel<>();
 	userListModel.addAll(newList);
@@ -438,9 +455,16 @@ public class View extends javax.swing.JFrame {
     }
 
     public void setUserPreview(User userData) {
-	text_userID.setText(userData.getID());
-	text_userName.setText(userData.getName());
-	text_userSecurityLevel.setText(userData.getSecurityLevel().toString());
+	try {
+	    if (userData != null) {
+		text_userID.setText(userData.getID());
+		text_userName.setText(userData.getName());
+		text_userSecurityLevel.setText(userData.getSecurityLevel().toString());
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     // Location Functions ------------------------------------------------------
