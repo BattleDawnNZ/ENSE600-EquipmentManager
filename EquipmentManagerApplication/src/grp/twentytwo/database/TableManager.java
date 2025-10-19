@@ -91,7 +91,7 @@ public class TableManager {
         // Print SQL to verify
         System.out.println(sql_createRowByPrimaryKey);
         System.out.println(sql_deleteRowByPrimaryKey);
-        System.out.println(sql_updateRowByPrimaryKey);
+        System.out.println("Update Row By Primary Key: " + sql_updateRowByPrimaryKey);
         System.out.println(sql_getRowByPrimaryKey);
         System.out.println(sql_getMaxPrimaryKey);
 
@@ -130,22 +130,36 @@ public class TableManager {
         }
     }
 
-    public void updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException {
+    public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException {
         if (verifyDataMapping(columnData)) { // Verify the data array
+            for (Column col : columnData) {
+                if (col.getName().equals(primaryKey.getName())) {
+                    if (!verifyPrimaryKey(col.data)) {
+                        System.out.println("Returning False");
+                        return false; // Id is invalid
+                    }
+                    break;
+                }
+            }
             try {
-                for (int i = 0; i < valueColumns.size(); i++) {
+
+                int st_index = 1;
+                for (int i = 0; i < allColumns.size(); i++) {
                     if (!columnData.get(i).getName().equals(primaryKey.getName())) { // Ensure primary key cannot be updated
-                        st_updateRowByPrimaryKey.setString(i + 1, columnData.get(i).data); // Add data
+                        st_updateRowByPrimaryKey.setString(st_index, columnData.get(i).data); // Add data
+                        st_index++;
                     }
                 }
-                st_updateRowByPrimaryKey.setString(columnData.size(), primaryKey.getName()); // Condition
+                st_updateRowByPrimaryKey.setString(columnData.size(), primaryKey.data); // Condition
                 st_updateRowByPrimaryKey.executeUpdate();
+                return true;
             } catch (SQLException ex) {
                 Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             throw new InvalidColumnNameException();
         }
+        return false;
     }
 
     public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException {
