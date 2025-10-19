@@ -128,7 +128,7 @@ class ItemManager {
     String addItem(Item item) {
         System.out.println(item.getLocation());
         if (locationManager.isValidLocationName(item.getLocation())) {
-            column_itemID.data = tableManager.getNextPrimaryKeyId();
+            column_itemID.data = generateItemID(item.getType());
             column_name.data = item.getName();
             column_description.data = item.getDescription();
             column_location.data = item.getLocation();
