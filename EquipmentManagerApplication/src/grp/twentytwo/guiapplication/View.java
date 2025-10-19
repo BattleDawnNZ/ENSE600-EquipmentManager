@@ -35,6 +35,7 @@ public class View extends javax.swing.JFrame {
     // <editor-fold desc="Speakers">
     public Speaker<ActionEvent> login;
     public Speaker<ActionEvent> addItem;
+    public Speaker<String> removeItem;
     public Speaker<String> bookItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
@@ -84,6 +85,26 @@ public class View extends javax.swing.JFrame {
 	login = new Speaker<>(button_login);
 
 	// Item Tab ------------------------------------------------------------
+	// Item Adding
+	button_addItem.addActionListener((ActionEvent e) -> {
+	    clearAddItemDialog();
+	    dialog_addItem.setVisible(true);
+	});
+	ActionListener closeAddItem = (ActionEvent e) -> {
+	    dialog_addItem.setVisible(false);
+	};
+	button_addItemCancel.addActionListener(closeAddItem);
+	addItem = new Speaker<>();
+	button_addItemConfirm.addActionListener(addItem.passthrough());
+	button_addItemConfirm.addActionListener(closeAddItem);
+	// Item Removal
+	removeItem = new Speaker<>();
+	button_removeItem.addActionListener((ActionEvent e) -> {
+	    String itemID = currentItemID();
+	    if (getConfirmation("Remove Item", "Are you sure you want remove Item " + itemID + "?")) {
+		removeItem.notifyListeners(itemID);
+	    }
+	});
 	// Item editing
 	editItem = new Speaker<>();
 	button_editItem.addActionListener((ActionEvent e) -> {
@@ -100,18 +121,6 @@ public class View extends javax.swing.JFrame {
 	};
 	button_searchItem.addActionListener(searchItemListener);
 	field_searchItem.addActionListener(searchItemListener);
-	// Item Adding
-	button_addItem.addActionListener((ActionEvent e) -> {
-	    clearAddItemDialog();
-	    dialog_addItem.setVisible(true);
-	});
-	ActionListener closeAddItem = (ActionEvent e) -> {
-	    dialog_addItem.setVisible(false);
-	};
-	button_addItemCancel.addActionListener(closeAddItem);
-	addItem = new Speaker<>();
-	button_addItemConfirm.addActionListener(addItem.passthrough());
-	button_addItemConfirm.addActionListener(closeAddItem);
 	// Item Selection
 	viewItem = new Speaker<>();
 	list_itemSearchResults.addListSelectionListener((ListSelectionEvent e) -> {

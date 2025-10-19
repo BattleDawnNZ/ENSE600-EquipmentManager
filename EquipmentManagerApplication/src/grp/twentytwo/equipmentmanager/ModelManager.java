@@ -71,6 +71,10 @@ public class ModelManager {
 	itemManager.addItem(item);
     }
 
+    public void removeItem(String itemID) {
+	itemManager.removeItem(itemID);
+    }
+
     public Item getItem(String itemID) {
 	Item item = null;
 	try {

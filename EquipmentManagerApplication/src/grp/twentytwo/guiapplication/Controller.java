@@ -40,6 +40,10 @@ public class Controller {
 	    view.setNewItemDetails(item);
 	    model.AddItem(item);
 	});
+	// Item Removal	
+	view.removeItem.addListener((String itemID) -> {
+	    model.removeItem(itemID);
+	});
 	// Item Edit
 	view.editItem.addListener((String itemID) -> {
 	    view.setItemEditingPreview(model.getItem(itemID));
