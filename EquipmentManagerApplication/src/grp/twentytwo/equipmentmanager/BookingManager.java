@@ -39,8 +39,7 @@ class BookingManager {
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         LocationManager lManager = new LocationManager(dbManager);
-        ItemManager itemManager = new ItemManager(dbManager, lManager);
-        BookingManager um = new BookingManager(itemManager, dbManager);
+        BookingManager um = new BookingManager(dbManager);
         um.printTable();
         //um.removeUser("000004");
         //um.saveUser(user);
@@ -49,7 +48,7 @@ class BookingManager {
 //        System.out.println(um.getBookingsForItem("000001"));
     }
 
-    BookingManager(ItemManager itemManager, DatabaseManager databaseManager) {
+    BookingManager(DatabaseManager databaseManager) {
         this.dbManager = databaseManager;
 
         // Define table parameters

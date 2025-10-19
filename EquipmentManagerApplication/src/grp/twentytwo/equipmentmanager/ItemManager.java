@@ -22,8 +22,6 @@ import java.util.logging.Logger;
  */
 class ItemManager {
 
-    private final LocationManager locationManager;
-
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
 
@@ -43,8 +41,7 @@ class ItemManager {
     public static void main(String[] args) {
         DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
         //dbManager.dropTable("ITEMTABLE");
-        LocationManager lManager = new LocationManager(dbManager);
-        ItemManager um = new ItemManager(dbManager, lManager);
+        ItemManager um = new ItemManager(dbManager);
         um.printTable();
         //System.out.println(um.searchForItems("0").toString()); 
         Item item = um.getItemFromID("MC0");
@@ -60,9 +57,8 @@ class ItemManager {
         //System.out.println(um.getItemFromID("MA1"));
     }
 
-    ItemManager(DatabaseManager databaseManager, LocationManager locationManager) {
+    ItemManager(DatabaseManager databaseManager) {
         this.dbManager = databaseManager;
-        this.locationManager = locationManager;
         // Define Table Parameters
         columnData = new ArrayList<Column>();
         columnData.add(column_itemID);
@@ -130,26 +126,21 @@ class ItemManager {
      */
     String addItem(Item item) {
         System.out.println(item.getLocation());
-        if (locationManager.isValidLocationName(item.getLocation())) {
-            column_itemID.data = generateItemID(item.getType());
-            column_name.data = item.getName();
-            column_description.data = item.getDescription();
-            column_location.data = item.getLocation();
-            column_status.data = item.getStatus().toString();
-            column_type.data = item.getType();
-            column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
-            column_lastCalibration.data = item.getLastCalibrationAsString();
-            try {
-                tableManager.createRow(columnData);
-                return column_itemID.data; // Item id
-            } catch (InvalidColumnNameException ex) {
-                Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-        } else {
-            System.out.println("Invalid Location Name");
+        column_itemID.data = generateItemID(item.getType());
+        column_name.data = item.getName();
+        column_description.data = item.getDescription();
+        column_location.data = item.getLocation();
+        column_status.data = item.getStatus().toString();
+        column_type.data = item.getType();
+        column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
+        column_lastCalibration.data = item.getLastCalibrationAsString();
+        try {
+            tableManager.createRow(columnData);
+            return column_itemID.data; // Item id
+        } catch (InvalidColumnNameException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -162,9 +153,7 @@ class ItemManager {
         String id = item.getID();
 
         if (tableManager.verifyPrimaryKey(id)) { // Update the table
-            if (locationManager.isValidLocationName(item.getLocation())) {
-                return saveItem(item);
-            }
+            return saveItem(item);
         }
         return false;
     }
