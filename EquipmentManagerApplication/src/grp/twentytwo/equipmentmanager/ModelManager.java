@@ -34,9 +34,9 @@ public class ModelManager {
 	try {
 	    databaseManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
 	    locationManager = new LocationManager(databaseManager);
-	    itemManager = new ItemManager(databaseManager, locationManager);
+	    itemManager = new ItemManager(databaseManager);
 	    userManager = new UserManager(databaseManager);
-	    bookingManager = new BookingManager(itemManager, databaseManager);
+	    bookingManager = new BookingManager(databaseManager);
 	    historyManager = new HistoryManager(databaseManager);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
@@ -68,11 +68,23 @@ public class ModelManager {
     }
 
     public void AddItem(Item item) {
-	itemManager.addItem(item);
+	try {
+	    if (locationManager.isValidLocationName(item.getLocation())) {
+		itemManager.addItem(item);
+	    }
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public void removeItem(String itemID) {
-	itemManager.removeItem(itemID);
+	try {
+	    itemManager.removeItem(itemID);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public Item getItem(String itemID) {
@@ -115,7 +127,9 @@ public class ModelManager {
 	boolean success = false;
 	try {
 	    // Todo Add feedback to user on failed issuing of item. Fix Overlap Function to allow back to back bookings.
-	    success = bookingManager.issueItem(booking);
+	    if (itemManager.verifyID(booking.getItemID())) {
+		success = bookingManager.issueItem(booking);
+	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -201,7 +215,12 @@ public class ModelManager {
     }
 
     public void RemoveUser(String userID) {
-	userManager.removeUser(userID);
+	try {
+	    userManager.removeUser(userID);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public LinkedHashSet<String> searchForUsers(String searchQuery) {
@@ -217,13 +236,23 @@ public class ModelManager {
 
     // Location Functions ------------------------------------------------------
     public void AddLocation(String locationName) {
-	locationManager.addLocation(locationName);
+	try {
+	    locationManager.addLocation(locationName);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public void removeLocation(String locationID) {
-	if (!locationID.isBlank() && itemManager.getItemsForLocation(locationManager.getLocationFromID(locationID).getName()).isEmpty()) {
-	    locationManager.removeLocation(locationID);
-	}// Todo throw custom exception to alert user to the fact that the location currently has items stored in it.
+	try {
+	    if (!locationID.isBlank() && itemManager.getItemsForLocation(locationManager.getLocationFromID(locationID).getName()).isEmpty()) {
+		locationManager.removeLocation(locationID);
+	    }// Todo throw custom exception to alert user to the fact that the location currently has items stored in it.
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public Location getLocation(String locationName) {
