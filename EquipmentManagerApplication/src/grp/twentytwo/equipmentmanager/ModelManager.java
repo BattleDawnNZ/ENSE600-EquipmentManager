@@ -71,6 +71,7 @@ public class ModelManager {
 	try {
 	    if (locationManager.isValidLocationName(item.getLocation())) {
 		itemManager.addItem(item);
+		historyManager.addHistory(new History(item.getID(), "Created by User: " + activeUser.getID()));
 	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
@@ -81,6 +82,7 @@ public class ModelManager {
     public void removeItem(String itemID) {
 	try {
 	    itemManager.removeItem(itemID);
+	    historyManager.addHistory(new History(itemID, "Details Updated by User: " + activeUser.getID()));
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -96,6 +98,18 @@ public class ModelManager {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
 	return item;
+    }
+
+    public void updateItem(Item item) {
+	try {
+	    if (locationManager.isValidLocationName(item.getLocation())) {
+		itemManager.updateItem(item);
+		historyManager.addHistory(new History(item.getID(), "Details Updated by User: " + activeUser.getID()));
+	    }
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
     }
 
     public LinkedHashSet<String> searchForItems(String searchQuery) {
@@ -129,6 +143,7 @@ public class ModelManager {
 	    // Todo Add feedback to user on failed issuing of item. Fix Overlap Function to allow back to back bookings.
 	    if (itemManager.verifyID(booking.getItemID())) {
 		success = bookingManager.issueItem(booking);
+		historyManager.addHistory(new History(booking.getItemID(), "Item Booked by User: " + activeUser.getID() + ", Booking ID: " + booking.getID()));
 	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
