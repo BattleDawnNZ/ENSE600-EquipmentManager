@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.sql.ResultSet;
@@ -128,7 +129,7 @@ class LocationManager {
         }
     }
 
-    boolean addLocation(String name) throws PrimaryKeyClashException {
+    boolean addLocation(String name) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             if (!isValidLocationName(name)) { // Ensure Location is new
                 column_primaryKey.data = tableManager.getNextPrimaryKeyId();

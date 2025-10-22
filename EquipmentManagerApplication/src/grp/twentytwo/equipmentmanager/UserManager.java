@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
@@ -98,7 +99,7 @@ class UserManager {
      * @param user
      * @return true if created (did not previously exist)
      */
-    boolean addUser(User user) throws PrimaryKeyClashException {
+    boolean addUser(User user) throws PrimaryKeyClashException, NullColumnValueException {
 
         if (!tableManager.verifyPrimaryKey(user.getID())) { // Ensure user is new
             column_userID.data = user.getID();

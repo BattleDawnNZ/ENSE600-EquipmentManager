@@ -163,7 +163,7 @@ public class TableManager {
         return false;
     }
 
-    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException {
+    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             try {
                 if (verifyPrimaryKey(columnData)) {
@@ -174,11 +174,12 @@ public class TableManager {
                 }
                 st_createRowByPrimaryKey.executeUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+                throw new NullColumnValueException();
             }
         } else {
             throw new InvalidColumnNameException();
         }
+
     }
 
     private boolean createTableIfNotExist() {
@@ -350,6 +351,9 @@ public class TableManager {
     }
 
     public boolean verifyDataMapping(ArrayList<Column> columnData) { // Verify the received array has matching table column names, same index
+        if (columnData == null || (allColumns.size() != columnData.size())) {
+            return false;
+        }
         for (int i = 0; i < allColumns.size(); i++) {
             if (!allColumns.get(i).getName().equals(columnData.get(i).getName())) {
                 return false;

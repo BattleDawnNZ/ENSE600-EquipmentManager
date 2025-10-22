@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ class HistoryManager {
         }
     }
 
-    boolean addHistory(History history) throws PrimaryKeyClashException {
+    boolean addHistory(History history) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             column_historyID.data = tableManager.getNextPrimaryKeyId();
             column_itemID.data = history.getItemID();
