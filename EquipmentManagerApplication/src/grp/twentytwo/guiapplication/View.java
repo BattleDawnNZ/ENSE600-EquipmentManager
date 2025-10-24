@@ -57,6 +57,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> removeLocation;
     public Speaker<String> searchForLocation;
     public Speaker<String> viewLocation;
+    public Speaker<ActionEvent> getLocations;
     // </editor-fold>
 
     /**
@@ -92,20 +93,23 @@ public class View extends javax.swing.JFrame {
 	});
 
 	// Item Tab ------------------------------------------------------------
+	getLocations = new Speaker<>();
 	// Item Adding
 	button_addItem.addActionListener((ActionEvent e) -> {
-	    clearAddItemDialog();
+	    setupAdditemDialog();
 	    dialog_addItem.setVisible(true);
 	});
-	ActionListener closeAddItem = (ActionEvent e) -> {
+	button_addItemCancel.addActionListener((ActionEvent e) -> {
 	    dialog_addItem.setVisible(false);
-	};
-	button_addItemCancel.addActionListener(closeAddItem);
+	});
 	addItem = new Speaker<>();
 	button_addItemConfirm.addActionListener((ActionEvent e) -> {
-	    addItem.notifyListeners(e);
+	    if (verifyAddItemDetails()) {
+		addItem.notifyListeners(e);
+		dialog_addItem.setVisible(false);
+	    }
+	    searchForItem.notifyListeners(field_searchItem.getText());
 	});
-	button_addItemConfirm.addActionListener(closeAddItem);
 	// Item Removal
 	removeItem = new Speaker<>();
 	button_removeItem.addActionListener((ActionEvent e) -> {
@@ -128,13 +132,13 @@ public class View extends javax.swing.JFrame {
 	editItem = new Speaker<>();
 	button_editItemConfirm.addActionListener((ActionEvent e) -> {
 	    editItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
 	});
 	button_editItemConfirm.addActionListener(closeEditItem);
 	// Item Searching
 	searchForItem = new Speaker<>();
 	ActionListener searchItemListener = (ActionEvent e) -> {
-	    String searchString = field_searchItem.getText();
-	    searchForItem.notifyListeners(searchString);
+	    searchForItem.notifyListeners(field_searchItem.getText());
 	};
 	button_searchItem.addActionListener(searchItemListener);
 	field_searchItem.addActionListener(searchItemListener);
@@ -267,7 +271,9 @@ public class View extends javax.swing.JFrame {
 	    public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		    String selectedValue = list_userSearchResults.getSelectedValue();
-		    viewUser.notifyListeners(selectedValue);
+		    if (selectedValue != null) {
+			viewUser.notifyListeners(selectedValue);
+		    }
 		}
 	    }
 	});
@@ -312,7 +318,9 @@ public class View extends javax.swing.JFrame {
 	    public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		    String selectedValue = list_locationSearchResults.getSelectedValue();
-		    viewLocation.notifyListeners(selectedValue);
+		    if (selectedValue != null) {
+			viewLocation.notifyListeners(selectedValue);
+		    }
 		}
 	    }
 	});
@@ -323,7 +331,7 @@ public class View extends javax.swing.JFrame {
 	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showInformation(String title, String message) {
+    public void showInvalidEntry(String title, String message) {
 	JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -363,22 +371,49 @@ public class View extends javax.swing.JFrame {
 	return list_itemBookings.getSelectedValue();
     }
 
-    public void clearAddItemDialog() {
+    public void setupAdditemDialog() {
+	getLocations.notifyListeners(null);
 	field_addItemName.setText("");
-	field_addItemLocation.setText("");
 	field_addItemType.setText("");
+    }
+
+    public boolean verifyAddItemDetails() {
+	// Check Name
+	if (field_addItemName.getText().length() < 1) {
+	    showInvalidEntry("Invalid Item Name", "The Item name entered is too short.\nItem names must be 1 characters or more.");
+	    return false;
+	}
+	if (field_addItemName.getText().length() > 30) {
+	    showInvalidEntry("Invalid Item Name", "The Item name entered is too long.\nItem names must be 30 characters or less.");
+	    return false;
+	}
+	// Check Type
+	if (field_addItemType.getText().length() < 1) {
+	    showInvalidEntry("Invalid Item Type", "The Item type entered is too short.\nItem locations must be 1 characters or more.");
+	    return false;
+	}
+	if (field_addItemType.getText().length() > 40) {
+	    showInvalidEntry("Invalid Item Type", "The Item type entered is too long.\nItem locations must be 40 characters or less.");
+	    return false;
+	}
+	// Check Location
+	if (combo_addItemLocation.getSelectedItem() == null) {
+	    showInvalidEntry("Invalid Item Location", "The Item must have a location.\nItem locations must be set.");
+	    return false;
+	}
+	return true;
     }
 
     public void setNewItemDetails(Item item) {
 	item.setName(field_addItemName.getText());
-	item.setLocation(field_addItemLocation.getText());
+	item.setLocation((String) combo_addItemLocation.getSelectedItem());
 	item.setType(field_addItemType.getText());
     }
 
     public void editItemDetails(Item item) {
 	item.setName(field_editItemName.getText());
 	item.setDescription(field_editItemDescription.getText());
-	item.setLocation(field_editItemLocation.getText());
+	item.setLocation((String) combo_editItemLocation.getSelectedItem());
 	item.setStatus((Item.Status) combo_editItemStatus.getSelectedItem());
 	item.setType(field_editItemType.getText());
     }
@@ -471,9 +506,10 @@ public class View extends javax.swing.JFrame {
     public void setItemEditingPreview(Item itemData) {
 	try {
 	    if (itemData != null) {
+		getLocations.notifyListeners(null);
 		field_editItemName.setText(itemData.getName());
 		field_editItemDescription.setText(itemData.getDescription());
-		field_editItemLocation.setText(itemData.getLocation());
+		combo_editItemLocation.setSelectedItem(itemData.getLocation());
 		DefaultComboBoxModel<Item.Status> statuses = new DefaultComboBoxModel<>();
 		for (Item.Status status : Item.Status.values()) {
 		    statuses.addElement(status);
@@ -543,13 +579,21 @@ public class View extends javax.swing.JFrame {
 
     public boolean verifyAddUserDetails() {
 	// Check ID
+	if (field_addUserID.getText().length() < 3) {
+	    showInvalidEntry("Invalid User ID", "The User ID entered is too short.\nUser IDs must be 3 characters or more.");
+	    return false;
+	}
 	if (field_addUserID.getText().length() > 12) {
-	    showInformation("Invalid User ID", "The User ID entered is too long.\nUser IDs must be 12 characters or less.");
+	    showInvalidEntry("Invalid User ID", "The User ID entered is too long.\nUser IDs must be 12 characters or less.");
 	    return false;
 	}
 	// Check Name
+	if (field_addUserName.getText().length() < 1) {
+	    showInvalidEntry("Invalid User Name", "The User name entered is too short.\nUser names must be 1 characters or more.");
+	    return false;
+	}
 	if (field_addUserName.getText().length() > 30) {
-	    showInformation("Invalid User Name", "The User name entered is too long.\nUser names must be 30 characters or less.");
+	    showInvalidEntry("Invalid User Name", "The User name entered is too long.\nUser names must be 30 characters or less.");
 	    return false;
 	}
 	// Check Password
@@ -561,12 +605,16 @@ public class View extends javax.swing.JFrame {
 	for (char c : field_addUserConfirmPassword.getPassword()) {
 	    confirmPassword += c;
 	}
+	if (password.length() < 3) {
+	    showInvalidEntry("Invalid User Password", "The User password entered is too short.\nUser passwords must be 3 characters or more.");
+	    return false;
+	}
 	if (password.length() > 15) {
-	    showInformation("Invalid User Password", "The User password entered is too long.\nUser passwords must be 15 characters or less.");
+	    showInvalidEntry("Invalid User Password", "The User password entered is too long.\nUser passwords must be 15 characters or less.");
 	    return false;
 	}
 	if (!password.equals(confirmPassword)) {
-	    showInformation("Invalid User Password", "The User passwords entered do not match.\nUser password must match the confirmation password.");
+	    showInvalidEntry("Invalid User Password", "The User passwords entered do not match.\nUser password must match the confirmation password.");
 	    return false;
 	}
 	return true;
@@ -655,6 +703,13 @@ public class View extends javax.swing.JFrame {
 	}
     }
 
+    public void setLocations(ArrayList<String> newList) {
+	DefaultComboBoxModel<String> locations = new DefaultComboBoxModel<>();
+	locations.addAll(newList);
+	combo_addItemLocation.setModel(locations);
+	combo_editItemLocation.setModel(locations);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -671,8 +726,8 @@ public class View extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         field_addItemName = new javax.swing.JTextField();
-        field_addItemLocation = new javax.swing.JTextField();
         field_addItemType = new javax.swing.JTextField();
+        combo_addItemLocation = new javax.swing.JComboBox<>();
         jPanel7 = new javax.swing.JPanel();
         button_addItemCancel = new javax.swing.JButton();
         button_addItemConfirm = new javax.swing.JButton();
@@ -684,11 +739,11 @@ public class View extends javax.swing.JFrame {
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         field_editItemName = new javax.swing.JTextField();
-        field_editItemLocation = new javax.swing.JTextField();
         field_editItemType = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         field_editItemDescription = new javax.swing.JTextArea();
         combo_editItemStatus = new javax.swing.JComboBox<>();
+        combo_editItemLocation = new javax.swing.JComboBox<>();
         jPanel9 = new javax.swing.JPanel();
         button_editItemCancel = new javax.swing.JButton();
         button_editItemConfirm = new javax.swing.JButton();
@@ -869,16 +924,17 @@ public class View extends javax.swing.JFrame {
         jPanel5.add(field_addItemName, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
-        jPanel5.add(field_addItemLocation, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
         jPanel5.add(field_addItemType, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel5.add(combo_addItemLocation, gridBagConstraints);
 
         dialog_addItem.getContentPane().add(jPanel5, java.awt.BorderLayout.CENTER);
 
@@ -949,12 +1005,6 @@ public class View extends javax.swing.JFrame {
         jPanel6.add(field_editItemName, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel6.add(field_editItemLocation, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -979,6 +1029,13 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         jPanel6.add(combo_editItemStatus, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel6.add(combo_editItemLocation, gridBagConstraints);
 
         dialog_editItem.getContentPane().add(jPanel6, java.awt.BorderLayout.CENTER);
 
@@ -1832,7 +1889,9 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_viewHistoryClose;
     private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
     private javax.swing.JCheckBox check_needsCalibration;
+    private javax.swing.JComboBox<String> combo_addItemLocation;
     private javax.swing.JComboBox<User.SecurityLevels> combo_addUserSecurityLevel;
+    private javax.swing.JComboBox<String> combo_editItemLocation;
     private javax.swing.JComboBox<Item.Status> combo_editItemStatus;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
@@ -1843,7 +1902,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JDialog dialog_bookItem;
     private javax.swing.JDialog dialog_editItem;
     private javax.swing.JDialog dialog_viewHistory;
-    private javax.swing.JTextField field_addItemLocation;
     private javax.swing.JTextField field_addItemName;
     private javax.swing.JTextField field_addItemType;
     private javax.swing.JTextField field_addLocationName;
@@ -1853,7 +1911,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_addUserName;
     private javax.swing.JPasswordField field_addUserPassword;
     private javax.swing.JTextArea field_editItemDescription;
-    private javax.swing.JTextField field_editItemLocation;
     private javax.swing.JTextField field_editItemName;
     private javax.swing.JTextField field_editItemType;
     private javax.swing.JPasswordField field_loginPassword;

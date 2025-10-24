@@ -35,6 +35,9 @@ public class Controller {
 	});
 	//</editor-fold>
 	//<editor-fold desc="Items Tab">----------------------------------------
+	view.getLocations.addListener((ActionEvent e) -> {
+	    view.setLocations(model.searchForLocations(""));
+	});
 	// Item Adding
 	view.addItem.addListener((ActionEvent e) -> {
 	    Item item = model.getNewItem();

@@ -87,13 +87,12 @@ public class TableManager {
 
         String sql_getMaxPrimaryKey = "SELECT MAX(" + primaryKey + ") AS maxId FROM " + tableName;
 
-        // Print SQL to verify
-        System.out.println(sql_createRowByPrimaryKey);
-        System.out.println(sql_deleteRowByPrimaryKey);
-        System.out.println("Update Row By Primary Key: " + sql_updateRowByPrimaryKey);
-        System.out.println(sql_getRowByPrimaryKey);
-        System.out.println(sql_getMaxPrimaryKey);
-
+        // DEGUD LINES: Print SQL to verify
+//        System.out.println(sql_createRowByPrimaryKey);
+//        System.out.println(sql_deleteRowByPrimaryKey);
+//        System.out.println("Update Row By Primary Key: " + sql_updateRowByPrimaryKey);
+//        System.out.println(sql_getRowByPrimaryKey);
+//        System.out.println(sql_getMaxPrimaryKey);
         // Prepare Statements
         try {
             st_getRowByPrimaryKey = conn.prepareStatement(sql_getRowByPrimaryKey);
@@ -140,7 +139,7 @@ public class TableManager {
     public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException, UnfoundPrimaryKeyException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             if (!verifyPrimaryKey(columnData)) {
-                throw new InvalidColumnNameException();
+                throw new UnfoundPrimaryKeyException();
             }
             try {
 
@@ -163,7 +162,7 @@ public class TableManager {
         return false;
     }
 
-    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException {
+    public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             try {
                 if (verifyPrimaryKey(columnData)) {
@@ -174,11 +173,12 @@ public class TableManager {
                 }
                 st_createRowByPrimaryKey.executeUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
+                throw new NullColumnValueException();
             }
         } else {
             throw new InvalidColumnNameException();
         }
+
     }
 
     private boolean createTableIfNotExist() {
@@ -310,23 +310,20 @@ public class TableManager {
      * @return the next primary key based (incremented from the maximum key)
      */
     public String getNextPrimaryKeyId() {
-        String next = "";
+        String next = "0"; // Default. Only occurs for no data in the table yet or no numeric key
         try {
             ResultSet rs = st_getMaxPrimaryKey.executeQuery();
             if (rs.next()) {
                 if (rs.getString("maxId") != null) {
-                    return Integer.toString(Integer.parseInt(rs.getString("maxId").replaceAll("[^0-9]", "")) + 1);
-                } else {
-                    next = "0";  // No data in the table yet
+                    String lastID = rs.getString("maxId").replaceAll("[^0-9]", "");
+                    if (lastID != null && !lastID.isBlank()) {
+                        return Integer.toString(Integer.parseInt(lastID) + 1);
+                    }
                 }
-            } else { // No data in the table yet
-                next = "0";
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        //String next = Integer.toString(Integer.parseInt(rs.getString(primaryKey)) + 1);
         return next;
 
     }
@@ -350,6 +347,9 @@ public class TableManager {
     }
 
     public boolean verifyDataMapping(ArrayList<Column> columnData) { // Verify the received array has matching table column names, same index
+        if (columnData == null || (allColumns.size() != columnData.size())) {
+            return false;
+        }
         for (int i = 0; i < allColumns.size(); i++) {
             if (!allColumns.get(i).getName().equals(columnData.get(i).getName())) {
                 return false;

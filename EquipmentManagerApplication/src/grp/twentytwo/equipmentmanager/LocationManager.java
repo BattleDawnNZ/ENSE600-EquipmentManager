@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.sql.ResultSet;
@@ -30,22 +31,6 @@ class LocationManager {
 
     private Column column_primaryKey = new Column("LocationID", "VARCHAR(12) not NULL", "");
     private Column column_locationName = new Column("Name", "VARCHAR(30)", "");
-
-    public static void main(String[] args) {
-//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-//        LocationManager lm = new LocationManager(dbManager);
-//        lm.printTable();
-//        //Location loc = new Location("000001", "Workshop1");
-//        System.out.println(lm.isValidLocationName("Workshop "));
-//
-//        //lm.addLocation("WORKSHOP3");
-//        //lm.removeLocation(loc);
-//        //System.out.println(lm.getLocationFromID("000001"));
-//        //System.out.println(lm.searchLocationsByName("W"));
-//        lm.printTable();
-//        //System.out.println(lm.getLocationFromName("WORKSHOP 12").getId()); //System.out.println(lm.getLocationFromID("000004"));
-//        //System.out.println(lm.isValidLocationName("WORKSHOP3"));
-    }
 
     LocationManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
 
@@ -128,7 +113,7 @@ class LocationManager {
         }
     }
 
-    boolean addLocation(String name) throws PrimaryKeyClashException {
+    boolean addLocation(String name) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             if (!isValidLocationName(name)) { // Ensure Location is new
                 column_primaryKey.data = tableManager.getNextPrimaryKeyId();

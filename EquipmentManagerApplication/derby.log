@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Sun Oct 19 10:32:34 NZDT 2025:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0199-f93d-17df-00001dd17830 
-on database directory C:\Users\mymys\University\2025\Software Construction\Labs\ENSE600-EquipmentManager\EquipmentManagerApplication\EquipmentManagerDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@70dea4e 
-Loaded from file:/C:/Users/mymys/University/2025/Software%20Construction/Labs/ENSE600-EquipmentManager/EquipmentManagerApplication/lib/derby.jar
+Fri Oct 24 20:30:22 NZDT 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-019a-1520-3000-00001dcf9e80 
+on database directory C:\Users\cwitt\OneDrive\Documents\AUT\Year 3 Semester 2\ENSE600 - Software Construction\Assignments\ENSE600-EquipmentManager\EquipmentManagerApplication\EquipmentManagerDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@85ede7b 
+Loaded from file:/C:/Users/cwitt/OneDrive/Documents/AUT/Year%203%20Semester%202/ENSE600%20-%20Software%20Construction/Assignments/ENSE600-EquipmentManager/EquipmentManagerApplication/lib/derby.jar
 java.vendor=Oracle Corporation
-java.runtime.version=21.0.2+13-LTS-58
-user.dir=C:\Users\mymys\University\2025\Software Construction\Labs\ENSE600-EquipmentManager\EquipmentManagerApplication
+java.runtime.version=23.0.2+7-58
+user.dir=C:\Users\cwitt\OneDrive\Documents\AUT\Year 3 Semester 2\ENSE600 - Software Construction\Assignments\ENSE600-EquipmentManager\EquipmentManagerApplication
 os.name=Windows 11
 os.arch=amd64
 os.version=10.0

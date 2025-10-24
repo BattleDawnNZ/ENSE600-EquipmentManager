@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ class HistoryManager {
     private Column column_historyID = new Column("HistoryID", "VARCHAR(12) not NULL", "");
     private Column column_itemID = new Column("ItemID", "VARCHAR(12)", "");
     private Column column_timestamp = new Column("Timestamp", "VARCHAR(30)", "");
-    private Column column_description = new Column("Description", "VARCHAR(50)", "");
+    private Column column_description = new Column("Description", "VARCHAR(100)", "");
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -96,7 +97,7 @@ class HistoryManager {
         }
     }
 
-    boolean addHistory(History history) throws PrimaryKeyClashException {
+    boolean addHistory(History history) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             column_historyID.data = tableManager.getNextPrimaryKeyId();
             column_itemID.data = history.getItemID();

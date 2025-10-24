@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.Item.Status;
@@ -40,25 +41,6 @@ class ItemManager {
     private Column column_type = new Column("Type", "VARCHAR(40)", "");
     private Column column_calibrationFlag = new Column("CalibrationFlag", "VARCHAR(6)", "");
     private Column column_lastCalibration = new Column("LastCalibration", "VARCHAR(20)", "");
-
-    public static void main(String[] args) {
-        //DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-        //dbManager.dropTable("ITEMTABLE");
-        //ItemManager um = new ItemManager(dbManager);
-        //um.printTable();
-        //System.out.println(um.searchForItems("0").toString()); 
-        //Item item = um.getItemFromID("MC0");
-        //item.setLocation("Electrical Lab 1");
-        //um.addItem("3D Printer", "WORKSHOP3", "Manufacturing/Additive");
-        //um.removeUser("000004");
-        //um.saveUser(user);
-        ///item.setLocation("WORKSHOP3");
-
-        //um.updateItem(item);
-        //um.printTable();
-        //System.out.println(um.getItemsForLocation("Wor"));
-        //System.out.println(um.getItemFromID("MA1"));
-    }
 
     ItemManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
@@ -127,12 +109,12 @@ class ItemManager {
      * @param item An item object. Id will be ignored
      * @return The Item ID of the Item Added.
      */
-    String addItem(Item item) throws PrimaryKeyClashException {
+    String addItem(Item item) throws PrimaryKeyClashException, NullColumnValueException {
         System.out.println(item.getLocation());
         column_itemID.data = generateItemID(item.getType());
         column_name.data = item.getName();
         column_description.data = item.getDescription();
-        column_location.data = item.getLocation();
+        column_location.data = item.getLocation().toUpperCase();
         column_status.data = item.getStatus().toString();
         column_type.data = item.getType();
         column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
@@ -175,7 +157,7 @@ class ItemManager {
             column_itemID.data = id;
             column_name.data = item.getName();
             column_description.data = item.getDescription();
-            column_location.data = item.getLocation();
+            column_location.data = item.getLocation().toUpperCase();
             column_status.data = item.getStatus().toString();
             column_type.data = item.getType();
             column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());

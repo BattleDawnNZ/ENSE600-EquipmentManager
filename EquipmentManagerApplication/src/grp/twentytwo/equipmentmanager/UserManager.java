@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import grp.twentytwo.equipmentmanager.User.SecurityLevels;
@@ -34,18 +35,6 @@ class UserManager {
     private Column column_name = new Column("Name", "VARCHAR(30)", "");
     private Column column_securityLevel = new Column("SecurityLevel", "VARCHAR(15)", "");
     private Column column_password = new Column("Password", "VARCHAR(15)", "");
-
-    public static void main(String[] args) {
-//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-//        UserManager um = new UserManager(dbManager);
-//        um.printTable();
-//        //User user = new Manager("000004", "Alice");
-//        //um.removeUser("000004");
-//        //um.saveUser(user);
-//        //um.printTable();
-//        //System.out.println(um.getUserFromID("000004"));
-//        System.out.println(um.searchForUsers("Gue").toString());
-    }
 
     UserManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
 
@@ -98,7 +87,7 @@ class UserManager {
      * @param user
      * @return true if created (did not previously exist)
      */
-    boolean addUser(User user) throws PrimaryKeyClashException {
+    boolean addUser(User user) throws PrimaryKeyClashException, NullColumnValueException {
 
         if (!tableManager.verifyPrimaryKey(user.getID())) { // Ensure user is new
             column_userID.data = user.getID();

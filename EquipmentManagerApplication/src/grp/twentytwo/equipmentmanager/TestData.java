@@ -1,11 +1,11 @@
 package grp.twentytwo.equipmentmanager;
 
-import grp.twentytwo.equipmentmanager.User.SecurityLevels;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Run this class to regenerate the tables and test data from scratch
  *
  * @author ppj1707
  */
@@ -13,14 +13,13 @@ public class TestData {
 
     private static ModelManager m = new ModelManager();
 
-    public static void main(String[] args) {
-	TestData.m.setupManagers();
-	TestData.dropTables();
-	TestData.m.setupManagers();
-	TestData.generate();
-	TestData.printAll();
-    }
-
+//    public static void main(String[] args) {
+//        TestData.m.setupManagers();
+//        TestData.dropTables();
+//        TestData.m.setupManagers();
+//        TestData.generate();
+//        TestData.printAll();
+//    }
     public static void generate() {
 	try {
 

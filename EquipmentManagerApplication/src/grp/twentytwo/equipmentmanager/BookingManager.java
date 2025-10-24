@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
 import java.sql.ResultSet;
@@ -38,18 +39,6 @@ class BookingManager {
     private Column column_returnDate = new Column("ReturnDate", "VARCHAR(20) not NULL", "");
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-
-    public static void main(String[] args) {
-//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-//        LocationManager lManager = new LocationManager(dbManager);
-//        BookingManager um = new BookingManager(dbManager);
-//        um.printTable();
-//        //um.removeUser("000004");
-//        //um.saveUser(user);
-//        um.printTable();
-////        System.out.println(um.getBookingFromID("000001"));
-////        System.out.println(um.getBookingsForItem("000001"));
-    }
 
     BookingManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
@@ -89,7 +78,7 @@ class BookingManager {
      * @return true if the booking was valid, did not clash with other bookings
      * and was created.
      */
-    boolean issueItem(Booking booking) throws InvalidBookingRangeException, PrimaryKeyClashException {
+    boolean issueItem(Booking booking) throws InvalidBookingRangeException, PrimaryKeyClashException, NullColumnValueException {
         ArrayList<Booking> itemBookings = getBookingsForItem(booking.getItemID());
         for (Booking b : itemBookings) { // Checking booking does not clash with other bookings
             if (booking.overlaps(b)) {

@@ -168,7 +168,7 @@ public class Booking {
 
     @Override
     public String toString() {
-        return "Booking ID: " + id + ", User ID: " + userID + ", Item ID: " + itemID + ", Booked Date: " + bookedDate.format(formatter) + ", Return Date: " + returnDate.format(formatter) + ".";
+        return bookedDate.format(formatter) + " - " + returnDate.format(formatter);
     }
 
 }
