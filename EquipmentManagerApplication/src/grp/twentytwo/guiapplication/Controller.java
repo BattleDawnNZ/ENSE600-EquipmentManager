@@ -30,8 +30,12 @@ public class Controller {
 	//<editor-fold desc="Login Page">
 	// Login
 	view.login.addListener((ActionEvent e) -> {
-	    view.login(model.login(view.getLoginDetails(model.getNewUser())));
+	    view.loginUser(model.login(view.getLoginDetails(model.getNewUser())));
 	    view.secureUI(model.getActiveUser());
+	});
+	view.logout.addListener((ActionEvent e) -> {
+	    model.logout();
+	    view.logoutUser();
 	});
 	//</editor-fold>
 	//<editor-fold desc="Items Tab">----------------------------------------
@@ -141,5 +145,6 @@ public class Controller {
 	view.setVisible(true);
 	//    }
 	//});
+	view.initialSearch();
     }
 }

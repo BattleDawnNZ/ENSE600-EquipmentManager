@@ -34,6 +34,7 @@ public class View extends javax.swing.JFrame {
 
     // <editor-fold desc="Speakers">
     public Speaker<ActionEvent> login;
+    public Speaker<ActionEvent> logout;
     public Speaker<ActionEvent> addItem;
     public Speaker<String> removeItem;
     public Speaker<String> bookItem;
@@ -90,6 +91,10 @@ public class View extends javax.swing.JFrame {
 	login = new Speaker<>();
 	button_login.addActionListener((ActionEvent e) -> {
 	    login.notifyListeners(e);
+	});
+	logout = new Speaker<>();
+	button_logout.addActionListener((ActionEvent e) -> {
+	    logout.notifyListeners(e);
 	});
 
 	// Item Tab ------------------------------------------------------------
@@ -200,11 +205,13 @@ public class View extends javax.swing.JFrame {
 	flagItem = new Speaker<>();
 	button_flagForCalibration.addActionListener((ActionEvent e) -> {
 	    flagItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
 	});
 
 	calibrateItem = new Speaker<>();
 	button_calibrateItem.addActionListener((ActionEvent e) -> {
 	    calibrateItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
 	});
 
 	// Item History
@@ -326,6 +333,12 @@ public class View extends javax.swing.JFrame {
 	});
     }
 
+    public void initialSearch() {
+	searchForItem.notifyListeners(currentItemID());
+	searchForUser.notifyListeners(currentUserID());
+	searchForLocation.notifyListeners(currentLocationName());
+    }
+
     // Helper Dialogs ----------------------------------------------------------
     public void showError(Exception err) {
 	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -350,10 +363,16 @@ public class View extends javax.swing.JFrame {
 	return user;
     }
 
-    public void login(boolean successful) {
+    public void loginUser(boolean successful) {
 	if (successful) {
 	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
 	}
+    }
+
+    public void logoutUser() {
+	((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
+	field_loginUserID.setText("");
+	field_loginPassword.setText("");
     }
 
     public void secureUI(User activeUser) {
@@ -798,6 +817,9 @@ public class View extends javax.swing.JFrame {
         field_loginUserID = new javax.swing.JTextField();
         label_username = new javax.swing.JLabel();
         panel_main = new javax.swing.JPanel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
+        jPanel2 = new javax.swing.JPanel();
+        button_logout = new javax.swing.JButton();
         tabs_application = new javax.swing.JTabbedPane();
         tab_items = new javax.swing.JSplitPane();
         panel_itemSearch = new javax.swing.JPanel();
@@ -1294,7 +1316,7 @@ public class View extends javax.swing.JFrame {
         setTitle("Equipment Manager");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setLocationByPlatform(true);
-        setMinimumSize(new java.awt.Dimension(400, 300));
+        setMinimumSize(new java.awt.Dimension(800, 600));
         setName("applicationFrame"); // NOI18N
         getContentPane().setLayout(new java.awt.CardLayout());
 
@@ -1346,6 +1368,22 @@ public class View extends javax.swing.JFrame {
         getContentPane().add(panel_login, "card3");
 
         panel_main.setLayout(new javax.swing.BoxLayout(panel_main, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLayeredPane1.setLayout(new javax.swing.OverlayLayout(jLayeredPane1));
+
+        jPanel2.setFocusable(false);
+        jPanel2.setOpaque(false);
+        jPanel2.setVerifyInputWhenFocusTarget(false);
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        button_logout.setText("Logout");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.weighty = 0.1;
+        jPanel2.add(button_logout, gridBagConstraints);
+
+        jLayeredPane1.add(jPanel2);
 
         panel_itemSearch.setLayout(new java.awt.GridBagLayout());
 
@@ -1848,7 +1886,9 @@ public class View extends javax.swing.JFrame {
 
         tabs_application.addTab("Locations", tab_locations);
 
-        panel_main.add(tabs_application);
+        jLayeredPane1.add(tabs_application);
+
+        panel_main.add(jLayeredPane1);
 
         getContentPane().add(panel_main, "card4");
 
@@ -1878,6 +1918,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_editUser;
     private javax.swing.JButton button_flagForCalibration;
     private javax.swing.JButton button_login;
+    private javax.swing.JButton button_logout;
     private javax.swing.JButton button_removeItem;
     private javax.swing.JButton button_removeLocation;
     private javax.swing.JButton button_removeUser;
@@ -1954,6 +1995,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -1964,6 +2006,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
