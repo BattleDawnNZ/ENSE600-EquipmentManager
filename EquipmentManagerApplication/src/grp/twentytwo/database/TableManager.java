@@ -140,7 +140,7 @@ public class TableManager {
     public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException, UnfoundPrimaryKeyException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             if (!verifyPrimaryKey(columnData)) {
-                throw new InvalidColumnNameException();
+                throw new UnfoundPrimaryKeyException();
             }
             try {
 
