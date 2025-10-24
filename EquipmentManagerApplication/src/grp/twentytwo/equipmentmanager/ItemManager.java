@@ -114,7 +114,7 @@ class ItemManager {
         column_itemID.data = generateItemID(item.getType());
         column_name.data = item.getName();
         column_description.data = item.getDescription();
-        column_location.data = item.getLocation();
+        column_location.data = item.getLocation().toUpperCase();
         column_status.data = item.getStatus().toString();
         column_type.data = item.getType();
         column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
@@ -157,7 +157,7 @@ class ItemManager {
             column_itemID.data = id;
             column_name.data = item.getName();
             column_description.data = item.getDescription();
-            column_location.data = item.getLocation();
+            column_location.data = item.getLocation().toUpperCase();
             column_status.data = item.getStatus().toString();
             column_type.data = item.getType();
             column_calibrationFlag.data = String.valueOf(item.getNeedsCalibration());
