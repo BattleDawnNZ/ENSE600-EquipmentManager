@@ -40,18 +40,6 @@ class BookingManager {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    public static void main(String[] args) {
-//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-//        LocationManager lManager = new LocationManager(dbManager);
-//        BookingManager um = new BookingManager(dbManager);
-//        um.printTable();
-//        //um.removeUser("000004");
-//        //um.saveUser(user);
-//        um.printTable();
-////        System.out.println(um.getBookingFromID("000001"));
-////        System.out.println(um.getBookingsForItem("000001"));
-    }
-
     BookingManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
         this.dbManager = databaseManager;
 

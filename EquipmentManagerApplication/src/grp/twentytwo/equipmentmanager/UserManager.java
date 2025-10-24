@@ -36,18 +36,6 @@ class UserManager {
     private Column column_securityLevel = new Column("SecurityLevel", "VARCHAR(15)", "");
     private Column column_password = new Column("Password", "VARCHAR(15)", "");
 
-    public static void main(String[] args) {
-//        DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
-//        UserManager um = new UserManager(dbManager);
-//        um.printTable();
-//        //User user = new Manager("000004", "Alice");
-//        //um.removeUser("000004");
-//        //um.saveUser(user);
-//        //um.printTable();
-//        //System.out.println(um.getUserFromID("000004"));
-//        System.out.println(um.searchForUsers("Gue").toString());
-    }
-
     UserManager(DatabaseManager databaseManager) throws DatabaseConnectionException {
 
         this.dbManager = databaseManager;

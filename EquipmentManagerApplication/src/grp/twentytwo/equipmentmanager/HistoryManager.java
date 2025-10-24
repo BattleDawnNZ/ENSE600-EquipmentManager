@@ -33,7 +33,7 @@ class HistoryManager {
     private Column column_historyID = new Column("HistoryID", "VARCHAR(12) not NULL", "");
     private Column column_itemID = new Column("ItemID", "VARCHAR(12)", "");
     private Column column_timestamp = new Column("Timestamp", "VARCHAR(30)", "");
-    private Column column_description = new Column("Description", "VARCHAR(50)", "");
+    private Column column_description = new Column("Description", "VARCHAR(100)", "");
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
