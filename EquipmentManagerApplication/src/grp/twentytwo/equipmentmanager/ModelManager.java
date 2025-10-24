@@ -236,6 +236,15 @@ public class ModelManager {
 	return new Manager("", "");
     }
 
+    public void AddUser(User user) {
+	try {
+	    userManager.addUser(user);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     public User getUser(String userID) {
 	User user = null;
 	try {

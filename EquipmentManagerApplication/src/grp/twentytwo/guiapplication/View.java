@@ -48,6 +48,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> calibrateItem;
     public Speaker<String> viewHistory;
 
+    public Speaker<ActionEvent> addUser;
     public Speaker<String> removeUser;
     public Speaker<String> searchForUser;
     public Speaker<String> viewUser;
@@ -227,6 +228,21 @@ public class View extends javax.swing.JFrame {
 //	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
 //	});
 	// User Tab ------------------------------------------------------------
+	// User Adding
+	button_addUser.addActionListener((ActionEvent e) -> {
+	    clearAddUserDialog();
+	    dialog_addUser.setVisible(true);
+	});
+	button_addUserCancel.addActionListener((ActionEvent e) -> {
+	    dialog_addUser.setVisible(false);
+	});
+	addUser = new Speaker<>();
+	button_addUserConfirm.addActionListener((ActionEvent e) -> {
+	    if (verifyAddUserDetails()) {
+		addUser.notifyListeners(e);
+		dialog_addUser.setVisible(false);
+	    }
+	});
 	// User Removal
 	removeUser = new Speaker<>();
 	button_removeUser.addActionListener((ActionEvent e) -> {
@@ -305,6 +321,10 @@ public class View extends javax.swing.JFrame {
     // Helper Dialogs ----------------------------------------------------------
     public void showError(Exception err) {
 	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showInformation(String title, String message) {
+	JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
     }
 
     public boolean getConfirmation(String title, String message) {
@@ -508,6 +528,63 @@ public class View extends javax.swing.JFrame {
 	return text_userID.getText();
     }
 
+    public void clearAddUserDialog() {
+	field_addUserID.setText("");
+	field_addUserName.setText("");
+	field_addUserPassword.setText("");
+	field_addUserConfirmPassword.setText("");
+	// Setup the Security Levels Combo Box
+	DefaultComboBoxModel<User.SecurityLevels> securityLevels = new DefaultComboBoxModel<>();
+	for (User.SecurityLevels level : User.SecurityLevels.values()) {
+	    securityLevels.addElement(level);
+	}
+	combo_addUserSecurityLevel.setModel(securityLevels);
+    }
+
+    public boolean verifyAddUserDetails() {
+	// Check ID
+	if (field_addUserID.getText().length() > 12) {
+	    showInformation("Invalid User ID", "The User ID entered is too long.\nUser IDs must be 12 characters or less.");
+	    return false;
+	}
+	// Check Name
+	if (field_addUserName.getText().length() > 30) {
+	    showInformation("Invalid User Name", "The User name entered is too long.\nUser names must be 30 characters or less.");
+	    return false;
+	}
+	// Check Password
+	String password = "";
+	for (char c : field_addUserPassword.getPassword()) {
+	    password += c;
+	}
+	String confirmPassword = "";
+	for (char c : field_addUserConfirmPassword.getPassword()) {
+	    confirmPassword += c;
+	}
+	if (password.length() > 15) {
+	    showInformation("Invalid User Password", "The User password entered is too long.\nUser passwords must be 15 characters or less.");
+	    return false;
+	}
+	if (!password.equals(confirmPassword)) {
+	    showInformation("Invalid User Password", "The User passwords entered do not match.\nUser password must match the confirmation password.");
+	    return false;
+	}
+	return true;
+    }
+
+    public void setNewUserDetails(User user) {
+	user.setID(field_addUserID.getText());
+	user.setName(field_addUserName.getText());
+	user.setSecurityLevel((User.SecurityLevels) combo_addUserSecurityLevel.getSelectedItem());
+
+	// Set Password
+	String password = "";
+	for (char c : field_addUserPassword.getPassword()) {
+	    password += c;
+	}
+	user.setPassword(password);
+    }
+
     public void setUserSearchResults(LinkedHashSet<String> newList) {
 	DefaultListModel<String> userListModel = new DefaultListModel<>();
 	userListModel.addAll(newList);
@@ -615,13 +692,6 @@ public class View extends javax.swing.JFrame {
         jPanel9 = new javax.swing.JPanel();
         button_editItemCancel = new javax.swing.JButton();
         button_editItemConfirm = new javax.swing.JButton();
-        dialog_addLocation = new javax.swing.JDialog();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        field_addLocationName = new javax.swing.JTextField();
-        jPanel10 = new javax.swing.JPanel();
-        button_addLocationCancel = new javax.swing.JButton();
-        button_addLocationConfirm = new javax.swing.JButton();
         dialog_bookItem = new javax.swing.JDialog();
         jPanel11 = new javax.swing.JPanel();
         dateTimePicker_bookItemBookedDate = new com.github.lgooddatepicker.components.DateTimePicker();
@@ -631,12 +701,6 @@ public class View extends javax.swing.JFrame {
         jPanel12 = new javax.swing.JPanel();
         button_bookItemCancel = new javax.swing.JButton();
         button_bookItemConfirm = new javax.swing.JButton();
-        dialog_viewHistory = new javax.swing.JDialog();
-        jPanel13 = new javax.swing.JPanel();
-        jScrollPane8 = new javax.swing.JScrollPane();
-        list_viewHistory = new javax.swing.JList<>();
-        jPanel14 = new javax.swing.JPanel();
-        button_viewHistoryClose = new javax.swing.JButton();
         dialog_addNote = new javax.swing.JDialog();
         jPanel15 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -644,7 +708,34 @@ public class View extends javax.swing.JFrame {
         jPanel16 = new javax.swing.JPanel();
         button_addNoteCancel = new javax.swing.JButton();
         button_addNoteConfirm = new javax.swing.JButton();
-        jSeparator3 = new javax.swing.JSeparator();
+        dialog_viewHistory = new javax.swing.JDialog();
+        jPanel13 = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        list_viewHistory = new javax.swing.JList<>();
+        jPanel14 = new javax.swing.JPanel();
+        button_viewHistoryClose = new javax.swing.JButton();
+        dialog_addUser = new javax.swing.JDialog();
+        jPanel17 = new javax.swing.JPanel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        field_addUserName = new javax.swing.JTextField();
+        combo_addUserSecurityLevel = new javax.swing.JComboBox<>();
+        jLabel27 = new javax.swing.JLabel();
+        field_addUserID = new javax.swing.JTextField();
+        jLabel29 = new javax.swing.JLabel();
+        field_addUserPassword = new javax.swing.JPasswordField();
+        jLabel30 = new javax.swing.JLabel();
+        field_addUserConfirmPassword = new javax.swing.JPasswordField();
+        jPanel18 = new javax.swing.JPanel();
+        button_addUserCancel = new javax.swing.JButton();
+        button_addUserConfirm = new javax.swing.JButton();
+        dialog_addLocation = new javax.swing.JDialog();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        field_addLocationName = new javax.swing.JTextField();
+        jPanel10 = new javax.swing.JPanel();
+        button_addLocationCancel = new javax.swing.JButton();
+        button_addLocationConfirm = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
         field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -741,7 +832,6 @@ public class View extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
 
         dialog_addItem.setTitle("Add Item");
-        dialog_addItem.setAlwaysOnTop(true);
         dialog_addItem.setMinimumSize(new java.awt.Dimension(300, 200));
         dialog_addItem.setModal(true);
         dialog_addItem.setResizable(false);
@@ -906,46 +996,7 @@ public class View extends javax.swing.JFrame {
 
         dialog_editItem.getContentPane().add(jPanel9, java.awt.BorderLayout.PAGE_END);
 
-        dialog_addLocation.setTitle("Add Item");
-        dialog_addLocation.setAlwaysOnTop(true);
-        dialog_addLocation.setMinimumSize(new java.awt.Dimension(300, 200));
-        dialog_addLocation.setModal(true);
-        dialog_addLocation.setResizable(false);
-
-        jPanel8.setLayout(new java.awt.GridBagLayout());
-
-        jLabel18.setText("Name");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel8.add(jLabel18, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
-        jPanel8.add(field_addLocationName, gridBagConstraints);
-
-        dialog_addLocation.getContentPane().add(jPanel8, java.awt.BorderLayout.CENTER);
-
-        jPanel10.setLayout(new java.awt.GridBagLayout());
-
-        button_addLocationCancel.setText("Cancel");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel10.add(button_addLocationCancel, gridBagConstraints);
-
-        button_addLocationConfirm.setText("Confirm");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel10.add(button_addLocationConfirm, gridBagConstraints);
-
-        dialog_addLocation.getContentPane().add(jPanel10, java.awt.BorderLayout.PAGE_END);
-
         dialog_bookItem.setTitle("Book Item");
-        dialog_bookItem.setAlwaysOnTop(true);
         dialog_bookItem.setMinimumSize(new java.awt.Dimension(400, 200));
         dialog_bookItem.setModal(true);
         dialog_bookItem.setResizable(false);
@@ -990,33 +1041,6 @@ public class View extends javax.swing.JFrame {
 
         dialog_bookItem.getContentPane().add(jPanel12, java.awt.BorderLayout.PAGE_END);
 
-        dialog_viewHistory.setTitle("Item History");
-        dialog_viewHistory.setAlwaysOnTop(true);
-        dialog_viewHistory.setMinimumSize(new java.awt.Dimension(400, 200));
-        dialog_viewHistory.setModal(true);
-
-        jPanel13.setLayout(new java.awt.GridBagLayout());
-
-        list_viewHistory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane8.setViewportView(list_viewHistory);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.weighty = 0.1;
-        jPanel13.add(jScrollPane8, gridBagConstraints);
-
-        dialog_viewHistory.getContentPane().add(jPanel13, java.awt.BorderLayout.CENTER);
-
-        jPanel14.setLayout(new java.awt.GridBagLayout());
-
-        button_viewHistoryClose.setText("Close");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        jPanel14.add(button_viewHistoryClose, gridBagConstraints);
-
-        dialog_viewHistory.getContentPane().add(jPanel14, java.awt.BorderLayout.PAGE_END);
-
         dialog_addNote.setTitle("Add Note");
         dialog_addNote.setMinimumSize(new java.awt.Dimension(400, 300));
         dialog_addNote.setModal(true);
@@ -1051,6 +1075,163 @@ public class View extends javax.swing.JFrame {
         jPanel16.add(button_addNoteConfirm, gridBagConstraints);
 
         dialog_addNote.getContentPane().add(jPanel16, java.awt.BorderLayout.PAGE_END);
+
+        dialog_viewHistory.setTitle("Item History");
+        dialog_viewHistory.setMinimumSize(new java.awt.Dimension(400, 200));
+        dialog_viewHistory.setModal(true);
+
+        jPanel13.setLayout(new java.awt.GridBagLayout());
+
+        list_viewHistory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane8.setViewportView(list_viewHistory);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        jPanel13.add(jScrollPane8, gridBagConstraints);
+
+        dialog_viewHistory.getContentPane().add(jPanel13, java.awt.BorderLayout.CENTER);
+
+        jPanel14.setLayout(new java.awt.GridBagLayout());
+
+        button_viewHistoryClose.setText("Close");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel14.add(button_viewHistoryClose, gridBagConstraints);
+
+        dialog_viewHistory.getContentPane().add(jPanel14, java.awt.BorderLayout.PAGE_END);
+
+        dialog_addUser.setTitle("Add Item");
+        dialog_addUser.setMinimumSize(new java.awt.Dimension(350, 250));
+        dialog_addUser.setModal(true);
+        dialog_addUser.setResizable(false);
+
+        jPanel17.setLayout(new java.awt.GridBagLayout());
+
+        jLabel24.setText("Name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel17.add(jLabel24, gridBagConstraints);
+
+        jLabel28.setText("Type");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel17.add(jLabel28, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel17.add(field_addUserName, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel17.add(combo_addUserSecurityLevel, gridBagConstraints);
+
+        jLabel27.setText("ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel17.add(jLabel27, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel17.add(field_addUserID, gridBagConstraints);
+
+        jLabel29.setText("Password");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel17.add(jLabel29, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel17.add(field_addUserPassword, gridBagConstraints);
+
+        jLabel30.setText("Confirm Password");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel17.add(jLabel30, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel17.add(field_addUserConfirmPassword, gridBagConstraints);
+
+        dialog_addUser.getContentPane().add(jPanel17, java.awt.BorderLayout.CENTER);
+
+        jPanel18.setLayout(new java.awt.GridBagLayout());
+
+        button_addUserCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel18.add(button_addUserCancel, gridBagConstraints);
+
+        button_addUserConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel18.add(button_addUserConfirm, gridBagConstraints);
+
+        dialog_addUser.getContentPane().add(jPanel18, java.awt.BorderLayout.PAGE_END);
+
+        dialog_addLocation.setTitle("Add Item");
+        dialog_addLocation.setMinimumSize(new java.awt.Dimension(300, 200));
+        dialog_addLocation.setModal(true);
+        dialog_addLocation.setResizable(false);
+
+        jPanel8.setLayout(new java.awt.GridBagLayout());
+
+        jLabel18.setText("Name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel8.add(jLabel18, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel8.add(field_addLocationName, gridBagConstraints);
+
+        dialog_addLocation.getContentPane().add(jPanel8, java.awt.BorderLayout.CENTER);
+
+        jPanel10.setLayout(new java.awt.GridBagLayout());
+
+        button_addLocationCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel10.add(button_addLocationCancel, gridBagConstraints);
+
+        button_addLocationConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel10.add(button_addLocationConfirm, gridBagConstraints);
+
+        dialog_addLocation.getContentPane().add(jPanel10, java.awt.BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
@@ -1628,6 +1809,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_addNoteCancel;
     private javax.swing.JButton button_addNoteConfirm;
     private javax.swing.JButton button_addUser;
+    private javax.swing.JButton button_addUserCancel;
+    private javax.swing.JButton button_addUserConfirm;
     private javax.swing.JButton button_bookItem;
     private javax.swing.JButton button_bookItemCancel;
     private javax.swing.JButton button_bookItemConfirm;
@@ -1649,12 +1832,14 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_viewHistoryClose;
     private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
     private javax.swing.JCheckBox check_needsCalibration;
+    private javax.swing.JComboBox<User.SecurityLevels> combo_addUserSecurityLevel;
     private javax.swing.JComboBox<Item.Status> combo_editItemStatus;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
     private javax.swing.JDialog dialog_addItem;
     private javax.swing.JDialog dialog_addLocation;
     private javax.swing.JDialog dialog_addNote;
+    private javax.swing.JDialog dialog_addUser;
     private javax.swing.JDialog dialog_bookItem;
     private javax.swing.JDialog dialog_editItem;
     private javax.swing.JDialog dialog_viewHistory;
@@ -1663,6 +1848,10 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_addItemType;
     private javax.swing.JTextField field_addLocationName;
     private javax.swing.JTextArea field_addNote;
+    private javax.swing.JPasswordField field_addUserConfirmPassword;
+    private javax.swing.JTextField field_addUserID;
+    private javax.swing.JTextField field_addUserName;
+    private javax.swing.JPasswordField field_addUserPassword;
     private javax.swing.JTextArea field_editItemDescription;
     private javax.swing.JTextField field_editItemLocation;
     private javax.swing.JTextField field_editItemName;
@@ -1694,9 +1883,14 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1711,6 +1905,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1729,7 +1925,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;

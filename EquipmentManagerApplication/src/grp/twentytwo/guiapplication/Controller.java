@@ -3,8 +3,8 @@ package grp.twentytwo.guiapplication;
 import grp.twentytwo.equipmentmanager.Booking;
 import grp.twentytwo.equipmentmanager.Item;
 import grp.twentytwo.equipmentmanager.ModelManager;
+import grp.twentytwo.equipmentmanager.User;
 import java.awt.event.ActionEvent;
-import java.time.LocalDateTime;
 
 /**
  * Base application entry class. Responsible for creating and loading managers,
@@ -35,7 +35,7 @@ public class Controller {
 	});
 	//</editor-fold>
 	//<editor-fold desc="Items Tab">----------------------------------------
-	// Item Add
+	// Item Adding
 	view.addItem.addListener((ActionEvent e) -> {
 	    Item item = model.getNewItem();
 	    view.setNewItemDetails(item);
@@ -93,6 +93,12 @@ public class Controller {
 	});
 	//</editor-fold>
 	//<editor-fold desc="Users Tab">----------------------------------------
+	// User Adding
+	view.addUser.addListener((ActionEvent e) -> {
+	    User user = model.getNewUser();
+	    view.setNewUserDetails(user);
+	    model.AddUser(user);
+	});
 	// User Removal	
 	view.removeUser.addListener((String userID) -> {
 	    model.RemoveUser(userID);
