@@ -110,8 +110,8 @@ class ItemManager {
      * @return The Item ID of the Item Added.
      */
     String addItem(Item item) throws PrimaryKeyClashException, NullColumnValueException {
-        System.out.println(item.getLocation());
-        column_itemID.data = generateItemID(item.getType());
+        item.setID(generateItemID(item.getType()));
+        column_itemID.data = item.getID();
         column_name.data = item.getName();
         column_description.data = item.getDescription();
         column_location.data = item.getLocation().toUpperCase();
