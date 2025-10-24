@@ -85,7 +85,7 @@ class BookingManager {
                 return false;
             }
         }
-        booking.setID(tableManager.getNextPrimaryKeyId());
+        booking.setID(this.generateHistoryID());
         column_bookingID.data = booking.getID();
         column_userID.data = booking.getUserID();
         column_itemID.data = booking.getItemID();
@@ -162,6 +162,16 @@ class BookingManager {
             Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    /**
+     *
+     * @return A unique history ID.
+     */
+    private String generateHistoryID() {
+        String newID;
+        newID = String.format(tableManager.getNextPrimaryKeyId()) + "B"; // B is unique identifier for booking
+        return newID;
     }
 
     /**

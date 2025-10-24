@@ -99,7 +99,7 @@ class HistoryManager {
 
     boolean addHistory(History history) throws PrimaryKeyClashException, NullColumnValueException {
         try {
-            column_historyID.data = tableManager.getNextPrimaryKeyId();
+            column_historyID.data = this.generateHistoryID();
             column_itemID.data = history.getItemID();
             column_description.data = history.getDescription();
             column_timestamp.data = history.getTimestamp().format(formatter);
@@ -109,6 +109,16 @@ class HistoryManager {
             System.out.println("Error: Invalid Column Name!");
             return false;
         }
+    }
+
+    /**
+     *
+     * @return A unique history ID.
+     */
+    private String generateHistoryID() {
+        String newID;
+        newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
+        return newID;
     }
 
     /**

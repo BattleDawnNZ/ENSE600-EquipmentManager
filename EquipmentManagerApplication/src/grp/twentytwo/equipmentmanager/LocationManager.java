@@ -116,7 +116,7 @@ class LocationManager {
     boolean addLocation(String name) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             if (!isValidLocationName(name)) { // Ensure Location is new
-                column_primaryKey.data = tableManager.getNextPrimaryKeyId();
+                column_primaryKey.data = this.generateLocationID();
                 column_locationName.data = name.toUpperCase();
                 tableManager.createRow(columns);
                 return true; // Location created
@@ -158,6 +158,16 @@ class LocationManager {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validLocations;
+    }
+
+    /**
+     *
+     * @return A unique location ID.
+     */
+    private String generateLocationID() {
+        String newID;
+        newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
+        return newID;
     }
 
     /**

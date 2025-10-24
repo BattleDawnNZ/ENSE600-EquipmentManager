@@ -177,7 +177,7 @@ class ItemManager {
      * @param type the items type.
      * @return A unique item ID.
      */
-    String generateItemID(String type) {
+    private String generateItemID(String type) {
         String newID;
         newID = "";
         for (String str : type.toUpperCase().split("/")) {
