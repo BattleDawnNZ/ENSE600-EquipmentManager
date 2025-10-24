@@ -37,6 +37,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<ActionEvent> addItem;
     public Speaker<String> removeItem;
     public Speaker<String> bookItem;
+    public Speaker<String> returnItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
     public Speaker<String> getEditDetails;
@@ -146,7 +147,6 @@ public class View extends javax.swing.JFrame {
 	list_itemBookings.addListSelectionListener((ListSelectionEvent e) -> {
 	    if (!e.getValueIsAdjusting()) { // Avoid duplicate events
 		String selectedValue = list_itemBookings.getSelectedValue();
-		list_itemBookings.clearSelection();
 		if (selectedValue != null) {
 		    viewBooking.notifyListeners(selectedValue);
 		}
@@ -166,6 +166,11 @@ public class View extends javax.swing.JFrame {
 	    bookItem.notifyListeners(currentItemID());
 	});
 	button_bookItemConfirm.addActionListener(closeBookItem);
+	// Item Returning
+	returnItem = new Speaker<>();
+	button_returnItem.addActionListener((ActionEvent e) -> {
+	    returnItem.notifyListeners(currentBookingID());
+	});
 	// Item Note
 	button_addNote.addActionListener((ActionEvent e) -> {
 	    clearAddNoteDialog();
@@ -319,6 +324,10 @@ public class View extends javax.swing.JFrame {
     // Item Functions ----------------------------------------------------------
     public String currentItemID() {
 	return text_itemID.getText();
+    }
+
+    public String currentBookingID() {
+	return list_itemBookings.getSelectedValue();
     }
 
     public void clearAddItemDialog() {
@@ -622,6 +631,7 @@ public class View extends javax.swing.JFrame {
         jPanel16 = new javax.swing.JPanel();
         button_addNoteCancel = new javax.swing.JButton();
         button_addNoteConfirm = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JSeparator();
         panel_login = new javax.swing.JPanel();
         field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -1706,6 +1716,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;

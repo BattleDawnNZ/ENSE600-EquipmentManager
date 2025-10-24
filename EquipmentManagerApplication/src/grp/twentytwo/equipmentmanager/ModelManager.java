@@ -152,6 +152,20 @@ public class ModelManager {
 	return success;
     }
 
+    public void returnItemBooking(String bookingID) {
+	try {
+	    if (bookingManager.getBookingFromID(bookingID).getUserID().equals(activeUser.getID())) {
+		bookingManager.returnItem(bookingID);
+	    } // Todo throw error to alert user that it's not their booking
+	    else {
+		modelError.notifyListeners(new Exception("This booking is not booked by the current user!"));
+	    }
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     public Booking getBooking(String bookingID) {
 	Booking booking = null;
 	try {

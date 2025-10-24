@@ -73,6 +73,10 @@ public class Controller {
 		model.AddBooking(booking);
 	    }
 	});
+	// Item Returning
+	view.returnItem.addListener((String bookingID) -> {
+	    model.returnItemBooking(bookingID);
+	});
 	// Item Maintenance
 	view.addNote.addListener((String itemID) -> {
 	    model.addNote(itemID, view.getNote());
