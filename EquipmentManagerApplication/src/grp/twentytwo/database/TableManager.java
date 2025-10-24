@@ -53,7 +53,7 @@ public class TableManager {
         prepareStatements();
     }
 
-    public void prepareStatements() {
+    public final void prepareStatements() {
 
         // Prepare SQL
         String sql_getRowByPrimaryKey = "SELECT * FROM " + tableName + " where " + primaryKey + " = ?";
@@ -204,9 +204,7 @@ public class TableManager {
             }
             return true;
         }
-
         return false;
-
     }
 
     private boolean dropTableIfExists() {
@@ -229,7 +227,6 @@ public class TableManager {
             }
         }
         return false;
-
     }
 
     public void printTable() {
@@ -245,7 +242,6 @@ public class TableManager {
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     /**
@@ -325,7 +321,6 @@ public class TableManager {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return next;
-
     }
 
     /**
