@@ -1,9 +1,6 @@
 package grp.twentytwo.guiapplication;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.LinkedList;
-import javax.swing.AbstractButton;
 
 /**
  *
@@ -14,10 +11,6 @@ public class Speaker<T> {
     private LinkedList<Listener<T>> listeners;
 
     public Speaker() {
-    }
-
-    public Speaker(AbstractButton button) {
-	button.addActionListener(passthrough());
     }
 
     private LinkedList<Listener<T>> getListeners() {
@@ -39,11 +32,5 @@ public class Speaker<T> {
 	for (Listener<T> listener : getListeners()) {
 	    listener.onNotify(newValue);
 	}
-    }
-
-    public ActionListener passthrough() {
-	return (ActionEvent e) -> {
-	    notifyListeners((T) e);
-	};
     }
 }

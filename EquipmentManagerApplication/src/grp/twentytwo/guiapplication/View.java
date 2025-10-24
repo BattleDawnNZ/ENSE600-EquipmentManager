@@ -85,7 +85,10 @@ public class View extends javax.swing.JFrame {
 	initComponents();
 
 	// Login
-	login = new Speaker<>(button_login);
+	login = new Speaker<>();
+	button_login.addActionListener((ActionEvent e) -> {
+	    login.notifyListeners(e);
+	});
 
 	// Item Tab ------------------------------------------------------------
 	// Item Adding
@@ -98,7 +101,9 @@ public class View extends javax.swing.JFrame {
 	};
 	button_addItemCancel.addActionListener(closeAddItem);
 	addItem = new Speaker<>();
-	button_addItemConfirm.addActionListener(addItem.passthrough());
+	button_addItemConfirm.addActionListener((ActionEvent e) -> {
+	    addItem.notifyListeners(e);
+	});
 	button_addItemConfirm.addActionListener(closeAddItem);
 	// Item Removal
 	removeItem = new Speaker<>();
@@ -261,7 +266,9 @@ public class View extends javax.swing.JFrame {
 	};
 	button_addLocationCancel.addActionListener(closeAddLocation);
 	addLocation = new Speaker<>();
-	button_addLocationConfirm.addActionListener(addLocation.passthrough());
+	button_addLocationConfirm.addActionListener((ActionEvent e) -> {
+	    addLocation.notifyListeners(e);
+	});
 	button_addLocationConfirm.addActionListener(closeAddLocation);
 	// Location Removal
 	removeLocation = new Speaker<>();
@@ -319,6 +326,12 @@ public class View extends javax.swing.JFrame {
 	if (successful) {
 	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
 	}
+    }
+
+    public void secureUI(User activeUser) {
+	boolean employee = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.EMPLOYEE) >= 0;
+	boolean manager = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.MANAGER) >= 0;
+	button_addItem.setVisible(manager);
     }
 
     // Item Functions ----------------------------------------------------------

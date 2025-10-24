@@ -58,6 +58,10 @@ public class ModelManager {
 	return success;
     }
 
+    public User getActiveUser() {
+	return activeUser;
+    }
+
     public void logout() {
 	activeUser = null;
     }

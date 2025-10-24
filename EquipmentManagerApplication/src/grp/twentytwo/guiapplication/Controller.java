@@ -31,6 +31,7 @@ public class Controller {
 	// Login
 	view.login.addListener((ActionEvent e) -> {
 	    view.login(model.login(view.getLoginDetails(model.getNewUser())));
+	    view.secureUI(model.getActiveUser());
 	});
 	//</editor-fold>
 	//<editor-fold desc="Items Tab">----------------------------------------
