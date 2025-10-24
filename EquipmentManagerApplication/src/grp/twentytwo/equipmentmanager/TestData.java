@@ -13,28 +13,29 @@ public class TestData {
 
     private static ModelManager m = new ModelManager();
 
-//    public static void main(String[] args) {
-//        TestData.m.setupManagers();
-//        TestData.dropTables();
-//        TestData.m.setupManagers();
-//        TestData.generate();
-//        TestData.printAll();
-//    }
+    public static void main(String[] args) {
+	TestData.m.setupManagers();
+	TestData.dropTables();
+	TestData.m.setupManagers();
+	TestData.generate();
+	TestData.printAll();
+    }
+
     public static void generate() {
 	try {
 
 	    m.locationManager.addLocation("WORKSHOP 1");
-	    m.locationManager.addLocation("Workshop 2");
-	    m.locationManager.addLocation("Electrical Lab 1");
+	    m.locationManager.addLocation("WORKSHOP 2");
+	    m.locationManager.addLocation("ELECTRICAL LAB 1");
 
 	    m.userManager.addUser(new Manager("111", "Bob", "123123"));
 	    m.userManager.addUser(new Employee("222", "Sally", "123123"));
 	    m.userManager.addUser(new Guest("333", "Fred", "123123"));
 
-	    m.itemManager.addItem(new Item("R9000 Universal Laser Cutter", "Workshop 1", "Manufacturing/Cutting"));
-	    m.itemManager.addItem(new Item("Ender 3D Printer", "Workshop 2", "Manufacturing/Additive"));
+	    m.itemManager.addItem(new Item("R9000 Universal Laser Cutter", "WORKSHOP 1", "Manufacturing/Cutting"));
+	    m.itemManager.addItem(new Item("Ender 3D Printer", "WORKSHOP 2", "Manufacturing/Additive"));
 	    m.itemManager.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
-	    m.itemManager.addItem(new Item("Soldering Iron", "Electrical Lab 1", "Electrical/Soldering"));
+	    m.itemManager.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
 
 	    m.historyManager.addHistory(new History("MC0", "Test note"));
 	    m.historyManager.addHistory(new History("MC0", "Test note2"));
