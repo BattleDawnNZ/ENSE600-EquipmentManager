@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Item {
 
-    private final String id;
+    private String id;
     private String name;
     private String description;
     private String location;
@@ -103,6 +103,10 @@ public class Item {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    void setID(String id) {
+        this.id = id;
     }
 
     /**
