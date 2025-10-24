@@ -378,7 +378,29 @@ public class View extends javax.swing.JFrame {
     public void secureUI(User activeUser) {
 	boolean employee = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.EMPLOYEE) >= 0;
 	boolean manager = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.MANAGER) >= 0;
+	// Set Item Secrutities
+	// Employee
+	button_bookItem.setVisible(employee);
+	button_returnItem.setVisible(employee);
+	button_viewHistory.setVisible(employee);
+	separator_booking.setVisible(employee);
+	// Manager
 	button_addItem.setVisible(manager);
+	button_editItem.setVisible(manager);
+	button_removeItem.setVisible(manager);
+	button_addNote.setVisible(manager);
+	button_flagForCalibration.setVisible(manager);
+	button_calibrateItem.setVisible(manager);
+	separator_item.setVisible(manager);
+
+	// Set User Securities
+	button_addUser.setVisible(manager);
+	button_editUser.setVisible(manager);
+	button_removeUser.setVisible(manager);
+
+	// Set Location Securities
+	button_addLocation.setVisible(manager);
+	button_removeLocation.setVisible(manager);
     }
 
     // Item Functions ----------------------------------------------------------
@@ -832,10 +854,10 @@ public class View extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         button_editItem = new javax.swing.JButton();
         button_removeItem = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JToolBar.Separator();
+        separator_item = new javax.swing.JToolBar.Separator();
         button_bookItem = new javax.swing.JButton();
         button_returnItem = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
+        separator_booking = new javax.swing.JToolBar.Separator();
         button_addNote = new javax.swing.JButton();
         button_flagForCalibration = new javax.swing.JButton();
         button_calibrateItem = new javax.swing.JButton();
@@ -1372,8 +1394,8 @@ public class View extends javax.swing.JFrame {
         jLayeredPane1.setLayout(new javax.swing.OverlayLayout(jLayeredPane1));
 
         jPanel2.setFocusable(false);
-        jPanel2.setOpaque(false);
         jPanel2.setVerifyInputWhenFocusTarget(false);
+        jPanel2.setOpaque(false);
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         button_logout.setText("Logout");
@@ -1440,7 +1462,7 @@ public class View extends javax.swing.JFrame {
         button_removeItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         button_removeItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(button_removeItem);
-        jToolBar1.add(jSeparator1);
+        jToolBar1.add(separator_item);
 
         button_bookItem.setText("Book Item");
         button_bookItem.setFocusable(false);
@@ -1453,7 +1475,7 @@ public class View extends javax.swing.JFrame {
         button_returnItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         button_returnItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(button_returnItem);
-        jToolBar1.add(jSeparator2);
+        jToolBar1.add(separator_booking);
 
         button_addNote.setText("Add Note");
         button_addNote.setFocusable(false);
@@ -2023,8 +2045,6 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
-    private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;
@@ -2046,6 +2066,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane panel_userDetails;
     private javax.swing.JPanel panel_userSearch;
     private javax.swing.JPanel panel_userView;
+    private javax.swing.JToolBar.Separator separator_booking;
+    private javax.swing.JToolBar.Separator separator_item;
     private javax.swing.JSplitPane tab_items;
     private javax.swing.JSplitPane tab_locations;
     private javax.swing.JSplitPane tab_users;
