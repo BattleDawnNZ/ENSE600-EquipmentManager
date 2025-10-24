@@ -17,22 +17,14 @@ public class DatabaseManager {
     private final String USERNAME; // DB username
     private final String PASSWORD; //DB password
     private final String URL;  // url of the DB host (add ;create=true to create db)   "jdbc:derby://localhost:1527/BookStoreDB"
-    private Connection conn;
+    private Connection conn = null;
     private Statement batchStatement = null;
 
     public DatabaseManager(String username, String password, String url) throws DatabaseConnectionException {
         this.URL = url;
         this.USERNAME = username;
         this.PASSWORD = password;
-        establishConnection();
-    }
-
-    // TEST CODE FOR DB CONNECTION
-    public static void main(String[] args) {
-        //DatabaseManager dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:UserDB; drop=true");
-        //System.out.println(dbManager.getConnection());
-        //dbManager.updateDB("DROP DATABASE UserDB");
-
+        this.establishConnection();
     }
 
     Connection getConnection() {
@@ -41,16 +33,17 @@ public class DatabaseManager {
 
     //Establish connection
     private void establishConnection() throws DatabaseConnectionException {
-        if (this.conn == null) {
-            try {
-                conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                if (conn == null) {
-                    throw new DatabaseConnectionException();
-                }
-                batchStatement = conn.createStatement();
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+        try {
+            System.out.println(conn);
+            conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            System.out.println("HERE4");
+            System.out.println(conn);
+            if (conn == null) {
+                throw new DatabaseConnectionException();
             }
+            batchStatement = conn.createStatement();
+        } catch (Exception ex) { // Connection likely already open in another instance of the application
+            throw new DatabaseConnectionException();
         }
     }
 
