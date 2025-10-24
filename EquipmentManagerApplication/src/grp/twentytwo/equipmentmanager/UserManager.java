@@ -120,7 +120,10 @@ class UserManager {
             column_name.data = user.getName();
             column_securityLevel.data = user.getSecurityLevel().toString();
             try {
-                column_password.data = tableManager.getRowByPrimaryKey(id).getString("Password");
+                ResultSet rs = tableManager.getRowByPrimaryKey(id);
+                if (rs.next()) {
+                    column_password.data = rs.getString("Password");
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             }
