@@ -53,7 +53,7 @@ public class Controller {
 	    model.removeItem(itemID);
 	});
 	// Item Edit
-	view.getEditDetails.addListener((String itemID) -> {
+	view.getEditItemDetails.addListener((String itemID) -> {
 	    view.setItemEditingPreview(model.getItem(itemID));
 	});
 	view.editItem.addListener((String itemID) -> {
@@ -106,6 +106,15 @@ public class Controller {
 	    view.setNewUserDetails(user);
 	    model.AddUser(user);
 	});
+	// User Edit
+	view.getEditUserDetails.addListener((String userID) -> {
+	    view.setUserEditingPreview(model.getUser(userID));
+	});
+	view.editUser.addListener((String userID) -> {
+	    User user = model.getUser(userID);
+	    view.editUserDetails(user);
+	    model.updateUser(user);
+	});
 	// User Removal	
 	view.removeUser.addListener((String userID) -> {
 	    model.RemoveUser(userID);
@@ -145,6 +154,5 @@ public class Controller {
 	view.setVisible(true);
 	//    }
 	//});
-	view.initialSearch();
     }
 }

@@ -245,6 +245,15 @@ public class ModelManager {
 	}
     }
 
+    public void updateUser(User user) {
+	try {
+	    userManager.updateUser(user);
+	} catch (Exception err) {
+	    modelError.notifyListeners(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     public User getUser(String userID) {
 	User user = null;
 	try {

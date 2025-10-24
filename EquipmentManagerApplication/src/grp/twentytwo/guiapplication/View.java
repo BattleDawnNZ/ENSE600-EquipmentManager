@@ -41,7 +41,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> returnItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
-    public Speaker<String> getEditDetails;
+    public Speaker<String> getEditItemDetails;
     public Speaker<String> editItem;
     public Speaker<String> viewBooking;
     public Speaker<String> addNote;
@@ -50,6 +50,8 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> viewHistory;
 
     public Speaker<ActionEvent> addUser;
+    public Speaker<String> getEditUserDetails;
+    public Speaker<String> editUser;
     public Speaker<String> removeUser;
     public Speaker<String> searchForUser;
     public Speaker<String> viewUser;
@@ -126,9 +128,9 @@ public class View extends javax.swing.JFrame {
 	    }
 	});
 	// Item editing
-	getEditDetails = new Speaker<>();
+	getEditItemDetails = new Speaker<>();
 	button_editItem.addActionListener((ActionEvent e) -> {
-	    getEditDetails.notifyListeners(currentItemID());
+	    getEditItemDetails.notifyListeners(currentItemID());
 	});
 	ActionListener closeEditItem = (ActionEvent e) -> {
 	    dialog_editItem.setVisible(false);
@@ -254,6 +256,21 @@ public class View extends javax.swing.JFrame {
 		dialog_addUser.setVisible(false);
 	    }
 	});
+	// User editing
+	getEditUserDetails = new Speaker<>();
+	button_editUser.addActionListener((ActionEvent e) -> {
+	    getEditUserDetails.notifyListeners(currentUserID());
+	});
+	ActionListener closeEditUser = (ActionEvent e) -> {
+	    dialog_editUser.setVisible(false);
+	};
+	button_editUserCancel.addActionListener(closeEditUser);
+	editUser = new Speaker<>();
+	button_editUserConfirm.addActionListener((ActionEvent e) -> {
+	    editUser.notifyListeners(currentUserID());
+	    viewUser.notifyListeners(currentUserID());
+	});
+	button_editUserConfirm.addActionListener(closeEditUser);
 	// User Removal
 	removeUser = new Speaker<>();
 	button_removeUser.addActionListener((ActionEvent e) -> {
@@ -334,8 +351,11 @@ public class View extends javax.swing.JFrame {
     }
 
     public void initialSearch() {
+	text_itemID.setText("");
 	searchForItem.notifyListeners(currentItemID());
+	text_userID.setText("");
 	searchForUser.notifyListeners(currentUserID());
+	text_locationName.setText("");
 	searchForLocation.notifyListeners(currentLocationName());
     }
 
@@ -365,6 +385,7 @@ public class View extends javax.swing.JFrame {
 
     public void loginUser(boolean successful) {
 	if (successful) {
+	    initialSearch();
 	    ((java.awt.CardLayout) getContentPane().getLayout()).next(getContentPane());
 	}
     }
@@ -394,6 +415,14 @@ public class View extends javax.swing.JFrame {
 	separator_item.setVisible(manager);
 
 	// Set User Securities
+	if (manager) {
+	    tabs_application.addTab("Users", tab_users);
+	} else {
+	    int tabIndex = tabs_application.indexOfTab("Users");
+	    if (tabIndex >= 0) {
+		tabs_application.removeTabAt(tabIndex);
+	    }
+	}
 	button_addUser.setVisible(manager);
 	button_editUser.setVisible(manager);
 	button_removeUser.setVisible(manager);
@@ -618,6 +647,30 @@ public class View extends javax.swing.JFrame {
 	combo_addUserSecurityLevel.setModel(securityLevels);
     }
 
+    public void setUserEditingPreview(User userData) {
+	try {
+	    if (userData != null) {
+		field_editUserName.setText(userData.getName());
+		// Setup the Security Levels Combo Box
+		DefaultComboBoxModel<User.SecurityLevels> securityLevels = new DefaultComboBoxModel<>();
+		for (User.SecurityLevels level : User.SecurityLevels.values()) {
+		    securityLevels.addElement(level);
+		}
+		combo_editUserSecurityLevel.setModel(securityLevels);
+		combo_editUserSecurityLevel.setSelectedItem(userData.getSecurityLevel());
+		dialog_editUser.setVisible(true);
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void editUserDetails(User user) {
+	user.setName(field_editUserName.getText());
+	user.setSecurityLevel((User.SecurityLevels) combo_editUserSecurityLevel.getSelectedItem());
+    }
+
     public boolean verifyAddUserDetails() {
 	// Check ID
 	if (field_addUserID.getText().length() < 3) {
@@ -832,6 +885,15 @@ public class View extends javax.swing.JFrame {
         jPanel10 = new javax.swing.JPanel();
         button_addLocationCancel = new javax.swing.JButton();
         button_addLocationConfirm = new javax.swing.JButton();
+        dialog_editUser = new javax.swing.JDialog();
+        jPanel19 = new javax.swing.JPanel();
+        jLabel31 = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
+        field_editUserName = new javax.swing.JTextField();
+        combo_editUserSecurityLevel = new javax.swing.JComboBox<>();
+        jPanel20 = new javax.swing.JPanel();
+        button_editUserCancel = new javax.swing.JButton();
+        button_editUserConfirm = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
         field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -887,27 +949,6 @@ public class View extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         list_itemBookings = new javax.swing.JList<>();
         jLabel8 = new javax.swing.JLabel();
-        tab_users = new javax.swing.JSplitPane();
-        panel_userSearch = new javax.swing.JPanel();
-        field_searchUser = new javax.swing.JTextField();
-        button_addUser = new javax.swing.JButton();
-        button_searchUser = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        list_userSearchResults = new javax.swing.JList<>();
-        panel_userView = new javax.swing.JPanel();
-        toolbar_userTools = new javax.swing.JToolBar();
-        button_editUser = new javax.swing.JButton();
-        button_removeUser = new javax.swing.JButton();
-        panel_userDetails = new javax.swing.JScrollPane();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        text_userID = new javax.swing.JTextField();
-        text_userName = new javax.swing.JTextField();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        text_userSecurityLevel = new javax.swing.JTextField();
         tab_locations = new javax.swing.JSplitPane();
         panel_locationSearch = new javax.swing.JPanel();
         field_searchLocation = new javax.swing.JTextField();
@@ -929,6 +970,27 @@ public class View extends javax.swing.JFrame {
         jScrollPane9 = new javax.swing.JScrollPane();
         list_locationItemsPreview = new javax.swing.JList<>();
         jLabel7 = new javax.swing.JLabel();
+        tab_users = new javax.swing.JSplitPane();
+        panel_userSearch = new javax.swing.JPanel();
+        field_searchUser = new javax.swing.JTextField();
+        button_addUser = new javax.swing.JButton();
+        button_searchUser = new javax.swing.JButton();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        list_userSearchResults = new javax.swing.JList<>();
+        panel_userView = new javax.swing.JPanel();
+        toolbar_userTools = new javax.swing.JToolBar();
+        button_editUser = new javax.swing.JButton();
+        button_removeUser = new javax.swing.JButton();
+        panel_userDetails = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        text_userID = new javax.swing.JTextField();
+        text_userName = new javax.swing.JTextField();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        text_userSecurityLevel = new javax.swing.JTextField();
 
         dialog_addItem.setTitle("Add Item");
         dialog_addItem.setMinimumSize(new java.awt.Dimension(300, 200));
@@ -1334,6 +1396,58 @@ public class View extends javax.swing.JFrame {
 
         dialog_addLocation.getContentPane().add(jPanel10, java.awt.BorderLayout.PAGE_END);
 
+        dialog_editUser.setTitle("Add Item");
+        dialog_editUser.setMinimumSize(new java.awt.Dimension(350, 250));
+        dialog_editUser.setModal(true);
+        dialog_editUser.setResizable(false);
+
+        jPanel19.setLayout(new java.awt.GridBagLayout());
+
+        jLabel31.setText("Name");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel19.add(jLabel31, gridBagConstraints);
+
+        jLabel32.setText("Type");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel19.add(jLabel32, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel19.add(field_editUserName, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        jPanel19.add(combo_editUserSecurityLevel, gridBagConstraints);
+
+        dialog_editUser.getContentPane().add(jPanel19, java.awt.BorderLayout.CENTER);
+
+        jPanel20.setLayout(new java.awt.GridBagLayout());
+
+        button_editUserCancel.setText("Cancel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel20.add(button_editUserCancel, gridBagConstraints);
+
+        button_editUserConfirm.setText("Confirm");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel20.add(button_editUserConfirm, gridBagConstraints);
+
+        dialog_editUser.getContentPane().add(jPanel20, java.awt.BorderLayout.PAGE_END);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -1664,128 +1778,6 @@ public class View extends javax.swing.JFrame {
 
         tabs_application.addTab("Items", tab_items);
 
-        panel_userSearch.setLayout(new java.awt.GridBagLayout());
-
-        field_searchUser.setToolTipText("Input a string to search for a list of corresponding users.");
-        field_searchUser.setMinimumSize(new java.awt.Dimension(100, 22));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
-        panel_userSearch.add(field_searchUser, gridBagConstraints);
-
-        button_addUser.setText("Add User");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
-        panel_userSearch.add(button_addUser, gridBagConstraints);
-
-        button_searchUser.setText("Search");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
-        panel_userSearch.add(button_searchUser, gridBagConstraints);
-
-        list_userSearchResults.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane6.setViewportView(list_userSearchResults);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.weighty = 0.1;
-        panel_userSearch.add(jScrollPane6, gridBagConstraints);
-
-        tab_users.setLeftComponent(panel_userSearch);
-
-        panel_userView.setLayout(new java.awt.BorderLayout());
-
-        toolbar_userTools.setFloatable(false);
-        toolbar_userTools.setRollover(true);
-
-        button_editUser.setText("Edit User");
-        button_editUser.setFocusable(false);
-        button_editUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        button_editUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(button_editUser);
-
-        button_removeUser.setText("Remove User");
-        button_removeUser.setFocusable(false);
-        button_removeUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        button_removeUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolbar_userTools.add(button_removeUser);
-
-        panel_userView.add(toolbar_userTools, java.awt.BorderLayout.PAGE_END);
-
-        panel_userDetails.setMinimumSize(new java.awt.Dimension(321, 16));
-
-        jPanel3.setLayout(new java.awt.GridBagLayout());
-
-        jLabel10.setText("ID:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        jPanel3.add(jLabel10, gridBagConstraints);
-
-        jLabel11.setText("Name:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        jPanel3.add(jLabel11, gridBagConstraints);
-
-        jLabel12.setText("Security Level:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        jPanel3.add(jLabel12, gridBagConstraints);
-
-        text_userID.setEditable(false);
-        text_userID.setPreferredSize(new java.awt.Dimension(232, 22));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel3.add(text_userID, gridBagConstraints);
-
-        text_userName.setEditable(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel3.add(text_userName, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.weightx = 0.1;
-        jPanel3.add(filler3, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 0.1;
-        jPanel3.add(filler4, gridBagConstraints);
-
-        text_userSecurityLevel.setEditable(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel3.add(text_userSecurityLevel, gridBagConstraints);
-
-        panel_userDetails.setViewportView(jPanel3);
-
-        panel_userView.add(panel_userDetails, java.awt.BorderLayout.CENTER);
-
-        tab_users.setRightComponent(panel_userView);
-
-        tabs_application.addTab("Users", tab_users);
-
         panel_locationSearch.setLayout(new java.awt.GridBagLayout());
 
         field_searchLocation.setMinimumSize(new java.awt.Dimension(100, 22));
@@ -1908,6 +1900,128 @@ public class View extends javax.swing.JFrame {
 
         tabs_application.addTab("Locations", tab_locations);
 
+        panel_userSearch.setLayout(new java.awt.GridBagLayout());
+
+        field_searchUser.setToolTipText("Input a string to search for a list of corresponding users.");
+        field_searchUser.setMinimumSize(new java.awt.Dimension(100, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_userSearch.add(field_searchUser, gridBagConstraints);
+
+        button_addUser.setText("Add User");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_userSearch.add(button_addUser, gridBagConstraints);
+
+        button_searchUser.setText("Search");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        panel_userSearch.add(button_searchUser, gridBagConstraints);
+
+        list_userSearchResults.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane6.setViewportView(list_userSearchResults);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        panel_userSearch.add(jScrollPane6, gridBagConstraints);
+
+        tab_users.setLeftComponent(panel_userSearch);
+
+        panel_userView.setLayout(new java.awt.BorderLayout());
+
+        toolbar_userTools.setFloatable(false);
+        toolbar_userTools.setRollover(true);
+
+        button_editUser.setText("Edit User");
+        button_editUser.setFocusable(false);
+        button_editUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_editUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_userTools.add(button_editUser);
+
+        button_removeUser.setText("Remove User");
+        button_removeUser.setFocusable(false);
+        button_removeUser.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_removeUser.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolbar_userTools.add(button_removeUser);
+
+        panel_userView.add(toolbar_userTools, java.awt.BorderLayout.PAGE_END);
+
+        panel_userDetails.setMinimumSize(new java.awt.Dimension(321, 16));
+
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        jLabel10.setText("ID:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel3.add(jLabel10, gridBagConstraints);
+
+        jLabel11.setText("Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel3.add(jLabel11, gridBagConstraints);
+
+        jLabel12.setText("Security Level:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        jPanel3.add(jLabel12, gridBagConstraints);
+
+        text_userID.setEditable(false);
+        text_userID.setPreferredSize(new java.awt.Dimension(232, 22));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel3.add(text_userID, gridBagConstraints);
+
+        text_userName.setEditable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        jPanel3.add(text_userName, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.weightx = 0.1;
+        jPanel3.add(filler3, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.1;
+        jPanel3.add(filler4, gridBagConstraints);
+
+        text_userSecurityLevel.setEditable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel3.add(text_userSecurityLevel, gridBagConstraints);
+
+        panel_userDetails.setViewportView(jPanel3);
+
+        panel_userView.add(panel_userDetails, java.awt.BorderLayout.CENTER);
+
+        tab_users.setRightComponent(panel_userView);
+
+        tabs_application.addTab("Users", tab_users);
+
         jLayeredPane1.add(tabs_application);
 
         panel_main.add(jLayeredPane1);
@@ -1938,6 +2052,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_editItemCancel;
     private javax.swing.JButton button_editItemConfirm;
     private javax.swing.JButton button_editUser;
+    private javax.swing.JButton button_editUserCancel;
+    private javax.swing.JButton button_editUserConfirm;
     private javax.swing.JButton button_flagForCalibration;
     private javax.swing.JButton button_login;
     private javax.swing.JButton button_logout;
@@ -1956,6 +2072,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JComboBox<User.SecurityLevels> combo_addUserSecurityLevel;
     private javax.swing.JComboBox<String> combo_editItemLocation;
     private javax.swing.JComboBox<Item.Status> combo_editItemStatus;
+    private javax.swing.JComboBox<User.SecurityLevels> combo_editUserSecurityLevel;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
     private javax.swing.JDialog dialog_addItem;
@@ -1964,6 +2081,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JDialog dialog_addUser;
     private javax.swing.JDialog dialog_bookItem;
     private javax.swing.JDialog dialog_editItem;
+    private javax.swing.JDialog dialog_editUser;
     private javax.swing.JDialog dialog_viewHistory;
     private javax.swing.JTextField field_addItemName;
     private javax.swing.JTextField field_addItemType;
@@ -1976,6 +2094,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextArea field_editItemDescription;
     private javax.swing.JTextField field_editItemName;
     private javax.swing.JTextField field_editItemType;
+    private javax.swing.JTextField field_editUserName;
     private javax.swing.JPasswordField field_loginPassword;
     private javax.swing.JTextField field_loginUserID;
     private javax.swing.JTextField field_searchItem;
@@ -2011,6 +2130,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -2028,7 +2149,9 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
