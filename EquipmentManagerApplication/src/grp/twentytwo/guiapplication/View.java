@@ -39,6 +39,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> bookItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
+    public Speaker<String> getEditDetails;
     public Speaker<String> editItem;
     public Speaker<String> viewBooking;
     public Speaker<String> addNote;
@@ -109,13 +110,19 @@ public class View extends javax.swing.JFrame {
 	    }
 	});
 	// Item editing
-	editItem = new Speaker<>();
+	getEditDetails = new Speaker<>();
 	button_editItem.addActionListener((ActionEvent e) -> {
+	    getEditDetails.notifyListeners(currentItemID());
+	});
+	ActionListener closeEditItem = (ActionEvent e) -> {
+	    dialog_editItem.setVisible(false);
+	};
+	button_editItemCancel.addActionListener(closeEditItem);
+	editItem = new Speaker<>();
+	button_editItemConfirm.addActionListener((ActionEvent e) -> {
 	    editItem.notifyListeners(currentItemID());
 	});
-	button_editItemCancel.addActionListener((ActionEvent e) -> {
-	    dialog_editItem.setVisible(false);
-	});
+	button_editItemConfirm.addActionListener(closeEditItem);
 	// Item Searching
 	searchForItem = new Speaker<>();
 	ActionListener searchItemListener = (ActionEvent e) -> {
@@ -326,6 +333,14 @@ public class View extends javax.swing.JFrame {
 	item.setType(field_addItemType.getText());
     }
 
+    public void editItemDetails(Item item) {
+	item.setName(field_editItemName.getText());
+	item.setDescription(field_editItemDescription.getText());
+	item.setLocation(field_editItemLocation.getText());
+	item.setStatus((Item.Status) combo_editItemStatus.getSelectedItem());
+	item.setType(field_editItemType.getText());
+    }
+
     public void setItemSearchResults(LinkedHashSet<String> newList) {
 	DefaultListModel<String> items = new DefaultListModel<>();
 	items.addAll(newList);
@@ -414,16 +429,16 @@ public class View extends javax.swing.JFrame {
     public void setItemEditingPreview(Item itemData) {
 	try {
 	    if (itemData != null) {
-		field_editingItemName.setText(itemData.getName());
-		field_editingItemDescription.setText(itemData.getDescription());
-		field_editingItemLocation.setText(itemData.getLocation());
-		DefaultComboBoxModel<String> statuses = new DefaultComboBoxModel<>();
+		field_editItemName.setText(itemData.getName());
+		field_editItemDescription.setText(itemData.getDescription());
+		field_editItemLocation.setText(itemData.getLocation());
+		DefaultComboBoxModel<Item.Status> statuses = new DefaultComboBoxModel<>();
 		for (Item.Status status : Item.Status.values()) {
-		    statuses.addElement(status.toString());
+		    statuses.addElement(status);
 		}
-		combo_editingItemStatus.setModel(statuses);
-		combo_editingItemStatus.setSelectedIndex(itemData.getStatus().ordinal());
-		field_editingItemType.setText(itemData.getType());
+		combo_editItemStatus.setModel(statuses);
+		combo_editItemStatus.setSelectedIndex(itemData.getStatus().ordinal());
+		field_editItemType.setText(itemData.getType());
 		dialog_editItem.setVisible(true);
 	    }
 	} catch (Exception err) {
@@ -569,12 +584,12 @@ public class View extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
-        field_editingItemName = new javax.swing.JTextField();
-        field_editingItemLocation = new javax.swing.JTextField();
-        field_editingItemType = new javax.swing.JTextField();
+        field_editItemName = new javax.swing.JTextField();
+        field_editItemLocation = new javax.swing.JTextField();
+        field_editItemType = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        field_editingItemDescription = new javax.swing.JTextArea();
-        combo_editingItemStatus = new javax.swing.JComboBox<>();
+        field_editItemDescription = new javax.swing.JTextArea();
+        combo_editItemStatus = new javax.swing.JComboBox<>();
         jPanel9 = new javax.swing.JPanel();
         button_editItemCancel = new javax.swing.JButton();
         button_editItemConfirm = new javax.swing.JButton();
@@ -818,23 +833,23 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel6.add(field_editingItemName, gridBagConstraints);
+        jPanel6.add(field_editItemName, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel6.add(field_editingItemLocation, gridBagConstraints);
+        jPanel6.add(field_editItemLocation, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        jPanel6.add(field_editingItemType, gridBagConstraints);
+        jPanel6.add(field_editItemType, gridBagConstraints);
 
-        field_editingItemDescription.setColumns(20);
-        field_editingItemDescription.setRows(5);
-        jScrollPane2.setViewportView(field_editingItemDescription);
+        field_editItemDescription.setColumns(20);
+        field_editItemDescription.setRows(5);
+        jScrollPane2.setViewportView(field_editItemDescription);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -845,13 +860,12 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.1;
         jPanel6.add(jScrollPane2, gridBagConstraints);
 
-        combo_editingItemStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        combo_editingItemStatus.setToolTipText("");
+        combo_editItemStatus.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel6.add(combo_editingItemStatus, gridBagConstraints);
+        jPanel6.add(combo_editItemStatus, gridBagConstraints);
 
         dialog_editItem.getContentPane().add(jPanel6, java.awt.BorderLayout.CENTER);
 
@@ -1612,7 +1626,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_viewHistoryClose;
     private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
     private javax.swing.JCheckBox check_needsCalibration;
-    private javax.swing.JComboBox<String> combo_editingItemStatus;
+    private javax.swing.JComboBox<Item.Status> combo_editItemStatus;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
     private javax.swing.JDialog dialog_addItem;
@@ -1626,10 +1640,10 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_addItemType;
     private javax.swing.JTextField field_addLocationName;
     private javax.swing.JTextArea field_addNote;
-    private javax.swing.JTextArea field_editingItemDescription;
-    private javax.swing.JTextField field_editingItemLocation;
-    private javax.swing.JTextField field_editingItemName;
-    private javax.swing.JTextField field_editingItemType;
+    private javax.swing.JTextArea field_editItemDescription;
+    private javax.swing.JTextField field_editItemLocation;
+    private javax.swing.JTextField field_editItemName;
+    private javax.swing.JTextField field_editItemType;
     private javax.swing.JPasswordField field_loginPassword;
     private javax.swing.JTextField field_loginUserID;
     private javax.swing.JTextField field_searchItem;

@@ -45,8 +45,13 @@ public class Controller {
 	    model.removeItem(itemID);
 	});
 	// Item Edit
-	view.editItem.addListener((String itemID) -> {
+	view.getEditDetails.addListener((String itemID) -> {
 	    view.setItemEditingPreview(model.getItem(itemID));
+	});
+	view.editItem.addListener((String itemID) -> {
+	    Item item = model.getItem(itemID);
+	    view.editItemDetails(item);
+	    model.updateItem(item);
 	});
 	// Item Search
 	view.searchForItem.addListener((String searchString) -> {
