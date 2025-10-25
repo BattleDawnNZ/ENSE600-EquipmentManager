@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages booking and returning of items.
+ * Manages booking and returning of items through a booking SQL table.
  *
  * @author ppj1707
  */

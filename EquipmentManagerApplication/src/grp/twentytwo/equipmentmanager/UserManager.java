@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages all users allowing for login, logout, create user, remove user,
- * verifying IDs, and tracking the current user.
+ * Manages all data interactions to a SQL table. Login, logout, create user,
+ * remove user, verifying IDs, etc.
  *
  * @author ppj1707
  */

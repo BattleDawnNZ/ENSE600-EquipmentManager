@@ -62,7 +62,7 @@ public class History {
 
     /**
      *
-     * @return a string representing the object.
+     * @return a string representing the booking object (start-end date).
      */
     @Override
     public String toString() {

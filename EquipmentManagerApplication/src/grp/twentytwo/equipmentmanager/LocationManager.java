@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages all locations, adding locations, moving items, and validating
- * locations.
+ * Manages all locations through a SQL table. Functions for adding locations,
+ * moving items, and validating locations etc.
  *
  * @author ppj1707
  */
