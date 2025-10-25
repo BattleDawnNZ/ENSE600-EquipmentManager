@@ -115,6 +115,19 @@ class BookingManager {
     }
 
     /**
+     * Delete all bookings for a paticular item.
+     *
+     * @param itemID The item ID to remove all bookings for.
+     * @return True if all bookings were successfully deleted
+     */
+    void deleteAllBookingsForItem(String itemID) throws UnfoundPrimaryKeyException, InvalidBookingRangeException {
+        ArrayList<Booking> itemBookings = this.getBookingsForItem(itemID);
+        for (Booking itemBooking : itemBookings) {
+            this.returnItem(itemBooking.getID());
+        }
+    }
+
+    /**
      *
      * @param bookingID The bookings ID
      * @param userID The User to check ownership
