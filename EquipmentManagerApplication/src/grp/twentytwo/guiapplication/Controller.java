@@ -50,7 +50,7 @@ public class Controller {
 	view.addItem.addListener((ActionEvent e) -> {
 	    Item item = model.getNewItem();
 	    view.setNewItemDetails(item);
-	    model.AddItem(item);
+	    model.addItem(item);
 	});
 	// Item Removal	
 	view.removeItem.addListener((String itemID) -> {

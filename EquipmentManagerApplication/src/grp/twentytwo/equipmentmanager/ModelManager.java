@@ -78,7 +78,7 @@ public class ModelManager {
 	return new Item("", "", "");
     }
 
-    public void AddItem(Item item) {
+    public void addItem(Item item) {
 	try {
 	    if (locationManager.isValidLocationName(item.getLocation())) {
 		itemManager.addItem(item);
