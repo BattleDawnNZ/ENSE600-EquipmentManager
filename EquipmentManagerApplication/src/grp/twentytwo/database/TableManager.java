@@ -48,7 +48,7 @@ public class TableManager {
         }
         valueColumns.remove(primaryKey); // Excludes column with primary key
         conn = dbManager.getConnection();
-        System.out.println(conn);
+        //System.out.println(conn);
         createTableIfNotExist();
         prepareStatements();
     }
@@ -89,7 +89,6 @@ public class TableManager {
         sql_createRowByPrimaryKey += ")";
 
         String sql_getMaxPrimaryKey = "SELECT MAX(" + primaryKey + ") AS maxId FROM " + tableName;
-        System.out.println(sql_getMaxPrimaryKey);
 
         // DEGUG LINES: Print SQL to verify
 //        System.out.println(sql_createRowByPrimaryKey);
@@ -344,7 +343,6 @@ public class TableManager {
             throw new InvalidColumnNameException();
         }
         String sql_query = "SELECT * FROM " + tableName + " WHERE UPPER(" + columnName + ") = UPPER('" + value + "')";
-        System.out.println(sql_query);
         return dbManager.queryDB(sql_query);
     }
 
