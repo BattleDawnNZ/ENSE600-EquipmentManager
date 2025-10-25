@@ -288,6 +288,13 @@ public class View extends javax.swing.JFrame {
 		showInvalidEntry("No Booking Selected", "No booking has been selected.\nPlease select a booking from the\nbookings list on the right to return it.");
 	    }
 	});
+	// Set Calendar
+	calendar_itemBookings.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    if (localDate.isBefore(LocalDate.now())) {
+		return false;
+	    }
+	    return true;
+	});
     }
 
     private void initialiseLocationsTab() {
@@ -475,6 +482,8 @@ public class View extends javax.swing.JFrame {
 	// Employee
 	button_bookItem.setVisible(employee);
 	button_returnItem.setVisible(employee);
+	button_viewBookingDetails.setVisible(employee);
+	panel_itemBookings.setVisible(employee);
 	button_viewHistory.setVisible(employee);
 	separator_booking.setVisible(employee);
 	// Manager
@@ -663,6 +672,9 @@ public class View extends javax.swing.JFrame {
 	}
 	list_itemBookings.setModel(bookings);
 	calendar_itemBookings.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    if (localDate.isBefore(LocalDate.now())) {
+		return false;
+	    }
 	    for (Booking booking : newList) {
 		if (!booking.isOutsideBookedDate(localDate)) {
 		    return false;
@@ -671,6 +683,9 @@ public class View extends javax.swing.JFrame {
 	    return true;
 	});
 	dateTimePicker_bookItemBookedDate.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    if (localDate.isBefore(LocalDate.now())) {
+		return false;
+	    }
 	    for (Booking booking : newList) {
 		if (!booking.isOutsideBookedDate(localDate)) {
 		    return false;
@@ -679,6 +694,9 @@ public class View extends javax.swing.JFrame {
 	    return true;
 	});
 	dateTimePicker_bookItemReturnDate.datePicker.getSettings().setVetoPolicy((LocalDate localDate) -> {
+	    if (localDate.isBefore(LocalDate.now())) {
+		return false;
+	    }
 	    for (Booking booking : newList) {
 		if (!booking.isOutsideBookedDate(localDate)) {
 		    return false;
