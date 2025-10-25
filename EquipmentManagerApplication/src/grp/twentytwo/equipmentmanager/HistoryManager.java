@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -117,8 +118,13 @@ class HistoryManager {
      */
     private String generateHistoryID() {
         String newID;
-        newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
-        return newID;
+        try {
+            newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
+            return newID;
+        } catch (NonNumericKeyClashException ex) {
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     /**

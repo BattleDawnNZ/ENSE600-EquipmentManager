@@ -86,6 +86,7 @@ public class TableManager {
         sql_createRowByPrimaryKey += ")";
 
         String sql_getMaxPrimaryKey = "SELECT MAX(" + primaryKey + ") AS maxId FROM " + tableName;
+        System.out.println(sql_getMaxPrimaryKey);
 
         // DEGUD LINES: Print SQL to verify
 //        System.out.println(sql_createRowByPrimaryKey);
@@ -305,22 +306,26 @@ public class TableManager {
      *
      * @return the next primary key based (incremented from the maximum key)
      */
-    public String getNextPrimaryKeyId() {
-        String next = "0"; // Default. Only occurs for no data in the table yet or no numeric key
+    public String getNextPrimaryKeyId() throws NonNumericKeyClashException {
         try {
             ResultSet rs = st_getMaxPrimaryKey.executeQuery();
             if (rs.next()) {
                 if (rs.getString("maxId") != null) {
+                    System.out.println("RAW:" + rs.getString("maxId"));
                     String lastID = rs.getString("maxId").replaceAll("[^0-9]", "");
+                    System.out.println("FORMATTED:" + lastID);
                     if (lastID != null && !lastID.isBlank()) {
-                        return Integer.toString(Integer.parseInt(lastID) + 1);
+                        System.out.println("ZEROS ADDED: " + String.format("%05d", ((Integer.parseInt(lastID) + 1))));
+                        return String.format("%05d", ((Integer.parseInt(lastID) + 1)));
+                    } else {
+                        throw new NonNumericKeyClashException();
                     }
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return next;
+        return "00000"; // Default. Only occurs for no data in the table yet or no numeric key
     }
 
     /**

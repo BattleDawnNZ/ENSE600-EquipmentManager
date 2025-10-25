@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -166,8 +167,14 @@ class LocationManager {
      */
     private String generateLocationID() {
         String newID;
-        newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
-        return newID;
+        try {
+            newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
+            return newID;
+        } catch (NonNumericKeyClashException ex) {
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     /**
