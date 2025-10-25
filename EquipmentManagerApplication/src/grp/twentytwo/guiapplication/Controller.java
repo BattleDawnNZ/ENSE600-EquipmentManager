@@ -29,7 +29,6 @@ public class Controller {
 	});
 	model.setupManagers();
 
-	//<editor-fold desc="Initializing connections between View and Model and vice versa">
 	//<editor-fold desc="Login Page">
 	// Login
 	view.login.addListener((ActionEvent e) -> {
@@ -41,6 +40,7 @@ public class Controller {
 	    view.logoutUser();
 	});
 	//</editor-fold>
+
 	//<editor-fold desc="Items Tab">----------------------------------------
 	view.getLocations.addListener((ActionEvent e) -> {
 	    view.setLocations(model.searchForLocations(""));
@@ -108,6 +108,7 @@ public class Controller {
 	    view.setupViewHistoryDialog(model.getHistoryForItem(itemID));
 	});
 	//</editor-fold>
+
 	//<editor-fold desc="Users Tab">----------------------------------------
 	// User Adding
 	view.addUser.addListener((ActionEvent e) -> {
@@ -137,6 +138,7 @@ public class Controller {
 	    view.setUserPreview(model.getUser(userID));
 	});
 	//</editor-fold>
+
 	//<editor-fold desc="Location Tab">----------------------------------------
 	// Location Add
 	view.addLocation.addListener((ActionEvent e) -> {
@@ -156,7 +158,7 @@ public class Controller {
 	    view.setLocationItemsPreview(model.getItemsForLocation(locationName));
 	});
 	//</editor-fold>
-	//</editor-fold>
+
 	/* Create and display the form */
 	//java.awt.EventQueue.invokeLater(new Runnable() {
 	//    public void run() {

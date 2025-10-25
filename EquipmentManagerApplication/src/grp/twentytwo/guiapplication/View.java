@@ -343,21 +343,29 @@ public class View extends javax.swing.JFrame {
 	    clearAddLocationDialog();
 	    dialog_addLocation.setVisible(true);
 	});
-	ActionListener closeAddLocation = (ActionEvent e) -> {
+	button_addLocationCancel.addActionListener((ActionEvent e) -> {
 	    dialog_addLocation.setVisible(false);
-	};
-	button_addLocationCancel.addActionListener(closeAddLocation);
+	});
 	addLocation = new Speaker<>();
 	button_addLocationConfirm.addActionListener((ActionEvent e) -> {
-	    addLocation.notifyListeners(e);
+	    if (verifyAddLocationDetails()) {
+		addLocation.notifyListeners(e);
+		dialog_addLocation.setVisible(false);
+		refreshLocationSearch();
+	    }
 	});
-	button_addLocationConfirm.addActionListener(closeAddLocation);
 	// Location Removal
 	removeLocation = new Speaker<>();
 	button_removeLocation.addActionListener((ActionEvent e) -> {
-	    if (!currentLocationID().isBlank()) {
+	    if (currentLocationName() == null || currentLocationName().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		String itemID = currentItemID();
 		if (getConfirmation("Remove Location", "Are you sure you want remove Location " + currentLocationName() + "?")) {
 		    removeLocation.notifyListeners(currentLocationID());
+		    refreshLocationSearch();
+		    setLocationPreview(null);
+		    setLocationItemsPreview(null);
 		}
 	    }
 	});
@@ -390,9 +398,9 @@ public class View extends javax.swing.JFrame {
 	text_itemID.setText("");
 	refreshItemSearch();
 	text_userID.setText("");
-	searchForUser.notifyListeners(currentUserID());
+	refreshUserSearch();
 	text_locationName.setText("");
-	searchForLocation.notifyListeners(currentLocationName());
+	refreshLocationSearch();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Helper Dialogs">
@@ -477,7 +485,7 @@ public class View extends javax.swing.JFrame {
     }
 
     public void refreshItemSearch() {
-	searchForItem.notifyListeners(currentItemID());
+	searchForItem.notifyListeners(field_searchItem.getText());
     }
 
     public void setupAdditemDialog() {
@@ -733,6 +741,10 @@ public class View extends javax.swing.JFrame {
 	return text_userID.getText();
     }
 
+    public void refreshUserSearch() {
+	searchForUser.notifyListeners(field_searchUser.getText());
+    }
+
     public void clearAddUserDialog() {
 	field_addUserID.setText("");
 	field_addUserName.setText("");
@@ -855,8 +867,24 @@ public class View extends javax.swing.JFrame {
 	return text_locationName.getText();
     }
 
+    public void refreshLocationSearch() {
+	searchForLocation.notifyListeners(field_searchLocation.getText());
+    }
+
     public void clearAddLocationDialog() {
 	field_addLocationName.setText("");
+    }
+
+    public boolean verifyAddLocationDetails() {// Check Name
+	if (field_addLocationName.getText().length() < 1) {
+	    showInvalidEntry("Invalid Location Name", "The Location name entered is too short.\nLocation names must be 1 characters or more.");
+	    return false;
+	}
+	if (field_addLocationName.getText().length() > 30) {
+	    showInvalidEntry("Invalid Location Name", "The Location name entered is too long.\nLocation names must be 30 characters or less.");
+	    return false;
+	}
+	return true;
     }
 
     public String getNewLocationDetails() {
@@ -876,7 +904,10 @@ public class View extends javax.swing.JFrame {
 
     public void setLocationPreview(Location locationData) {
 	try {
-	    if (locationData != null) {
+	    if (locationData == null) {
+		text_locationID.setText("");
+		text_locationName.setText("");
+	    } else {
 		text_locationID.setText(locationData.getID());
 		text_locationName.setText(locationData.getName());
 	    }
@@ -888,9 +919,13 @@ public class View extends javax.swing.JFrame {
 
     public void setLocationItemsPreview(ArrayList<String> newList) {
 	try {
-	    DefaultListModel<String> locations = new DefaultListModel<>();
-	    locations.addAll(newList);
-	    list_locationItemsPreview.setModel(locations);
+	    if (newList == null) {
+		list_locationItemsPreview.setModel(new DefaultListModel<>());
+	    } else {
+		DefaultListModel<String> locations = new DefaultListModel<>();
+		locations.addAll(newList);
+		list_locationItemsPreview.setModel(locations);
+	    }
 	} catch (Exception err) {
 	    showError(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);

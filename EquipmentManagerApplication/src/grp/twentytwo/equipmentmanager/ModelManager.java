@@ -94,7 +94,7 @@ public class ModelManager {
     public void removeItem(String itemID) {
 	try {
 	    itemManager.removeItem(itemID);
-	    historyManager.addHistory(new History(itemID, "Details Updated by User: " + activeUser.getID()));
+	    historyManager.addHistory(new History(itemID, "Item " + itemID + " removed by User: " + activeUser.getID()));
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -311,8 +311,12 @@ public class ModelManager {
 
     public void removeLocation(String locationID) {
 	try {
-	    if (!locationID.isBlank() && itemManager.getItemsForLocation(locationManager.getLocationFromID(locationID).getName()).isEmpty()) {
-		locationManager.removeLocation(locationID);
+	    if (!locationID.isBlank()) {
+		if (itemManager.getItemsForLocation(locationManager.getLocationFromID(locationID).getName()).isEmpty()) {
+		    locationManager.removeLocation(locationID);
+		} else {
+		    modelInvalidEntry.notifyListeners("Cannot remove a location that contains items.\nPlease move items first.");
+		}
 	    }// Todo throw custom exception to alert user to the fact that the location currently has items stored in it.
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
