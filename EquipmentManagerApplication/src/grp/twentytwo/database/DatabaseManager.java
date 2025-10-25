@@ -34,10 +34,7 @@ public class DatabaseManager {
     //Establish connection
     private void establishConnection() throws DatabaseConnectionException {
         try {
-            System.out.println(conn);
             conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            System.out.println("HERE4");
-            System.out.println(conn);
             if (conn == null) {
                 throw new DatabaseConnectionException();
             }
