@@ -253,18 +253,16 @@ class UserManager {
      * @return whether the id and password are valid (false if the user id was
      * not found in the system or password was incorrect for the user)
      */
-    boolean login(User user) {
+    boolean login(User user) throws UnfoundPrimaryKeyException {
         try {
-            if (tableManager.verifyPrimaryKey(user.getName())) {
-                ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
-                if (rs.next()) {
-                    if (rs.getString("Password").equals(user.getPassword())) {
-                        return true;
-                    }
+            ResultSet rs = tableManager.getRowByPrimaryKey(user.getID());
+            if (rs.next()) {
+                if (rs.getString("Password").equals(user.getPassword())) {
+                    return true;
                 }
             }
             return false;
-        } catch (SQLException | UnfoundPrimaryKeyException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
