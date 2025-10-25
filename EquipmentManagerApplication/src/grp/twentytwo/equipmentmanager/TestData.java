@@ -49,30 +49,30 @@ public class TestData {
 	    model.addItem(new Item("Ender 3D Printer", "WORKSHOP 3", "Manufacturing/Additive"));
 	    model.addItem(new Item("Ender 3D Printer", "WORKSHOP 3", "Manufacturing/Additive"));
 	    model.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
-	    model.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
-	    model.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
+	    model.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 2", "Electrical/Measurement"));
+	    model.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 4", "Electrical/Measurement"));
 	    model.addItem(new Item("Duratech True RMS Multimeter", "WORKSHOP 3", "Electrical/Measurement"));
 	    model.addItem(new Item("Duratech True RMS Multimeter", "WORKSHOP 4", "Electrical/Measurement"));
 	    model.addItem(new Item("Duratech True RMS Multimeter", "WORKSHOP 4", "Electrical/Measurement"));
 	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
-	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
-	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
-	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
-	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
+	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 2", "Electrical/Soldering"));
+	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 2", "Electrical/Soldering"));
+	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 3", "Electrical/Soldering"));
+	    model.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 3", "Electrical/Soldering"));
 	    model.addItem(new Item("Soldering Iron", "WORKSHOP 4", "Electrical/Soldering"));
 	    model.addItem(new Item("Soldering Iron", "WORKSHOP 5", "Electrical/Soldering"));
 
-	    model.addNote("MC00000", "Test note");
-	    model.addNote("MC00000", "Test note 2");
-	    model.addNote("EM00001", "Test note");
-	    model.addNote("ES00001", "Test note");
+	    model.addNote("E00000", "Test note");
+	    model.addNote("E00000", "Test note 2");
+	    model.addNote("E00001", "Test note");
+	    model.addNote("E00001", "Test note");
 
 	    LocalDateTime dateBooked = LocalDateTime.of(2025, 10, 5, 8, 0); // 5/10/2025 8:00am 
 	    LocalDateTime dateReturned = LocalDateTime.of(2025, 10, 5, 8, 30); // 5/10/2025 8:30am
-	    model.addBooking(new Booking("111", "MC00000", dateBooked, dateReturned));
-	    model.addBooking(new Booking("111", "MC00000", dateReturned.plusDays(2), dateReturned.plusDays(3)));
-	    model.addBooking(new Booking("222", "EM00001", dateBooked, dateReturned));
-	    model.addBooking(new Booking("222", "ES00001", dateBooked, dateReturned));
+	    model.addBooking(new Booking("111", "E00000", dateBooked, dateReturned));
+	    model.addBooking(new Booking("111", "E00000", dateReturned.plusDays(2), dateReturned.plusDays(3)));
+	    model.addBooking(new Booking("222", "E00001", dateBooked, dateReturned));
+	    model.addBooking(new Booking("222", "E00001", dateBooked, dateReturned));
 	} catch (Exception ex) {
 	    Logger.getLogger(TestData.class.getName()).log(Level.SEVERE, null, ex);
 	}
