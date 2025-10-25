@@ -41,7 +41,6 @@ public class ModelManager {
 	    userManager = new UserManager(databaseManager);
 	    bookingManager = new BookingManager(databaseManager);
 	    historyManager = new HistoryManager(databaseManager);
-	    historyManager.printTable();
 	} catch (DatabaseConnectionException err) {
 	    modelError.notifyListeners(err);
 	    System.out.println(err.getMessage());

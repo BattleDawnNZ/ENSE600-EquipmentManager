@@ -32,7 +32,7 @@ import javax.swing.event.ListSelectionListener;
  */
 public class View extends javax.swing.JFrame {
 
-    // <editor-fold desc="Speakers">
+    // <editor-fold  defaultstate="collapsed" desc="Speakers">
     public Speaker<ActionEvent> login;
     public Speaker<ActionEvent> logout;
     public Speaker<ActionEvent> addItem;
@@ -76,7 +76,7 @@ public class View extends javax.swing.JFrame {
 	    for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 		if (look.equals(info.getName())) {
 		    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-		    //break;
+		    break;
 		}
 	    }
 	} catch (ClassNotFoundException ex) {
@@ -90,17 +90,28 @@ public class View extends javax.swing.JFrame {
 	}
 	initComponents();
 
+	// Initalise GUI Functions
+	initialiseLogin();
+	initialiseItemsTab();
+	initialiseBookingFunctions();
+	intialiseUsersTab();
+	initialiseLocationsTab();
+    }
+
+    private void initialiseLogin() {
 	// Login
 	login = new Speaker<>();
 	button_login.addActionListener((ActionEvent e) -> {
 	    login.notifyListeners(e);
 	});
+	// Logout
 	logout = new Speaker<>();
 	button_logout.addActionListener((ActionEvent e) -> {
 	    logout.notifyListeners(e);
 	});
+    }
 
-	// Item Tab ------------------------------------------------------------
+    private void initialiseItemsTab() {
 	getLocations = new Speaker<>();
 	// Item Adding
 	button_addItem.addActionListener((ActionEvent e) -> {
@@ -189,7 +200,7 @@ public class View extends javax.swing.JFrame {
 		dialog_addNote.setVisible(false);
 	    }
 	});
-	// Item Maintenance
+	// Item Flagging
 	flagItem = new Speaker<>();
 	button_flagForCalibration.addActionListener((ActionEvent e) -> {
 	    if (currentItemID() == null || currentItemID().isBlank()) {
@@ -199,7 +210,7 @@ public class View extends javax.swing.JFrame {
 		viewItem.notifyListeners(currentItemID());
 	    }
 	});
-
+	// Item Calibration
 	calibrateItem = new Speaker<>();
 	button_calibrateItem.addActionListener((ActionEvent e) -> {
 	    if (currentItemID() == null || currentItemID().isBlank()) {
@@ -209,7 +220,6 @@ public class View extends javax.swing.JFrame {
 		viewItem.notifyListeners(currentItemID());
 	    }
 	});
-
 	// Item History
 	viewHistory = new Speaker<>();
 	button_viewHistory.addActionListener((ActionEvent e) -> {
@@ -223,8 +233,9 @@ public class View extends javax.swing.JFrame {
 	button_viewHistoryClose.addActionListener((ActionEvent e) -> {
 	    dialog_viewHistory.setVisible(false);
 	});
+    }
 
-	// Bookings ------------------------------------------------------------
+    private void initialiseBookingFunctions() {
 	// Preview Booking Details
 	viewBookingDetails = new Speaker<>();
 	button_viewBookingDetails.addActionListener((ActionEvent e) -> {
@@ -277,78 +288,9 @@ public class View extends javax.swing.JFrame {
 		showInvalidEntry("No Booking Selected", "No booking has been selected.\nPlease select a booking from the\nbookings list on the right to return it.");
 	    }
 	});
+    }
 
-	// User Tab ------------------------------------------------------------
-	// User Adding
-	button_addUser.addActionListener((ActionEvent e) -> {
-	    clearAddUserDialog();
-	    dialog_addUser.setVisible(true);
-	});
-	button_addUserCancel.addActionListener((ActionEvent e) -> {
-	    dialog_addUser.setVisible(false);
-	});
-	addUser = new Speaker<>();
-	button_addUserConfirm.addActionListener((ActionEvent e) -> {
-	    if (verifyAddUserDetails()) {
-		addUser.notifyListeners(e);
-		dialog_addUser.setVisible(false);
-		refreshUserSearch();
-	    }
-	});
-	// User editing
-	getEditUserDetails = new Speaker<>();
-	button_editUser.addActionListener((ActionEvent e) -> {
-	    if (currentUserID() == null || currentUserID().isBlank()) {
-		showInvalidEntry("No User Selected", "No User has been selected.\nPlease select a User from the\nuser list on the left.");
-	    } else {
-		getEditUserDetails.notifyListeners(currentUserID());
-	    }
-	});
-	ActionListener closeEditUser = (ActionEvent e) -> {
-	    dialog_editUser.setVisible(false);
-	};
-	button_editUserCancel.addActionListener(closeEditUser);
-	editUser = new Speaker<>();
-	button_editUserConfirm.addActionListener((ActionEvent e) -> {
-	    editUser.notifyListeners(currentUserID());
-	    viewUser.notifyListeners(currentUserID());
-	});
-	button_editUserConfirm.addActionListener(closeEditUser);
-	// User Removal
-	removeUser = new Speaker<>();
-	button_removeUser.addActionListener((ActionEvent e) -> {
-	    if (currentUserID() == null || currentUserID().isBlank()) {
-		showInvalidEntry("No User Selected", "No User has been selected.\nPlease select a User from the\nuser list on the left.");
-	    } else {
-		String userID = currentUserID();
-		if (getConfirmation("Remove User", "Are you sure you want remove User " + userID + "?")) {
-		    removeUser.notifyListeners(userID);
-		    refreshUserSearch();
-		    setUserPreview(null);
-		}
-	    }
-	});
-	// User Searching
-	searchForUser = new Speaker<>();
-	ActionListener searchUserListener = (ActionEvent e) -> {
-	    searchForUser.notifyListeners(field_searchUser.getText());
-	};
-	button_searchUser.addActionListener(searchUserListener);
-	field_searchUser.addActionListener(searchUserListener);
-	// User Selection
-	viewUser = new Speaker<>();
-	list_userSearchResults.addListSelectionListener(new ListSelectionListener() {
-	    @Override
-	    public void valueChanged(ListSelectionEvent e) {
-		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
-		    String selectedValue = list_userSearchResults.getSelectedValue();
-		    if (selectedValue != null) {
-			viewUser.notifyListeners(selectedValue);
-		    }
-		}
-	    }
-	});
-	// Location Tab --------------------------------------------------------
+    private void initialiseLocationsTab() {
 	// Location Adding
 	button_addLocation.addActionListener((ActionEvent e) -> {
 	    clearAddLocationDialog();
@@ -399,6 +341,79 @@ public class View extends javax.swing.JFrame {
 		    String selectedValue = list_locationSearchResults.getSelectedValue();
 		    if (selectedValue != null) {
 			viewLocation.notifyListeners(selectedValue);
+		    }
+		}
+	    }
+	});
+    }
+
+    private void intialiseUsersTab() {
+	// User Adding
+	button_addUser.addActionListener((ActionEvent e) -> {
+	    clearAddUserDialog();
+	    dialog_addUser.setVisible(true);
+	});
+	button_addUserCancel.addActionListener((ActionEvent e) -> {
+	    dialog_addUser.setVisible(false);
+	});
+	addUser = new Speaker<>();
+	button_addUserConfirm.addActionListener((ActionEvent e) -> {
+	    if (verifyAddUserDetails()) {
+		addUser.notifyListeners(e);
+		dialog_addUser.setVisible(false);
+		refreshUserSearch();
+	    }
+	});
+	// User editing
+	getEditUserDetails = new Speaker<>();
+	button_editUser.addActionListener((ActionEvent e) -> {
+	    if (currentUserID() == null || currentUserID().isBlank()) {
+		showInvalidEntry("No User Selected", "No User has been selected.\nPlease select a User from the\nuser list on the left.");
+	    } else {
+		getEditUserDetails.notifyListeners(currentUserID());
+	    }
+	});
+	button_editUserCancel.addActionListener((ActionEvent e) -> {
+	    dialog_editUser.setVisible(false);
+	});
+	editUser = new Speaker<>();
+	button_editUserConfirm.addActionListener((ActionEvent e) -> {
+	    if (verifyEditUserDetails()) {
+		editUser.notifyListeners(currentUserID());
+		viewUser.notifyListeners(currentUserID());
+		dialog_editUser.setVisible(false);
+	    }
+	});
+	// User Removal
+	removeUser = new Speaker<>();
+	button_removeUser.addActionListener((ActionEvent e) -> {
+	    if (currentUserID() == null || currentUserID().isBlank()) {
+		showInvalidEntry("No User Selected", "No User has been selected.\nPlease select a User from the\nuser list on the left.");
+	    } else {
+		String userID = currentUserID();
+		if (getConfirmation("Remove User", "Are you sure you want remove User " + userID + "?")) {
+		    removeUser.notifyListeners(userID);
+		    refreshUserSearch();
+		    setUserPreview(null);
+		}
+	    }
+	});
+	// User Searching
+	searchForUser = new Speaker<>();
+	ActionListener searchUserListener = (ActionEvent e) -> {
+	    searchForUser.notifyListeners(field_searchUser.getText());
+	};
+	button_searchUser.addActionListener(searchUserListener);
+	field_searchUser.addActionListener(searchUserListener);
+	// User Selection
+	viewUser = new Speaker<>();
+	list_userSearchResults.addListSelectionListener(new ListSelectionListener() {
+	    @Override
+	    public void valueChanged(ListSelectionEvent e) {
+		if (!e.getValueIsAdjusting()) { // Avoid duplicate events
+		    String selectedValue = list_userSearchResults.getSelectedValue();
+		    if (selectedValue != null) {
+			viewUser.notifyListeners(selectedValue);
 		    }
 		}
 	    }
@@ -862,6 +877,19 @@ public class View extends javax.swing.JFrame {
 	return true;
     }
 
+    public boolean verifyEditUserDetails() {
+	// Check Name
+	if (field_editUserName.getText().length() < 1) {
+	    showInvalidEntry("Invalid User Name", "The User name entered is too short.\nUser names must be 1 characters or more.");
+	    return false;
+	}
+	if (field_editUserName.getText().length() > 30) {
+	    showInvalidEntry("Invalid User Name", "The User name entered is too long.\nUser names must be 30 characters or less.");
+	    return false;
+	}
+	return true;
+    }
+
     public void setNewUserDetails(User user) {
 	user.setID(field_addUserID.getText());
 	user.setName(field_addUserName.getText());
@@ -981,6 +1009,7 @@ public class View extends javax.swing.JFrame {
     }
     // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Auto-Generated Code">
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -2602,4 +2631,5 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JToolBar toolbar_locationTools;
     private javax.swing.JToolBar toolbar_userTools;
     // End of variables declaration//GEN-END:variables
+    //</editor-fold>
 }

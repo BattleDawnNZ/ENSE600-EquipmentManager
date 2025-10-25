@@ -29,19 +29,20 @@ public class Controller {
 	});
 	model.setupManagers();
 
-	//<editor-fold desc="Login Page">
+	//<editor-fold  defaultstate="collapsed" desc="Login Page">
 	// Login
 	view.login.addListener((ActionEvent e) -> {
 	    view.loginUser(model.login(view.getLoginDetails(model.getNewUser())));
 	    view.secureUI(model.getActiveUser());
 	});
+	// Logout
 	view.logout.addListener((ActionEvent e) -> {
 	    model.logout();
 	    view.logoutUser();
 	});
 	//</editor-fold>
 
-	//<editor-fold desc="Items Tab">----------------------------------------
+	//<editor-fold  defaultstate="collapsed" desc="Items Tab">
 	view.getLocations.addListener((ActionEvent e) -> {
 	    view.setLocations(model.searchForLocations(""));
 	});
@@ -109,7 +110,7 @@ public class Controller {
 	});
 	//</editor-fold>
 
-	//<editor-fold desc="Users Tab">----------------------------------------
+	//<editor-fold  defaultstate="collapsed" desc="Users Tab">
 	// User Adding
 	view.addUser.addListener((ActionEvent e) -> {
 	    User user = model.getNewUser();
@@ -139,7 +140,7 @@ public class Controller {
 	});
 	//</editor-fold>
 
-	//<editor-fold desc="Location Tab">----------------------------------------
+	//<editor-fold  defaultstate="collapsed" desc="Location Tab">
 	// Location Add
 	view.addLocation.addListener((ActionEvent e) -> {
 	    model.AddLocation(view.getNewLocationDetails());
@@ -160,10 +161,10 @@ public class Controller {
 	//</editor-fold>
 
 	/* Create and display the form */
-	//java.awt.EventQueue.invokeLater(new Runnable() {
-	//    public void run() {
-	view.setVisible(true);
-	//    }
-	//});
+	java.awt.EventQueue.invokeLater(new Runnable() {
+	    public void run() {
+		view.setVisible(true);
+	    }
+	});
     }
 }
