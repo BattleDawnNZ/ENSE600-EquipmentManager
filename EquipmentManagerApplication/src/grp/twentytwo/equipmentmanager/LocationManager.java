@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -16,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages all locations, adding locations, moving items, and validating
- * locations.
+ * Manages all locations through a SQL table. Functions for adding locations,
+ * moving items, and validating locations etc.
  *
  * @author ppj1707
  */
@@ -166,8 +167,14 @@ class LocationManager {
      */
     private String generateLocationID() {
         String newID;
-        newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
-        return newID;
+        try {
+            newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
+            return newID;
+        } catch (NonNumericKeyClashException ex) {
+            Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     /**

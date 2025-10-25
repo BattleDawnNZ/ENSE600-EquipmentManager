@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -18,11 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Manages history entries to a history SQL tables
  *
  * @author ppj1707
  */
 class HistoryManager {
-    /// MAX 50 description
 
     private final DatabaseManager dbManager;
     private final TableManager tableManager;
@@ -41,7 +42,7 @@ class HistoryManager {
         this.dbManager = databaseManager;
 
         // Define Table Parameters
-        columnData = new ArrayList<Column>();
+        columnData = new ArrayList<>();
         columnData.add(column_historyID);
         columnData.add(column_itemID);
         columnData.add(column_timestamp);
@@ -97,6 +98,13 @@ class HistoryManager {
         }
     }
 
+    /**
+     *
+     * @param history
+     * @return Whether the entry was successfully saved
+     * @throws PrimaryKeyClashException
+     * @throws NullColumnValueException
+     */
     boolean addHistory(History history) throws PrimaryKeyClashException, NullColumnValueException {
         try {
             column_historyID.data = this.generateHistoryID();
@@ -117,8 +125,13 @@ class HistoryManager {
      */
     private String generateHistoryID() {
         String newID;
-        newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
-        return newID;
+        try {
+            newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
+            return newID;
+        } catch (NonNumericKeyClashException ex) {
+            Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     /**
@@ -135,7 +148,7 @@ class HistoryManager {
      */
     private ArrayList<History> getHistoryObjectsFromResultSet(ResultSet resultSet) {
         try {
-            ArrayList<History> historyObjects = new ArrayList<History>();
+            ArrayList<History> historyObjects = new ArrayList<>();
             while (resultSet.next()) { // User exists
                 String historyID = resultSet.getString("HistoryID");
                 String description = resultSet.getString("Description");
@@ -149,5 +162,4 @@ class HistoryManager {
             return null;
         }
     }
-
 }

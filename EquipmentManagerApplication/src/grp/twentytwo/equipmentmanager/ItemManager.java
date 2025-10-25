@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
 
 /**
  * Manages item operations such as adding, removing, generating IDs, and
- * retrieving items from the HashMap.
+ * retrieving items from a items SQL table
  *
  * @author ppj1707
  */
@@ -55,12 +56,8 @@ class ItemManager {
         columnData.add(column_calibrationFlag);
         columnData.add(column_lastCalibration);
 
-        //DESCRIPTION MAX 200. HOW THROW THIS ERRPR?????!!!!!
         // Initialise Table
         tableManager = new TableManager(dbManager, tableName, columnData, column_itemID);
-
-        // Add test data to table
-        //dbManager.updateDB("INSERT INTO ITEMTABLE VALUES ('1', 'R9000 Universal Laser Cutter', 'Cuts mdf (1mm-12mm), arcrylic (1mm-10mm)', 'Workshop1', 'WORKING', 'Manufacturing/Cutting', '0', '03-03-2025 14:20')");
     }
 
     /**
@@ -95,9 +92,7 @@ class ItemManager {
             return validItems;
         } catch (NoSuchElementException e) {
             System.out.println("InvalidID");
-        } catch (InvalidColumnNameException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (InvalidColumnNameException | SQLException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -173,6 +168,8 @@ class ItemManager {
     }
 
     /**
+     * Generates a unique id number, and combines it with a alphabetical code
+     * based on the item type
      *
      * @param type the items type.
      * @return A unique item ID.
@@ -183,7 +180,11 @@ class ItemManager {
         for (String str : type.toUpperCase().split("/")) {
             newID += str.toCharArray()[0];
         }
-        newID += String.format(tableManager.getNextPrimaryKeyId());
+        try {
+            newID += String.format(tableManager.getNextPrimaryKeyId());
+        } catch (NonNumericKeyClashException ex) {
+            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return newID;
     }
 
@@ -241,9 +242,7 @@ class ItemManager {
             while (rs.next()) {
                 validItems.add(rs.getString("ItemID"));
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidColumnNameException ex) {
+        } catch (SQLException | InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return validItems;
@@ -270,9 +269,7 @@ class ItemManager {
                 validItems.add(rs.getString("ItemID"));
             }
             return validItems;
-        } catch (SQLException ex) {
-            Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidColumnNameException ex) {
+        } catch (SQLException | InvalidColumnNameException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -318,7 +315,7 @@ class ItemManager {
      */
     private ArrayList<Item> getItemObjectsFromResultSet(ResultSet resultSet) {
 
-        ArrayList<Item> itemList = new ArrayList<Item>();
+        ArrayList<Item> itemList = new ArrayList<>();
 
         try {
 

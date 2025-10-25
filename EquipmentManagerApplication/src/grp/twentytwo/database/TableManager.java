@@ -48,12 +48,15 @@ public class TableManager {
         }
         valueColumns.remove(primaryKey); // Excludes column with primary key
         conn = dbManager.getConnection();
-        System.out.println(conn);
+        //System.out.println(conn);
         createTableIfNotExist();
         prepareStatements();
     }
 
-    public final void prepareStatements() {
+    /**
+     * Generate SQL queries based on the table definition and prepare statements
+     */
+    private final void prepareStatements() {
 
         // Prepare SQL
         String sql_getRowByPrimaryKey = "SELECT * FROM " + tableName + " where " + primaryKey + " = ?";
@@ -87,7 +90,7 @@ public class TableManager {
 
         String sql_getMaxPrimaryKey = "SELECT MAX(" + primaryKey + ") AS maxId FROM " + tableName;
 
-        // DEGUD LINES: Print SQL to verify
+        // DEGUG LINES: Print SQL to verify
 //        System.out.println(sql_createRowByPrimaryKey);
 //        System.out.println(sql_deleteRowByPrimaryKey);
 //        System.out.println("Update Row By Primary Key: " + sql_updateRowByPrimaryKey);
@@ -106,6 +109,12 @@ public class TableManager {
 
     }
 
+    /**
+     * @param primaryKeyValue
+     * @return a result set containing a singular row that matches the primary
+     * key
+     * @throws UnfoundPrimaryKeyException
+     */
     public ResultSet getRowByPrimaryKey(String primaryKeyValue) throws UnfoundPrimaryKeyException {
         try {
             if (verifyPrimaryKey(primaryKeyValue)) {
@@ -121,6 +130,13 @@ public class TableManager {
         return null;
     }
 
+    /**
+     * Deletes a specified row in the table
+     *
+     * @param primaryKeyValue
+     * @return
+     * @throws UnfoundPrimaryKeyException
+     */
     public boolean deleteRowByPrimaryKey(String primaryKeyValue) throws UnfoundPrimaryKeyException {
         try {
             if (verifyPrimaryKey(primaryKeyValue)) {
@@ -136,6 +152,15 @@ public class TableManager {
         return false;
     }
 
+    /**
+     * Updates an existing row based in its primary key. The primary key cannot
+     * be changed.
+     *
+     * @param columnData
+     * @return Whether the row was successfully updated
+     * @throws InvalidColumnNameException
+     * @throws UnfoundPrimaryKeyException
+     */
     public boolean updateRowByPrimaryKey(ArrayList<Column> columnData) throws InvalidColumnNameException, UnfoundPrimaryKeyException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             if (!verifyPrimaryKey(columnData)) {
@@ -162,6 +187,15 @@ public class TableManager {
         return false;
     }
 
+    /**
+     * Creates a new row in the table. Should be used for new rows with unique
+     * IDs.
+     *
+     * @param columnData
+     * @throws InvalidColumnNameException
+     * @throws PrimaryKeyClashException
+     * @throws NullColumnValueException
+     */
     public void createRow(ArrayList<Column> columnData) throws InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
         if (verifyDataMapping(columnData)) { // Verify the data array
             try {
@@ -181,6 +215,11 @@ public class TableManager {
 
     }
 
+    /**
+     * Creates a new table if it does not exist
+     *
+     * @return Whether the table was created
+     */
     private boolean createTableIfNotExist() {
 
         String sql_createTable = "CREATE TABLE " + tableName + "(";
@@ -207,6 +246,11 @@ public class TableManager {
         return false;
     }
 
+    /**
+     * Deletes the table if it exists in the DB
+     *
+     * @return
+     */
     private boolean dropTableIfExists() {
 
         String sql_createTable = "DROP TABLE " + tableName;
@@ -229,6 +273,9 @@ public class TableManager {
         return false;
     }
 
+    /**
+     * Prints the entire SQL table to the console
+     */
     public void printTable() {
         try {
             System.out.println("Table Data:");
@@ -264,6 +311,12 @@ public class TableManager {
         }
     }
 
+    /**
+     * Verifies a primary key exists in the table
+     *
+     * @param columnData
+     * @return
+     */
     public boolean verifyPrimaryKey(ArrayList<Column> columnData) {
         for (Column col : columnData) {
             if (col.getName().equals(primaryKey.getName())) {
@@ -276,12 +329,20 @@ public class TableManager {
         return false;
     }
 
+    /**
+     * Returns a result set of rows where a specified column matches a specified
+     * value
+     *
+     * @param columnName
+     * @param value
+     * @return
+     * @throws InvalidColumnNameException
+     */
     public ResultSet getRowByColumnValue(String columnName, String value) throws InvalidColumnNameException {
         if (!verifyColumnName(columnName)) {
             throw new InvalidColumnNameException();
         }
         String sql_query = "SELECT * FROM " + tableName + " WHERE UPPER(" + columnName + ") = UPPER('" + value + "')";
-        System.out.println(sql_query);
         return dbManager.queryDB(sql_query);
     }
 
@@ -305,22 +366,23 @@ public class TableManager {
      *
      * @return the next primary key based (incremented from the maximum key)
      */
-    public String getNextPrimaryKeyId() {
-        String next = "0"; // Default. Only occurs for no data in the table yet or no numeric key
+    public String getNextPrimaryKeyId() throws NonNumericKeyClashException {
         try {
             ResultSet rs = st_getMaxPrimaryKey.executeQuery();
             if (rs.next()) {
                 if (rs.getString("maxId") != null) {
-                    String lastID = rs.getString("maxId").replaceAll("[^0-9]", "");
+                    String lastID = rs.getString("maxId").replaceAll("[^0-9]", ""); // Remove all non-numeric characters
                     if (lastID != null && !lastID.isBlank()) {
-                        return Integer.toString(Integer.parseInt(lastID) + 1);
+                        return String.format("%05d", ((Integer.parseInt(lastID) + 1))); // Format key to 5 characters
+                    } else {
+                        throw new NonNumericKeyClashException();
                     }
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return next;
+        return "00000"; // Default. Only occurs for no data in the table yet or no numeric key
     }
 
     /**
@@ -341,7 +403,13 @@ public class TableManager {
         return keyList;
     }
 
-    public boolean verifyDataMapping(ArrayList<Column> columnData) { // Verify the received array has matching table column names, same index
+    /**
+     * Verify the received array has matching table column names, same index
+     *
+     * @param columnData
+     * @return
+     */
+    private boolean verifyDataMapping(ArrayList<Column> columnData) {
         if (columnData == null || (allColumns.size() != columnData.size())) {
             return false;
         }
@@ -353,6 +421,12 @@ public class TableManager {
         return true;
     }
 
+    /**
+     * Verify a column name exists in the table
+     *
+     * @param colName
+     * @return
+     */
     public boolean verifyColumnName(String colName) { // Verify a columnName exists
         for (int i = 0; i < allColumns.size(); i++) {
             if (allColumns.get(i).getName().equals(colName)) {

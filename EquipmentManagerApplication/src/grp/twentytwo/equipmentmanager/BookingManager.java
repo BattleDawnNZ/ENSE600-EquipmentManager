@@ -5,6 +5,7 @@ import grp.twentytwo.database.Column;
 import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.TableManager;
 import grp.twentytwo.database.InvalidColumnNameException;
+import grp.twentytwo.database.NonNumericKeyClashException;
 import grp.twentytwo.database.NullColumnValueException;
 import grp.twentytwo.database.PrimaryKeyClashException;
 import grp.twentytwo.database.UnfoundPrimaryKeyException;
@@ -18,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages booking and returning of items.
+ * Manages booking and returning of items through a booking SQL table.
  *
  * @author ppj1707
  */
@@ -85,22 +86,20 @@ class BookingManager {
                 return false;
             }
         }
-        booking.setID(this.generateHistoryID());
-        column_bookingID.data = booking.getID();
-        column_userID.data = booking.getUserID();
-        column_itemID.data = booking.getItemID();
-        column_bookedDate.data = booking.getBookedDate().format(formatter);
-        column_returnDate.data = booking.getReturnDate().format(formatter);
-
         try {
+            booking.setID(this.generateBookingID());
+            column_bookingID.data = booking.getID();
+            column_userID.data = booking.getUserID();
+            column_itemID.data = booking.getItemID();
+            column_bookedDate.data = booking.getBookedDate().format(formatter);
+            column_returnDate.data = booking.getReturnDate().format(formatter);
+
             tableManager.createRow(columnData);
             return true; // User created
-        } catch (InvalidColumnNameException ex) {
+        } catch (InvalidColumnNameException | NonNumericKeyClashException ex) {
             Logger.getLogger(BookingManager.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-
-        //HISTORY ADDitemManagergetItemFromID(itemID).addHistory("(Booking ID: " + bookingID + ") Booked by " + userID + ", from " + bookedDate.format(formatter) + " to " + returnDate.format(formatter));
     }
 
     /**
@@ -179,9 +178,9 @@ class BookingManager {
 
     /**
      *
-     * @return A unique history ID.
+     * @return A unique booking ID.
      */
-    private String generateHistoryID() {
+    private String generateBookingID() throws NonNumericKeyClashException {
         String newID;
         newID = String.format(tableManager.getNextPrimaryKeyId()) + "B"; // B is unique identifier for booking
         return newID;
@@ -201,7 +200,6 @@ class BookingManager {
                 String bookingID = resultSet.getString("BookingID");
                 String userID = resultSet.getString("UserID");
                 String itemID = resultSet.getString("ItemID");
-                System.out.println(resultSet.getString("BookedDate"));
                 LocalDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter);
                 LocalDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter);
 
