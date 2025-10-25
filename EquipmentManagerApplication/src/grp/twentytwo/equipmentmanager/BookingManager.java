@@ -200,7 +200,6 @@ class BookingManager {
                 String bookingID = resultSet.getString("BookingID");
                 String userID = resultSet.getString("UserID");
                 String itemID = resultSet.getString("ItemID");
-                System.out.println(resultSet.getString("BookedDate"));
                 LocalDateTime bookedDate = LocalDateTime.parse(resultSet.getString("BookedDate"), formatter);
                 LocalDateTime returnDate = LocalDateTime.parse(resultSet.getString("ReturnDate"), formatter);
 
