@@ -175,17 +175,16 @@ class ItemManager {
      * @return A unique item ID.
      */
     private String generateItemID(String type) {
-        String postID = "";
         String newID = "";
         for (String str : type.toUpperCase().split("/")) {
-            postID += str.toCharArray()[0];
+            newID += str.toCharArray()[0];
         }
         try {
             newID += String.format(tableManager.getNextPrimaryKeyId());
         } catch (NonNumericKeyClashException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return newID += postID;
+        return newID;
     }
 
     /**
