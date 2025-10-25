@@ -121,17 +121,27 @@ public class View extends javax.swing.JFrame {
 	// Item Removal
 	removeItem = new Speaker<>();
 	button_removeItem.addActionListener((ActionEvent e) -> {
-	    String itemID = currentItemID();
-	    if (!itemID.isBlank()) {
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		String itemID = currentItemID();
 		if (getConfirmation("Remove Item", "Are you sure you want remove Item " + itemID + "?")) {
 		    removeItem.notifyListeners(itemID);
+		    searchForItem.notifyListeners(field_searchItem.getText());
+		    setItemPreview(null);
+		    setItemBookings(null);
 		}
 	    }
+
 	});
 	// Item editing
 	getEditItemDetails = new Speaker<>();
 	button_editItem.addActionListener((ActionEvent e) -> {
-	    getEditItemDetails.notifyListeners(currentItemID());
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		getEditItemDetails.notifyListeners(currentItemID());
+	    }
 	});
 	ActionListener closeEditItem = (ActionEvent e) -> {
 	    dialog_editItem.setVisible(false);
@@ -162,8 +172,12 @@ public class View extends javax.swing.JFrame {
 	});
 	// Item Note
 	button_addNote.addActionListener((ActionEvent e) -> {
-	    clearAddNoteDialog();
-	    dialog_addNote.setVisible(true);
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		clearAddNoteDialog();
+		dialog_addNote.setVisible(true);
+	    }
 	});
 	ActionListener closeAddNote = (ActionEvent e) -> {
 	    dialog_addNote.setVisible(false);
@@ -177,21 +191,33 @@ public class View extends javax.swing.JFrame {
 	// Item Maintenance
 	flagItem = new Speaker<>();
 	button_flagForCalibration.addActionListener((ActionEvent e) -> {
-	    flagItem.notifyListeners(currentItemID());
-	    viewItem.notifyListeners(currentItemID());
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		flagItem.notifyListeners(currentItemID());
+		viewItem.notifyListeners(currentItemID());
+	    }
 	});
 
 	calibrateItem = new Speaker<>();
 	button_calibrateItem.addActionListener((ActionEvent e) -> {
-	    calibrateItem.notifyListeners(currentItemID());
-	    viewItem.notifyListeners(currentItemID());
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		calibrateItem.notifyListeners(currentItemID());
+		viewItem.notifyListeners(currentItemID());
+	    }
 	});
 
 	// Item History
 	viewHistory = new Speaker<>();
 	button_viewHistory.addActionListener((ActionEvent e) -> {
-	    viewHistory.notifyListeners(currentItemID());
-	    dialog_viewHistory.setVisible(true);
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		viewHistory.notifyListeners(currentItemID());
+		dialog_viewHistory.setVisible(true);
+	    }
 	});
 	button_viewHistoryClose.addActionListener((ActionEvent e) -> {
 	    dialog_viewHistory.setVisible(false);
@@ -222,8 +248,12 @@ public class View extends javax.swing.JFrame {
 	});
 	// Item Booking
 	button_bookItem.addActionListener((ActionEvent e) -> {
-	    setupBookItemDialog();
-	    dialog_bookItem.setVisible(true);
+	    if (currentItemID() == null || currentItemID().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left to book it.");
+	    } else {
+		setupBookItemDialog();
+		dialog_bookItem.setVisible(true);
+	    }
 	});
 	ActionListener closeBookItem = (ActionEvent e) -> {
 	    dialog_bookItem.setVisible(false);
@@ -232,12 +262,18 @@ public class View extends javax.swing.JFrame {
 	bookItem = new Speaker<>();
 	button_bookItemConfirm.addActionListener((ActionEvent e) -> {
 	    bookItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
 	});
 	button_bookItemConfirm.addActionListener(closeBookItem);
 	// Item Returning
 	returnItem = new Speaker<>();
 	button_returnItem.addActionListener((ActionEvent e) -> {
-	    returnItem.notifyListeners(currentBookingID());
+	    if (currentBookingID() != null) {
+		returnItem.notifyListeners(currentBookingID());
+		viewItem.notifyListeners(currentItemID());
+	    } else {
+		showInvalidEntry("No Booking Selected", "No booking has been selected.\nPlease select a booking from the\nbookings list on the right to return it.");
+	    }
 	});
 
 	// User Tab ------------------------------------------------------------
@@ -307,21 +343,29 @@ public class View extends javax.swing.JFrame {
 	    clearAddLocationDialog();
 	    dialog_addLocation.setVisible(true);
 	});
-	ActionListener closeAddLocation = (ActionEvent e) -> {
+	button_addLocationCancel.addActionListener((ActionEvent e) -> {
 	    dialog_addLocation.setVisible(false);
-	};
-	button_addLocationCancel.addActionListener(closeAddLocation);
+	});
 	addLocation = new Speaker<>();
 	button_addLocationConfirm.addActionListener((ActionEvent e) -> {
-	    addLocation.notifyListeners(e);
+	    if (verifyAddLocationDetails()) {
+		addLocation.notifyListeners(e);
+		dialog_addLocation.setVisible(false);
+		refreshLocationSearch();
+	    }
 	});
-	button_addLocationConfirm.addActionListener(closeAddLocation);
 	// Location Removal
 	removeLocation = new Speaker<>();
 	button_removeLocation.addActionListener((ActionEvent e) -> {
-	    if (!currentLocationID().isBlank()) {
+	    if (currentLocationName() == null || currentLocationName().isBlank()) {
+		showInvalidEntry("No Item Selected", "No Item has been selected.\nPlease select an Item from the\nitem list on the left.");
+	    } else {
+		String itemID = currentItemID();
 		if (getConfirmation("Remove Location", "Are you sure you want remove Location " + currentLocationName() + "?")) {
 		    removeLocation.notifyListeners(currentLocationID());
+		    refreshLocationSearch();
+		    setLocationPreview(null);
+		    setLocationItemsPreview(null);
 		}
 	    }
 	});
@@ -352,11 +396,11 @@ public class View extends javax.swing.JFrame {
 
     public void initialSearch() {
 	text_itemID.setText("");
-	searchForItem.notifyListeners(currentItemID());
+	refreshItemSearch();
 	text_userID.setText("");
-	searchForUser.notifyListeners(currentUserID());
+	refreshUserSearch();
 	text_locationName.setText("");
-	searchForLocation.notifyListeners(currentLocationName());
+	refreshLocationSearch();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Helper Dialogs">
@@ -371,8 +415,8 @@ public class View extends javax.swing.JFrame {
     public boolean getConfirmation(String title, String message) {
 	return JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_CANCEL_OPTION) == 0;
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Login">
     public User getLoginDetails(User user) {
 	user.setID(field_loginUserID.getText());
@@ -398,7 +442,7 @@ public class View extends javax.swing.JFrame {
     }
 
     public void secureUI(User activeUser) {
-	label_loggedInAs.setText("Logged in as " + activeUser.getName() + " (" + activeUser.getSecurityLevel().toString() + ")");
+	label_loggedInAs.setText("Logged in as " + activeUser.getName() + " [" + activeUser.getID() + "] (" + activeUser.getSecurityLevel().toString() + ")");
 	boolean employee = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.EMPLOYEE) >= 0;
 	boolean manager = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.MANAGER) >= 0;
 	// Set Item Secrutities
@@ -433,11 +477,15 @@ public class View extends javax.swing.JFrame {
 	button_addLocation.setVisible(manager);
 	button_removeLocation.setVisible(manager);
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Item Functions">
     public String currentItemID() {
 	return text_itemID.getText();
+    }
+
+    public void refreshItemSearch() {
+	searchForItem.notifyListeners(field_searchItem.getText());
     }
 
     public void setupAdditemDialog() {
@@ -467,7 +515,7 @@ public class View extends javax.swing.JFrame {
 	}
 	// Check Location
 	if (combo_addItemLocation.getSelectedItem() == null) {
-	    showInvalidEntry("Invalid Item Location", "The Item must have a location.\nItem locations must be set.");
+	    showInvalidEntry("Invalid Item Location", "The Item must have a location.");
 	    return false;
 	}
 	return true;
@@ -495,7 +543,16 @@ public class View extends javax.swing.JFrame {
 
     public void setItemPreview(Item itemData) {
 	try {
-	    if (itemData != null) {
+	    if (itemData == null) {
+		text_itemID.setText("");
+		text_itemName.setText("");
+		text_itemDescription.setText("");
+		text_itemLocation.setText("");
+		text_itemStatus.setText("");
+		text_itemType.setText("");
+		text_lastCalibration.setText("");
+		check_needsCalibration.setSelected(false);
+	    } else {
 		text_itemID.setText(itemData.getID());
 		text_itemName.setText(itemData.getName());
 		text_itemDescription.setText(itemData.getDescription());
@@ -548,14 +605,18 @@ public class View extends javax.swing.JFrame {
 	}
 	list_viewHistory.setModel(history);
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Booking Functions">
     public String currentBookingID() {
 	return list_itemBookings.getSelectedValue();
     }
 
     public void setItemBookings(List<Booking> newList) {
+	if (newList == null) {
+	    list_itemBookings.setModel(new DefaultListModel<>());
+	    return;
+	}
 	DefaultListModel<String> bookings = new DefaultListModel<>();
 	for (Booking booking : newList) {
 	    bookings.addElement(booking.getID());
@@ -607,9 +668,33 @@ public class View extends javax.swing.JFrame {
 
     public boolean setNewBookingDetails(Booking booking) {
 	try {
-	    LocalDateTime bookedDate = dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(dateTimePicker_bookItemBookedDate.timePicker.getTime());
-	    LocalDateTime returnDate = dateTimePicker_bookItemReturnDate.datePicker.getDate().atTime(dateTimePicker_bookItemReturnDate.timePicker.getTime());
-	    booking.setBookingRange(bookedDate, returnDate);
+	    LocalDate bookedDate = dateTimePicker_bookItemBookedDate.datePicker.getDate();
+	    if (bookedDate == null) {
+		showInvalidEntry("Invalid Booking Date", "A booking requires a book date.");
+		return false;
+	    }
+	    LocalTime bookedTime = dateTimePicker_bookItemBookedDate.timePicker.getTime();
+	    if (bookedTime == null) {
+		showInvalidEntry("Invalid Booking Time", "A booking requires a book time.");
+		return false;
+	    }
+	    LocalDateTime bookedDateTime = bookedDate.atTime(bookedTime);
+	    LocalDate returnDate = dateTimePicker_bookItemReturnDate.datePicker.getDate();
+	    if (returnDate == null) {
+		showInvalidEntry("Invalid Booking Date", "A booking requires a return date.");
+		return false;
+	    }
+	    LocalTime returnTime = dateTimePicker_bookItemReturnDate.timePicker.getTime();
+	    if (returnTime == null) {
+		showInvalidEntry("Invalid Booking Time", "A booking requires a return time.");
+		return false;
+	    }
+	    LocalDateTime returnDateTime = returnDate.atTime(returnTime);
+	    if (bookedDateTime.isAfter(returnDateTime)) {
+		showInvalidEntry("Invalid Booking Range", "A bookings return date must be after its book date.");
+		return false;
+	    }
+	    booking.setBookingRange(bookedDateTime, returnDateTime);
 	    return true;
 	} catch (Exception err) {
 	    showError(err);
@@ -649,11 +734,15 @@ public class View extends javax.swing.JFrame {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="User Functions">
     public String currentUserID() {
 	return text_userID.getText();
+    }
+
+    public void refreshUserSearch() {
+	searchForUser.notifyListeners(field_searchUser.getText());
     }
 
     public void clearAddUserDialog() {
@@ -767,8 +856,8 @@ public class View extends javax.swing.JFrame {
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
     }
-
     // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Location Functions">
     public String currentLocationID() {
 	return text_locationID.getText();
@@ -778,8 +867,24 @@ public class View extends javax.swing.JFrame {
 	return text_locationName.getText();
     }
 
+    public void refreshLocationSearch() {
+	searchForLocation.notifyListeners(field_searchLocation.getText());
+    }
+
     public void clearAddLocationDialog() {
 	field_addLocationName.setText("");
+    }
+
+    public boolean verifyAddLocationDetails() {// Check Name
+	if (field_addLocationName.getText().length() < 1) {
+	    showInvalidEntry("Invalid Location Name", "The Location name entered is too short.\nLocation names must be 1 characters or more.");
+	    return false;
+	}
+	if (field_addLocationName.getText().length() > 30) {
+	    showInvalidEntry("Invalid Location Name", "The Location name entered is too long.\nLocation names must be 30 characters or less.");
+	    return false;
+	}
+	return true;
     }
 
     public String getNewLocationDetails() {
@@ -799,7 +904,10 @@ public class View extends javax.swing.JFrame {
 
     public void setLocationPreview(Location locationData) {
 	try {
-	    if (locationData != null) {
+	    if (locationData == null) {
+		text_locationID.setText("");
+		text_locationName.setText("");
+	    } else {
 		text_locationID.setText(locationData.getID());
 		text_locationName.setText(locationData.getName());
 	    }
@@ -811,9 +919,13 @@ public class View extends javax.swing.JFrame {
 
     public void setLocationItemsPreview(ArrayList<String> newList) {
 	try {
-	    DefaultListModel<String> locations = new DefaultListModel<>();
-	    locations.addAll(newList);
-	    list_locationItemsPreview.setModel(locations);
+	    if (newList == null) {
+		list_locationItemsPreview.setModel(new DefaultListModel<>());
+	    } else {
+		DefaultListModel<String> locations = new DefaultListModel<>();
+		locations.addAll(newList);
+		list_locationItemsPreview.setModel(locations);
+	    }
 	} catch (Exception err) {
 	    showError(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -826,8 +938,8 @@ public class View extends javax.swing.JFrame {
 	combo_addItemLocation.setModel(locations);
 	combo_editItemLocation.setModel(locations);
     }
-
     // </editor-fold>
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1215,14 +1327,14 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         jPanel11.add(dateTimePicker_bookItemReturnDate, gridBagConstraints);
 
-        jLabel25.setText("Book From");
+        jLabel25.setText("Book Date");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel11.add(jLabel25, gridBagConstraints);
 
-        jLabel26.setText("Until");
+        jLabel26.setText("Return Date");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
