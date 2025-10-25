@@ -169,22 +169,18 @@ class ItemManager {
 
     /**
      * Generates a unique id number, and combines it with a alphabetical code
-     * based on the item type
      *
      * @param type the items type.
      * @return A unique item ID.
      */
     private String generateItemID(String type) {
-        String newID = "";
-        for (String str : type.toUpperCase().split("/")) {
-            newID += str.toCharArray()[0];
-        }
         try {
-            newID += String.format(tableManager.getNextPrimaryKeyId());
+            String newID = "I" + tableManager.getNextPrimaryKeyId();
+            return newID;
         } catch (NonNumericKeyClashException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return newID;
     }
 
     /**
