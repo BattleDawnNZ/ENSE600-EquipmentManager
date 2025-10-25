@@ -541,11 +541,11 @@ public class View extends javax.swing.JFrame {
 	}
 	// Check Type
 	if (field_addItemType.getText().length() < 1) {
-	    showInvalidEntry("Invalid Item Type", "The Item type entered is too short.\nItem locations must be 1 characters or more.");
+	    showInvalidEntry("Invalid Item Type", "The Item type entered is too short.\nItem types must be 1 characters or more.");
 	    return false;
 	}
 	if (field_addItemType.getText().length() > 40) {
-	    showInvalidEntry("Invalid Item Type", "The Item type entered is too long.\nItem locations must be 40 characters or less.");
+	    showInvalidEntry("Invalid Item Type", "The Item type entered is too long.\nItem types must be 40 characters or less.");
 	    return false;
 	}
 	// Check Location
@@ -1046,6 +1046,8 @@ public class View extends javax.swing.JFrame {
         field_addItemName = new javax.swing.JTextField();
         field_addItemType = new javax.swing.JTextField();
         combo_addItemLocation = new javax.swing.JComboBox<>();
+        label_addItemTypeHint1 = new javax.swing.JLabel();
+        label_addItemTypeHint2 = new javax.swing.JLabel();
         panel_addItemBottom = new javax.swing.JPanel();
         button_addItemCancel = new javax.swing.JButton();
         button_addItemConfirm = new javax.swing.JButton();
@@ -1287,6 +1289,20 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
         panel_addItemTop.add(combo_addItemLocation, gridBagConstraints);
+
+        label_addItemTypeHint1.setText("Types should be of the form \"example/type\"");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
+        panel_addItemTop.add(label_addItemTypeHint1, gridBagConstraints);
+
+        label_addItemTypeHint2.setText("to get an item of the form \"ET00001\"");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 3;
+        panel_addItemTop.add(label_addItemTypeHint2, gridBagConstraints);
 
         dialog_addItem.getContentPane().add(panel_addItemTop, java.awt.BorderLayout.CENTER);
 
@@ -2551,6 +2567,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel label_addItemLocation;
     private javax.swing.JLabel label_addItemName;
     private javax.swing.JLabel label_addItemType;
+    private javax.swing.JLabel label_addItemTypeHint1;
+    private javax.swing.JLabel label_addItemTypeHint2;
     private javax.swing.JLabel label_addLocationName;
     private javax.swing.JLabel label_addUserConfirmPassword;
     private javax.swing.JLabel label_addUserID;

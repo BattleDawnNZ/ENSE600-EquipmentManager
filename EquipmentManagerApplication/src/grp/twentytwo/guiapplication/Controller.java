@@ -50,7 +50,7 @@ public class Controller {
 	view.addItem.addListener((ActionEvent e) -> {
 	    Item item = model.getNewItem();
 	    view.setNewItemDetails(item);
-	    model.AddItem(item);
+	    model.addItem(item);
 	});
 	// Item Removal	
 	view.removeItem.addListener((String itemID) -> {
@@ -82,7 +82,7 @@ public class Controller {
 	    Booking booking = model.getNewBooking();
 	    booking.setItemID(itemID);
 	    if (view.setNewBookingDetails(booking)) {
-		if (!model.AddBooking(booking)) {
+		if (!model.addBooking(booking)) {
 		    view.showInvalidEntry("Invalid Booking Range", "Bookings cannot overlap existing bookings.");
 		}
 	    }
@@ -115,7 +115,7 @@ public class Controller {
 	view.addUser.addListener((ActionEvent e) -> {
 	    User user = model.getNewUser();
 	    view.setNewUserDetails(user);
-	    model.AddUser(user);
+	    model.addUser(user);
 	});
 	// User Edit
 	view.getEditUserDetails.addListener((String userID) -> {
@@ -128,7 +128,7 @@ public class Controller {
 	});
 	// User Removal	
 	view.removeUser.addListener((String userID) -> {
-	    model.RemoveUser(userID);
+	    model.removeUser(userID);
 	});
 	// User Search
 	view.searchForUser.addListener((String searchString) -> {
@@ -143,7 +143,7 @@ public class Controller {
 	//<editor-fold  defaultstate="collapsed" desc="Location Tab">
 	// Location Add
 	view.addLocation.addListener((ActionEvent e) -> {
-	    model.AddLocation(view.getNewLocationDetails());
+	    model.addLocation(view.getNewLocationDetails());
 	});
 	// Location Removal	
 	view.removeLocation.addListener((String locationID) -> {
