@@ -37,17 +37,17 @@ public class TestData {
             m.itemManager.addItem(new Item("Duratech True RMS Multimeter", "Electrical Lab 1", "Electrical/Measurement"));
             m.itemManager.addItem(new Item("Soldering Iron", "ELECTRICAL LAB 1", "Electrical/Soldering"));
 
-            m.historyManager.addHistory(new History("MC0", "Test note"));
-            m.historyManager.addHistory(new History("MC0", "Test note2"));
-            m.historyManager.addHistory(new History("EM1", "Test note"));
-            m.historyManager.addHistory(new History("ES1", "Test note"));
+            m.historyManager.addHistory(new History("MC00000", "Test note"));
+            m.historyManager.addHistory(new History("MC00000", "Test note2"));
+            m.historyManager.addHistory(new History("EM00001", "Test note"));
+            m.historyManager.addHistory(new History("ES00001", "Test note"));
 
             LocalDateTime dateBooked = LocalDateTime.of(2025, 10, 5, 8, 0); // 5/10/2025 8:00am 
             LocalDateTime dateReturned = LocalDateTime.of(2025, 10, 5, 8, 30); // 5/10/2025 8:30am
-            m.bookingManager.issueItem(new Booking("111", "MC0", dateBooked, dateReturned));
-            m.bookingManager.issueItem(new Booking("111", "MC0", dateReturned.plusDays(2), dateReturned.plusDays(3)));
-            m.bookingManager.issueItem(new Booking("222", "EM1", dateBooked, dateReturned));
-            m.bookingManager.issueItem(new Booking("222", "ES1", dateBooked, dateReturned));
+            m.bookingManager.issueItem(new Booking("111", "MC00000", dateBooked, dateReturned));
+            m.bookingManager.issueItem(new Booking("111", "MC00000", dateReturned.plusDays(2), dateReturned.plusDays(3)));
+            m.bookingManager.issueItem(new Booking("222", "EM00001", dateBooked, dateReturned));
+            m.bookingManager.issueItem(new Booking("222", "ES00001", dateBooked, dateReturned));
         } catch (Exception ex) {
             Logger.getLogger(TestData.class.getName()).log(Level.SEVERE, null, ex);
         }
