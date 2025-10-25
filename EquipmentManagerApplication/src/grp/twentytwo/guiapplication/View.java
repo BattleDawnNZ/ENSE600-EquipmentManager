@@ -44,6 +44,7 @@ public class View extends javax.swing.JFrame {
     public Speaker<String> getEditItemDetails;
     public Speaker<String> editItem;
     public Speaker<String> viewBooking;
+    public Speaker<String> viewBookingDetails;
     public Speaker<String> addNote;
     public Speaker<String> flagItem;
     public Speaker<String> calibrateItem;
@@ -159,6 +160,56 @@ public class View extends javax.swing.JFrame {
 		}
 	    }
 	});
+	// Item Note
+	button_addNote.addActionListener((ActionEvent e) -> {
+	    clearAddNoteDialog();
+	    dialog_addNote.setVisible(true);
+	});
+	ActionListener closeAddNote = (ActionEvent e) -> {
+	    dialog_addNote.setVisible(false);
+	};
+	button_addNoteCancel.addActionListener(closeAddNote);
+	addNote = new Speaker<>();
+	button_addNoteConfirm.addActionListener((ActionEvent e) -> {
+	    addNote.notifyListeners(currentItemID());
+	});
+	button_addNoteConfirm.addActionListener(closeAddNote);
+	// Item Maintenance
+	flagItem = new Speaker<>();
+	button_flagForCalibration.addActionListener((ActionEvent e) -> {
+	    flagItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
+	});
+
+	calibrateItem = new Speaker<>();
+	button_calibrateItem.addActionListener((ActionEvent e) -> {
+	    calibrateItem.notifyListeners(currentItemID());
+	    viewItem.notifyListeners(currentItemID());
+	});
+
+	// Item History
+	viewHistory = new Speaker<>();
+	button_viewHistory.addActionListener((ActionEvent e) -> {
+	    viewHistory.notifyListeners(currentItemID());
+	    dialog_viewHistory.setVisible(true);
+	});
+	button_viewHistoryClose.addActionListener((ActionEvent e) -> {
+	    dialog_viewHistory.setVisible(false);
+	});
+
+	// Bookings ------------------------------------------------------------
+	// Preview Booking Details
+	viewBookingDetails = new Speaker<>();
+	button_viewBookingDetails.addActionListener((ActionEvent e) -> {
+	    if (currentBookingID() != null) {
+		viewBookingDetails.notifyListeners(currentBookingID());
+	    } else {
+		showInvalidEntry("No Booking Selected", "No booking has been selected.\nPlease select a booking from the\nbookings list on the right to view its details.");
+	    }
+	});
+	button_viewBookingDetailsClose.addActionListener((ActionEvent e) -> {
+	    dialog_viewBookingDetails.setVisible(false);
+	});
 	// Item Preview Bookings
 	viewBooking = new Speaker<>();
 	list_itemBookings.addListSelectionListener((ListSelectionEvent e) -> {
@@ -188,58 +239,7 @@ public class View extends javax.swing.JFrame {
 	button_returnItem.addActionListener((ActionEvent e) -> {
 	    returnItem.notifyListeners(currentBookingID());
 	});
-	// Item Note
-	button_addNote.addActionListener((ActionEvent e) -> {
-	    clearAddNoteDialog();
-	    dialog_addNote.setVisible(true);
-	});
-	ActionListener closeAddNote = (ActionEvent e) -> {
-	    dialog_addNote.setVisible(false);
-	};
-	button_addNoteCancel.addActionListener(closeAddNote);
-	addNote = new Speaker<>();
-	button_addNoteConfirm.addActionListener((ActionEvent e) -> {
-	    addNote.notifyListeners(currentItemID());
-	});
-	button_addNoteConfirm.addActionListener(closeAddNote);
-	// Item Maintenance
 
-	flagItem = new Speaker<>();
-	button_flagForCalibration.addActionListener((ActionEvent e) -> {
-	    flagItem.notifyListeners(currentItemID());
-	    viewItem.notifyListeners(currentItemID());
-	});
-
-	calibrateItem = new Speaker<>();
-	button_calibrateItem.addActionListener((ActionEvent e) -> {
-	    calibrateItem.notifyListeners(currentItemID());
-	    viewItem.notifyListeners(currentItemID());
-	});
-
-	// Item History
-	viewHistory = new Speaker<>();
-	button_viewHistory.addActionListener((ActionEvent e) -> {
-	    viewHistory.notifyListeners(currentItemID());
-	    dialog_viewHistory.setVisible(true);
-	});
-	button_viewHistoryClose.addActionListener((ActionEvent e) -> {
-	    dialog_viewHistory.setVisible(false);
-	});
-	// Test Code for vetoing DateTimes
-//	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-//	ZonedDateTime bookedDate = LocalDateTime.parse("13-10-2025 02:30:00", formatter).atZone(ZoneId.systemDefault());
-//	ZonedDateTime returnDate = LocalDateTime.parse("13-11-2025 04:30:00", formatter).atZone(ZoneId.systemDefault());
-//	Booking testBooking = new Booking("0", "0", "0", bookedDate, returnDate);
-//	DatePickerSettings datePickerSettings = dateTimePicker1.datePicker.getSettings();
-//	datePickerSettings.setVetoPolicy((LocalDate localDate) -> {
-//	    ZonedDateTime zonedDate = localDate.atStartOfDay(ZoneId.systemDefault());
-//	    return (returnDate.isBefore(zonedDate.plusDays(1)) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate));
-//	});
-//	TimePickerSettings timePickerSettings = dateTimePicker1.timePicker.getSettings();
-//	timePickerSettings.setVetoPolicy((LocalTime localTime) -> {
-//	    ZonedDateTime zonedDate = dateTimePicker1.datePicker.getDate().atTime(localTime).atZone(ZoneId.systemDefault());
-//	    return (returnDate.isBefore(zonedDate) || returnDate.isEqual(zonedDate) || bookedDate.isAfter(zonedDate) || bookedDate.isEqual(zonedDate));
-//	});
 	// User Tab ------------------------------------------------------------
 	// User Adding
 	button_addUser.addActionListener((ActionEvent e) -> {
@@ -359,7 +359,7 @@ public class View extends javax.swing.JFrame {
 	searchForLocation.notifyListeners(currentLocationName());
     }
 
-    // Helper Dialogs ----------------------------------------------------------
+    // <editor-fold defaultstate="collapsed" desc="Helper Dialogs">
     public void showError(Exception err) {
 	JOptionPane.showMessageDialog(this, err.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -372,7 +372,8 @@ public class View extends javax.swing.JFrame {
 	return JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_CANCEL_OPTION) == 0;
     }
 
-    // Login -------------------------------------------------------------------
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Login">
     public User getLoginDetails(User user) {
 	user.setID(field_loginUserID.getText());
 	String password = "";
@@ -397,6 +398,7 @@ public class View extends javax.swing.JFrame {
     }
 
     public void secureUI(User activeUser) {
+	label_loggedInAs.setText("Logged in as " + activeUser.getName() + " (" + activeUser.getSecurityLevel().toString() + ")");
 	boolean employee = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.EMPLOYEE) >= 0;
 	boolean manager = activeUser.getSecurityLevel().compareTo(User.SecurityLevels.MANAGER) >= 0;
 	// Set Item Secrutities
@@ -432,13 +434,10 @@ public class View extends javax.swing.JFrame {
 	button_removeLocation.setVisible(manager);
     }
 
-    // Item Functions ----------------------------------------------------------
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Item Functions">
     public String currentItemID() {
 	return text_itemID.getText();
-    }
-
-    public String currentBookingID() {
-	return list_itemBookings.getSelectedValue();
     }
 
     public void setupAdditemDialog() {
@@ -512,6 +511,50 @@ public class View extends javax.swing.JFrame {
 	}
     }
 
+    public void setItemEditingPreview(Item itemData) {
+	try {
+	    if (itemData != null) {
+		getLocations.notifyListeners(null);
+		field_editItemName.setText(itemData.getName());
+		field_editItemDescription.setText(itemData.getDescription());
+		combo_editItemLocation.setSelectedItem(itemData.getLocation());
+		DefaultComboBoxModel<Item.Status> statuses = new DefaultComboBoxModel<>();
+		for (Item.Status status : Item.Status.values()) {
+		    statuses.addElement(status);
+		}
+		combo_editItemStatus.setModel(statuses);
+		combo_editItemStatus.setSelectedIndex(itemData.getStatus().ordinal());
+		field_editItemType.setText(itemData.getType());
+		dialog_editItem.setVisible(true);
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
+    public void clearAddNoteDialog() {
+	field_addNote.setText("");
+    }
+
+    public String getNote() {
+	return field_addNote.getText();
+    }
+
+    public void setupViewHistoryDialog(ArrayList<History> newList) {
+	DefaultListModel<String> history = new DefaultListModel<>();
+	for (History h : newList) {
+	    history.addElement(h.toString());
+	}
+	list_viewHistory.setModel(history);
+    }
+
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Booking Functions">
+    public String currentBookingID() {
+	return list_itemBookings.getSelectedValue();
+    }
+
     public void setItemBookings(List<Booking> newList) {
 	DefaultListModel<String> bookings = new DefaultListModel<>();
 	for (Booking booking : newList) {
@@ -562,39 +605,6 @@ public class View extends javax.swing.JFrame {
 	});
     }
 
-    public void setBookingPreview(Booking booking) {
-	try {
-	    if (booking != null) {
-		calendar_itemBookings.setSelectedDate(booking.getBookedDate().toLocalDate());
-	    }
-	} catch (Exception err) {
-	    showError(err);
-	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
-	}
-    }
-
-    public void setItemEditingPreview(Item itemData) {
-	try {
-	    if (itemData != null) {
-		getLocations.notifyListeners(null);
-		field_editItemName.setText(itemData.getName());
-		field_editItemDescription.setText(itemData.getDescription());
-		combo_editItemLocation.setSelectedItem(itemData.getLocation());
-		DefaultComboBoxModel<Item.Status> statuses = new DefaultComboBoxModel<>();
-		for (Item.Status status : Item.Status.values()) {
-		    statuses.addElement(status);
-		}
-		combo_editItemStatus.setModel(statuses);
-		combo_editItemStatus.setSelectedIndex(itemData.getStatus().ordinal());
-		field_editItemType.setText(itemData.getType());
-		dialog_editItem.setVisible(true);
-	    }
-	} catch (Exception err) {
-	    showError(err);
-	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
-	}
-    }
-
     public boolean setNewBookingDetails(Booking booking) {
 	try {
 	    LocalDateTime bookedDate = dateTimePicker_bookItemBookedDate.datePicker.getDate().atTime(dateTimePicker_bookItemBookedDate.timePicker.getTime());
@@ -608,28 +618,40 @@ public class View extends javax.swing.JFrame {
 	return false;
     }
 
+    public void setBookingPreview(Booking booking) {
+	try {
+	    if (booking != null) {
+		calendar_itemBookings.setSelectedDate(booking.getBookedDate().toLocalDate());
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
+	}
+    }
+
     public void setupBookItemDialog() {
 	dateTimePicker_bookItemBookedDate.clear();
 	dateTimePicker_bookItemReturnDate.clear();
     }
 
-    public void clearAddNoteDialog() {
-	field_addNote.setText("");
-    }
-
-    public String getNote() {
-	return field_addNote.getText();
-    }
-
-    public void setupViewHistoryDialog(ArrayList<History> newList) {
-	DefaultListModel<String> history = new DefaultListModel<>();
-	for (History h : newList) {
-	    history.addElement(h.toString());
+    public void previewBookingDetails(Booking booking) {
+	try {
+	    if (booking != null) {
+		field_viewBookingDetailsBookingID.setText(booking.getID());
+		field_viewBookingDetailsUserID.setText(booking.getUserID());
+		field_viewBookingDetailsItemID.setText(booking.getItemID());
+		dateTimePicker_viewBookingDetailsBookedDate.setDateTimeStrict(booking.getBookedDate());
+		dateTimePicker_viewBookingDetailsReturnDate.setDateTimeStrict(booking.getReturnDate());
+		dialog_viewBookingDetails.setVisible(true);
+	    }
+	} catch (Exception err) {
+	    showError(err);
+	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
 	}
-	list_viewHistory.setModel(history);
     }
 
-    // User Functions ----------------------------------------------------------
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="User Functions">
     public String currentUserID() {
 	return text_userID.getText();
     }
@@ -746,7 +768,8 @@ public class View extends javax.swing.JFrame {
 	}
     }
 
-    // Location Functions ------------------------------------------------------
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Location Functions">
     public String currentLocationID() {
 	return text_locationID.getText();
     }
@@ -804,6 +827,7 @@ public class View extends javax.swing.JFrame {
 	combo_editItemLocation.setModel(locations);
     }
 
+    // </editor-fold>
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -894,6 +918,20 @@ public class View extends javax.swing.JFrame {
         jPanel20 = new javax.swing.JPanel();
         button_editUserCancel = new javax.swing.JButton();
         button_editUserConfirm = new javax.swing.JButton();
+        dialog_viewBookingDetails = new javax.swing.JDialog();
+        jPanel21 = new javax.swing.JPanel();
+        dateTimePicker_viewBookingDetailsBookedDate = new com.github.lgooddatepicker.components.DateTimePicker();
+        dateTimePicker_viewBookingDetailsReturnDate = new com.github.lgooddatepicker.components.DateTimePicker();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        jLabel35 = new javax.swing.JLabel();
+        jLabel36 = new javax.swing.JLabel();
+        jLabel37 = new javax.swing.JLabel();
+        field_viewBookingDetailsBookingID = new javax.swing.JTextField();
+        field_viewBookingDetailsUserID = new javax.swing.JTextField();
+        field_viewBookingDetailsItemID = new javax.swing.JTextField();
+        jPanel22 = new javax.swing.JPanel();
+        button_viewBookingDetailsClose = new javax.swing.JButton();
         panel_login = new javax.swing.JPanel();
         field_loginPassword = new javax.swing.JPasswordField();
         button_login = new javax.swing.JButton();
@@ -904,6 +942,8 @@ public class View extends javax.swing.JFrame {
         jLayeredPane1 = new javax.swing.JLayeredPane();
         jPanel2 = new javax.swing.JPanel();
         button_logout = new javax.swing.JButton();
+        label_loggedInAs = new javax.swing.JLabel();
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         tabs_application = new javax.swing.JTabbedPane();
         tab_items = new javax.swing.JSplitPane();
         panel_itemSearch = new javax.swing.JPanel();
@@ -919,6 +959,7 @@ public class View extends javax.swing.JFrame {
         separator_item = new javax.swing.JToolBar.Separator();
         button_bookItem = new javax.swing.JButton();
         button_returnItem = new javax.swing.JButton();
+        button_viewBookingDetails = new javax.swing.JButton();
         separator_booking = new javax.swing.JToolBar.Separator();
         button_addNote = new javax.swing.JButton();
         button_flagForCalibration = new javax.swing.JButton();
@@ -1448,6 +1489,95 @@ public class View extends javax.swing.JFrame {
 
         dialog_editUser.getContentPane().add(jPanel20, java.awt.BorderLayout.PAGE_END);
 
+        dialog_viewBookingDetails.setTitle("Booking Details");
+        dialog_viewBookingDetails.setMinimumSize(new java.awt.Dimension(400, 250));
+        dialog_viewBookingDetails.setResizable(false);
+
+        jPanel21.setLayout(new java.awt.GridBagLayout());
+
+        dateTimePicker_viewBookingDetailsBookedDate.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        jPanel21.add(dateTimePicker_viewBookingDetailsBookedDate, gridBagConstraints);
+
+        dateTimePicker_viewBookingDetailsReturnDate.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        jPanel21.add(dateTimePicker_viewBookingDetailsReturnDate, gridBagConstraints);
+
+        jLabel33.setText("Booked Date");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel21.add(jLabel33, gridBagConstraints);
+
+        jLabel34.setText("Return Date");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel21.add(jLabel34, gridBagConstraints);
+
+        jLabel35.setText("Booking ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel21.add(jLabel35, gridBagConstraints);
+
+        jLabel36.setText("User ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel21.add(jLabel36, gridBagConstraints);
+
+        jLabel37.setText("Item ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel21.add(jLabel37, gridBagConstraints);
+
+        field_viewBookingDetailsBookingID.setEditable(false);
+        field_viewBookingDetailsBookingID.setCaretColor(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel21.add(field_viewBookingDetailsBookingID, gridBagConstraints);
+
+        field_viewBookingDetailsUserID.setEditable(false);
+        field_viewBookingDetailsUserID.setCaretColor(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel21.add(field_viewBookingDetailsUserID, gridBagConstraints);
+
+        field_viewBookingDetailsItemID.setEditable(false);
+        field_viewBookingDetailsItemID.setCaretColor(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel21.add(field_viewBookingDetailsItemID, gridBagConstraints);
+
+        dialog_viewBookingDetails.getContentPane().add(jPanel21, java.awt.BorderLayout.CENTER);
+
+        jPanel22.setLayout(new java.awt.GridBagLayout());
+
+        button_viewBookingDetailsClose.setText("Close");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        jPanel22.add(button_viewBookingDetailsClose, gridBagConstraints);
+
+        dialog_viewBookingDetails.getContentPane().add(jPanel22, java.awt.BorderLayout.PAGE_END);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Equipment Manager");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -1514,10 +1644,23 @@ public class View extends javax.swing.JFrame {
 
         button_logout.setText("Logout");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.weighty = 0.1;
         jPanel2.add(button_logout, gridBagConstraints);
+
+        label_loggedInAs.setText("Logged in as ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        jPanel2.add(label_loggedInAs, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        jPanel2.add(filler7, gridBagConstraints);
 
         jLayeredPane1.add(jPanel2);
 
@@ -1589,6 +1732,12 @@ public class View extends javax.swing.JFrame {
         button_returnItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         button_returnItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(button_returnItem);
+
+        button_viewBookingDetails.setText("View Booking Details");
+        button_viewBookingDetails.setFocusable(false);
+        button_viewBookingDetails.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        button_viewBookingDetails.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(button_viewBookingDetails);
         jToolBar1.add(separator_booking);
 
         button_addNote.setText("Add Note");
@@ -1662,12 +1811,14 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(jLabel6, gridBagConstraints);
 
         text_itemID.setEditable(false);
+        text_itemID.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         jPanel1.add(text_itemID, gridBagConstraints);
 
         text_itemName.setEditable(false);
+        text_itemName.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -1676,6 +1827,7 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemName, gridBagConstraints);
 
         text_itemLocation.setEditable(false);
+        text_itemLocation.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -1684,6 +1836,7 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemLocation, gridBagConstraints);
 
         text_itemStatus.setEditable(false);
+        text_itemStatus.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -1692,6 +1845,7 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(text_itemStatus, gridBagConstraints);
 
         text_itemType.setEditable(false);
+        text_itemType.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -1710,9 +1864,10 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.1;
         jPanel1.add(filler2, gridBagConstraints);
 
-        text_itemDescription.setEditable(false);
         text_itemDescription.setColumns(20);
+        text_itemDescription.setEditable(false);
         text_itemDescription.setRows(5);
+        text_itemDescription.setCaretColor(new java.awt.Color(255, 255, 255));
         jScrollPane1.setViewportView(text_itemDescription);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1730,6 +1885,7 @@ public class View extends javax.swing.JFrame {
         jPanel1.add(jLabel9, gridBagConstraints);
 
         text_lastCalibration.setEditable(false);
+        text_lastCalibration.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
@@ -1849,6 +2005,7 @@ public class View extends javax.swing.JFrame {
         jPanel4.add(jLabel14, gridBagConstraints);
 
         text_locationID.setEditable(false);
+        text_locationID.setCaretColor(new java.awt.Color(255, 255, 255));
         text_locationID.setPreferredSize(new java.awt.Dimension(232, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1856,6 +2013,7 @@ public class View extends javax.swing.JFrame {
         jPanel4.add(text_locationID, gridBagConstraints);
 
         text_locationName.setEditable(false);
+        text_locationName.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -1982,6 +2140,7 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(jLabel12, gridBagConstraints);
 
         text_userID.setEditable(false);
+        text_userID.setCaretColor(new java.awt.Color(255, 255, 255));
         text_userID.setPreferredSize(new java.awt.Dimension(232, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1989,6 +2148,7 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(text_userID, gridBagConstraints);
 
         text_userName.setEditable(false);
+        text_userName.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -2008,6 +2168,7 @@ public class View extends javax.swing.JFrame {
         jPanel3.add(filler4, gridBagConstraints);
 
         text_userSecurityLevel.setEditable(false);
+        text_userSecurityLevel.setCaretColor(new java.awt.Color(255, 255, 255));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -2064,6 +2225,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JButton button_searchItem;
     private javax.swing.JButton button_searchLocation;
     private javax.swing.JButton button_searchUser;
+    private javax.swing.JButton button_viewBookingDetails;
+    private javax.swing.JButton button_viewBookingDetailsClose;
     private javax.swing.JButton button_viewHistory;
     private javax.swing.JButton button_viewHistoryClose;
     private com.github.lgooddatepicker.components.CalendarPanel calendar_itemBookings;
@@ -2075,6 +2238,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JComboBox<User.SecurityLevels> combo_editUserSecurityLevel;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemBookedDate;
     private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_bookItemReturnDate;
+    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_viewBookingDetailsBookedDate;
+    private com.github.lgooddatepicker.components.DateTimePicker dateTimePicker_viewBookingDetailsReturnDate;
     private javax.swing.JDialog dialog_addItem;
     private javax.swing.JDialog dialog_addLocation;
     private javax.swing.JDialog dialog_addNote;
@@ -2082,6 +2247,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JDialog dialog_bookItem;
     private javax.swing.JDialog dialog_editItem;
     private javax.swing.JDialog dialog_editUser;
+    private javax.swing.JDialog dialog_viewBookingDetails;
     private javax.swing.JDialog dialog_viewHistory;
     private javax.swing.JTextField field_addItemName;
     private javax.swing.JTextField field_addItemType;
@@ -2100,12 +2266,16 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_searchItem;
     private javax.swing.JTextField field_searchLocation;
     private javax.swing.JTextField field_searchUser;
+    private javax.swing.JTextField field_viewBookingDetailsBookingID;
+    private javax.swing.JTextField field_viewBookingDetailsItemID;
+    private javax.swing.JTextField field_viewBookingDetailsUserID;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
     private javax.swing.Box.Filler filler5;
     private javax.swing.Box.Filler filler6;
+    private javax.swing.Box.Filler filler7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -2132,6 +2302,11 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -2152,6 +2327,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -2169,6 +2346,7 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel label_loggedInAs;
     private javax.swing.JLabel label_password;
     private javax.swing.JLabel label_username;
     private javax.swing.JList<String> list_itemBookings;

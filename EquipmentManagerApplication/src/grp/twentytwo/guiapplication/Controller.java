@@ -24,6 +24,9 @@ public class Controller {
 	model.modelError.addListener((Exception err) -> {
 	    view.showError(err);
 	});
+	model.modelInvalidEntry.addListener((String message) -> {
+	    view.showInvalidEntry("Invalid Entry", message);
+	});
 	model.setupManagers();
 
 	//<editor-fold desc="Initializing connections between View and Model and vice versa">
@@ -84,6 +87,10 @@ public class Controller {
 	// Item Returning
 	view.returnItem.addListener((String bookingID) -> {
 	    model.returnItemBooking(bookingID);
+	});
+	// View Booking Details
+	view.viewBookingDetails.addListener((String bookingID) -> {
+	    view.previewBookingDetails(model.getBooking(bookingID));
 	});
 	// Item Maintenance
 	view.addNote.addListener((String itemID) -> {

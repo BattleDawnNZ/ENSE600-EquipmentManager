@@ -1,5 +1,6 @@
 package grp.twentytwo.equipmentmanager;
 
+import grp.twentytwo.database.DatabaseConnectionException;
 import grp.twentytwo.database.DatabaseManager;
 import grp.twentytwo.guiapplication.Speaker;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class ModelManager {
     private User activeUser = null;
 
     public Speaker<Exception> modelError;
+    public Speaker<String> modelInvalidEntry;
 
     DatabaseManager databaseManager;
     LocationManager locationManager;
@@ -28,6 +30,7 @@ public class ModelManager {
 
     public ModelManager() {
 	modelError = new Speaker<>();
+	modelInvalidEntry = new Speaker<>();
     }
 
     public void setupManagers() {
@@ -38,6 +41,10 @@ public class ModelManager {
 	    userManager = new UserManager(databaseManager);
 	    bookingManager = new BookingManager(databaseManager);
 	    historyManager = new HistoryManager(databaseManager);
+	} catch (DatabaseConnectionException err) {
+	    modelError.notifyListeners(err);
+	    System.out.println(err.getMessage());
+	    System.exit(0);
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
@@ -162,7 +169,7 @@ public class ModelManager {
 		bookingManager.returnItem(bookingID);
 	    } // Todo throw error to alert user that it's not their booking
 	    else {
-		modelError.notifyListeners(new Exception("This booking is not booked by the current user!"));
+		modelInvalidEntry.notifyListeners("This booking is not booked by the current user.");
 	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
