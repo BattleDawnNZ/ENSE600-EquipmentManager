@@ -362,45 +362,26 @@ public class TableManager {
         return dbManager.queryDB(sql_query);
     }
 
-//    /**
-//     *
-//     * @return the next primary key based (incremented from the maximum key)
-//     */
-//    public String getNextPrimaryKeyId() throws NonNumericKeyClashException {
-//        try {
-//            ResultSet rs = st_getMaxPrimaryKey.executeQuery();
-//            if (rs.next()) {
-//                if (rs.getString("maxId") != null) {
-//                    String lastID = rs.getString("maxId").replaceAll("[^0-9]", ""); // Remove all non-numeric characters
-//                    if (lastID != null && !lastID.isBlank()) {
-//                        return String.format("%05d", ((Integer.parseInt(lastID) + 1))); // Format key to 5 characters
-//                    } else {
-//                        throw new NonNumericKeyClashException();
-//                    }
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return "00000"; // Default. Only occurs for no data in the table yet or no numeric key
-//    }
     /**
      *
      * @return the next primary key based (incremented from the maximum key)
      * @throws grp.twentytwo.database.NonNumericKeyClashException
      */
     public String getNextPrimaryKeyId() throws NonNumericKeyClashException {
-        ArrayList<String> keys = this.getAllPrimaryKeys();
-        if (!keys.isEmpty()) {
-            String lastKey = keys.getLast();
-            if (lastKey != null) {
-                String lastID = lastKey.replaceAll("[^0-9]", ""); // Remove all non-numeric characters
-                if (lastID != null && !lastID.isBlank()) {
-                    return String.format("%05d", ((Integer.parseInt(lastID) + 1))); // Format key to 5 characters
-                } else {
-                    throw new NonNumericKeyClashException();
+        try {
+            ResultSet rs = st_getMaxPrimaryKey.executeQuery();
+            if (rs.next()) {
+                if (rs.getString("maxId") != null) {
+                    String lastID = rs.getString("maxId").replaceAll("[^0-9]", ""); // Remove all non-numeric characters
+                    if (lastID != null && !lastID.isBlank()) {
+                        return String.format("%05d", ((Integer.parseInt(lastID) + 1))); // Format key to 5 characters
+                    } else {
+                        throw new NonNumericKeyClashException();
+                    }
                 }
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(TableManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "00000"; // Default. Only occurs for no data in the table yet or no numeric key
     }
