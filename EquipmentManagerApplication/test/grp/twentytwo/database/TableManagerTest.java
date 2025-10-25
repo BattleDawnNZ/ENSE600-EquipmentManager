@@ -15,8 +15,8 @@ import org.junit.Test;
 
 /**
  * This JUNIT class tests key functionality of the table manager. Eg. create,
- * update delete and get rows. Low-level functions are inheritely tested
- * therefor focus is on these main functions.
+ * update delete, get rows and getNextPrimaryKey. Low-level functions are
+ * inheritely tested therefore focus is on these main functions.
  *
  * @author mymys
  */
@@ -38,7 +38,7 @@ public class TableManagerTest {
             dbManager = new DatabaseManager("pdc", "pdc", "jdbc:derby:EquipmentManagerDB; create=true");
             dbManager.dropTableIfExists(tableName);
             columns = new ArrayList<>();
-            column_primaryKey = new Column("Column1", "VARCHAR(12)", "20");
+            column_primaryKey = new Column("Column1", "VARCHAR(12)", "00000");
             column_dataColumn = new Column("Column2", "VARCHAR(12)", "data2");
             columns.add(column_primaryKey);
             columns.add(column_dataColumn);
@@ -164,36 +164,45 @@ public class TableManagerTest {
 
     // ------------------ GET NEXT PRIMARY KEY TESTS -------------------- \\
     @Test
-    public void testGetNextPrimaryKey_numericalKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException {
+    public void testGetNextPrimaryKey_numericalKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException, DatabaseConnectionException, NonNumericKeyClashException {
         System.out.println("TEST: Get next primary key, numerical first entry");
         String nextKey = tableManager.getNextPrimaryKeyId();
-        assert (nextKey.equals("21"));
+        assert (nextKey.equals("00001"));
     }
 
-    @Test
-    public void testGetNextPrimaryKey_nonNumericKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
+    @Test(expected = NonNumericKeyClashException.class)
+    public void testGetNextPrimaryKey_nonNumericKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException, NonNumericKeyClashException {
         System.out.println("TEST: Get next primary key, alphabetical first entry");
-        column_primaryKey.data = "h";
+        column_primaryKey.data = "hhh";
         tableManager.createRow(columns);
         String nextKey = tableManager.getNextPrimaryKeyId();
-        assert (nextKey.equals("0"));
+        assert (nextKey.equals("00001"));
     }
 
     @Test
-    public void testGetNextPrimaryKey_partialNumericKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
+    public void testGetNextPrimaryKey_partialNumericKey() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException, NonNumericKeyClashException {
         System.out.println("TEST: Get next primary key, alphabetical first entry");
         column_primaryKey.data = "h2";
         tableManager.createRow(columns);
         String nextKey = tableManager.getNextPrimaryKeyId();
-        assert (nextKey.equals("3"));
+        assert (nextKey.equals("00003"));
     }
 
     @Test
-    public void testGetNextPrimaryKey_emptyTable() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException {
+    public void testGetNextPrimaryKey_largeNumber() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException, NonNumericKeyClashException {
+        System.out.println("TEST: Get next primary key, large entries in DB (10000)");
+        column_primaryKey.data = "10000";
+        tableManager.createRow(columns);
+        String nextKey = tableManager.getNextPrimaryKeyId();
+        assert (nextKey.equals("10001"));
+    }
+
+    @Test
+    public void testGetNextPrimaryKey_emptyTable() throws UnfoundPrimaryKeyException, DatabaseConnectionException, InvalidColumnNameException, PrimaryKeyClashException, NullColumnValueException, NonNumericKeyClashException {
         System.out.println("TEST: Get next primary key, alphabetical first entry");
         tableManager.deleteRowByPrimaryKey(column_primaryKey.data);
         String nextKey = tableManager.getNextPrimaryKeyId();
-        assert (nextKey.equals("0"));
+        assert (nextKey.equals("00000"));
     }
 
     @After
