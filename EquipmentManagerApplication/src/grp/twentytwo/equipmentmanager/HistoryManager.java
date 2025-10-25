@@ -126,7 +126,7 @@ class HistoryManager {
     private String generateHistoryID() {
         String newID;
         try {
-            newID = String.format(tableManager.getNextPrimaryKeyId()) + "H"; // H is unique identifier for history
+            newID = "H" + String.format(tableManager.getNextPrimaryKeyId()); // H is unique identifier for history
             return newID;
         } catch (NonNumericKeyClashException ex) {
             Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);

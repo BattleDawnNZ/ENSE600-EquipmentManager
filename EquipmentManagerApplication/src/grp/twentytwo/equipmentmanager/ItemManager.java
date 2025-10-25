@@ -175,7 +175,7 @@ class ItemManager {
      */
     private String generateItemID(String type) {
         try {
-            String newID = "I" + tableManager.getNextPrimaryKeyId();
+            String newID = "E" + tableManager.getNextPrimaryKeyId();
             return newID;
         } catch (NonNumericKeyClashException ex) {
             Logger.getLogger(ItemManager.class.getName()).log(Level.SEVERE, null, ex);

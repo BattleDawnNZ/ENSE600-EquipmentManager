@@ -182,7 +182,7 @@ class BookingManager {
      */
     private String generateBookingID() throws NonNumericKeyClashException {
         String newID;
-        newID = String.format(tableManager.getNextPrimaryKeyId()) + "B"; // B is unique identifier for booking
+        newID = "B" + String.format(tableManager.getNextPrimaryKeyId()); // B is unique identifier for booking
         return newID;
     }
 
