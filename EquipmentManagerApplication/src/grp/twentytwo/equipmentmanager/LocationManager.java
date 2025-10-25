@@ -168,7 +168,7 @@ class LocationManager {
     private String generateLocationID() {
         String newID;
         try {
-            newID = String.format(tableManager.getNextPrimaryKeyId()) + "L"; // L is unique identifier for location
+            newID = "L" + String.format(tableManager.getNextPrimaryKeyId()); // L is unique identifier for location
             return newID;
         } catch (NonNumericKeyClashException ex) {
             Logger.getLogger(LocationManager.class.getName()).log(Level.SEVERE, null, ex);
