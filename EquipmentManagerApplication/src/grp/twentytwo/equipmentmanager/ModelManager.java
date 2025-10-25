@@ -148,7 +148,7 @@ public class ModelManager {
 	return null;
     }
 
-    public boolean AddBooking(Booking booking) {
+    public boolean addBooking(Booking booking) {
 	boolean success = false;
 	try {
 	    // Todo Add feedback to user on failed issuing of item. Fix Overlap Function to allow back to back bookings.
@@ -249,7 +249,7 @@ public class ModelManager {
 	return new Manager("", "");
     }
 
-    public void AddUser(User user) {
+    public void addUser(User user) {
 	try {
 	    userManager.addUser(user);
 	} catch (Exception err) {
@@ -278,7 +278,7 @@ public class ModelManager {
 	return user;
     }
 
-    public void RemoveUser(String userID) {
+    public void removeUser(String userID) {
 	try {
 	    userManager.removeUser(userID);
 	} catch (Exception err) {
@@ -299,7 +299,7 @@ public class ModelManager {
     }
 
     // Location Functions ------------------------------------------------------
-    public void AddLocation(String locationName) {
+    public void addLocation(String locationName) {
 	try {
 	    locationManager.addLocation(locationName);
 	} catch (Exception err) {
