@@ -81,7 +81,9 @@ public class Controller {
 	    Booking booking = model.getNewBooking();
 	    booking.setItemID(itemID);
 	    if (view.setNewBookingDetails(booking)) {
-		model.AddBooking(booking);
+		if (!model.AddBooking(booking)) {
+		    view.showInvalidEntry("Invalid Booking Range", "Bookings cannot overlap existing bookings.");
+		}
 	    }
 	});
 	// Item Returning

@@ -41,6 +41,7 @@ public class ModelManager {
 	    userManager = new UserManager(databaseManager);
 	    bookingManager = new BookingManager(databaseManager);
 	    historyManager = new HistoryManager(databaseManager);
+	    historyManager.printTable();
 	} catch (DatabaseConnectionException err) {
 	    modelError.notifyListeners(err);
 	    System.out.println(err.getMessage());
@@ -154,7 +155,9 @@ public class ModelManager {
 	    // Todo Add feedback to user on failed issuing of item. Fix Overlap Function to allow back to back bookings.
 	    if (itemManager.verifyID(booking.getItemID())) {
 		success = bookingManager.issueItem(booking);
-		historyManager.addHistory(new History(booking.getItemID(), "Item Booked by User: " + activeUser.getID() + ", Booking ID: " + booking.getID()));
+		if (success) {
+		    historyManager.addHistory(new History(booking.getItemID(), "Item Booked by User: " + activeUser.getID() + ", Booking ID: " + booking.getID()));
+		}
 	    }
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
@@ -199,11 +202,15 @@ public class ModelManager {
 	return bookings;
     }
 
+    public void removeBookingsForItem(String itemID) {
+	// Todo Implement item booking deletion
+    }
+
     public void addNote(String itemID, String note) {
 	try {
 	    Item item = itemManager.getItemFromID(itemID);
 	    itemManager.updateItem(item);
-	    historyManager.addHistory(new History(itemID, "Note Added by User: " + activeUser.getID() + ", Note: " + note));
+	    historyManager.addHistory(new History(itemID, "Note: " + note + ", Added by User: " + activeUser.getID()));
 	} catch (Exception err) {
 	    modelError.notifyListeners(err);
 	    Logger.getLogger(ModelManager.class.getName()).log(Level.SEVERE, null, err);
