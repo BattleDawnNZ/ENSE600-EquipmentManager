@@ -1131,12 +1131,14 @@ public class View extends javax.swing.JFrame {
         field_itemDetailsLocation = new javax.swing.JTextField();
         field_itemDetailsStatus = new javax.swing.JTextField();
         field_itemDetailsType = new javax.swing.JTextField();
-        filler_itemDetails = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         scrollPane_itemDescription = new javax.swing.JScrollPane();
         text_itemDescription = new javax.swing.JTextArea();
         label_itemDetailsLastCalibration = new javax.swing.JLabel();
         field_itemDetailsLastCalibration = new javax.swing.JTextField();
         check_itemDetailsNeedsCalibration = new javax.swing.JCheckBox();
+        filler_itemDetailsLabels = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler_itemDetailsFields = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler_itemDetailsExcess = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         panel_itemBookings = new javax.swing.JPanel();
         calendar_itemBookings = new com.github.lgooddatepicker.components.CalendarPanel();
         scrollPane_itemBookings = new javax.swing.JScrollPane();
@@ -1156,12 +1158,14 @@ public class View extends javax.swing.JFrame {
         panel_locationDetails = new javax.swing.JPanel();
         label_locationDetailsID = new javax.swing.JLabel();
         label_locationDetailsName = new javax.swing.JLabel();
-        field_locationDetailsID = new javax.swing.JTextField();
         field_locationDetailsName = new javax.swing.JTextField();
-        filler_locationDetails = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         label_locationDetailsItemIDs = new javax.swing.JLabel();
         scrollPane_locationItemPreview = new javax.swing.JScrollPane();
         list_locationItemsPreview = new javax.swing.JList<>();
+        filler_locationDetailsLabels = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler_locationDetailsFields = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler_locationDetailsExcess = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        field_locationDetailsID = new javax.swing.JTextField();
         tab_users = new javax.swing.JSplitPane();
         panel_userSearch = new javax.swing.JPanel();
         field_searchUser = new javax.swing.JTextField();
@@ -1181,7 +1185,9 @@ public class View extends javax.swing.JFrame {
         field_userDetailsID = new javax.swing.JTextField();
         field_userDetailsName = new javax.swing.JTextField();
         field_userDetailsSecurityLevel = new javax.swing.JTextField();
-        filler_userDetails = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler_userDetailsLabels = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler_userDetailsFields = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler_userDetailsExcess = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
 
         dialog_addItem.setTitle("Add Item");
         dialog_addItem.setLocation(new java.awt.Point(400, 400));
@@ -1826,6 +1832,9 @@ public class View extends javax.swing.JFrame {
 
         layeredPane_main.add(panel_logout);
 
+        tab_items.setDividerSize(0);
+        tab_items.setEnabled(false);
+
         panel_itemSearch.setLayout(new java.awt.GridBagLayout());
 
         field_searchItem.setToolTipText("Input a string to search for a list of corresponding users.");
@@ -1930,11 +1939,12 @@ public class View extends javax.swing.JFrame {
 
         scrollPane_itemDetails.setMinimumSize(new java.awt.Dimension(321, 16));
 
-        panel_itemDetails.setMinimumSize(new java.awt.Dimension(202, 100));
+        panel_itemDetails.setMinimumSize(new java.awt.Dimension(310, 100));
         panel_itemDetails.setLayout(new java.awt.GridBagLayout());
 
         label_itemDetailsID.setText("ID:");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsID, gridBagConstraints);
 
@@ -1942,6 +1952,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsName, gridBagConstraints);
 
@@ -1949,13 +1960,15 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
         panel_itemDetails.add(label_itemDetailsDescription, gridBagConstraints);
 
         label_itemDetailsLocation.setText("Location:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsLocation, gridBagConstraints);
 
@@ -1963,6 +1976,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsStatus, gridBagConstraints);
 
@@ -1970,6 +1984,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsType, gridBagConstraints);
 
@@ -2015,13 +2030,6 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panel_itemDetails.add(field_itemDetailsType, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.weighty = 0.1;
-        panel_itemDetails.add(filler_itemDetails, gridBagConstraints);
 
         text_itemDescription.setColumns(20);
         text_itemDescription.setEditable(false);
@@ -2040,6 +2048,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_itemDetails.add(label_itemDetailsLastCalibration, gridBagConstraints);
 
@@ -2060,6 +2069,25 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panel_itemDetails.add(check_itemDetailsNeedsCalibration, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 100;
+        panel_itemDetails.add(filler_itemDetailsLabels, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 275;
+        panel_itemDetails.add(filler_itemDetailsFields, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        panel_itemDetails.add(filler_itemDetailsExcess, gridBagConstraints);
 
         scrollPane_itemDetails.setViewportView(panel_itemDetails);
 
@@ -2092,6 +2120,9 @@ public class View extends javax.swing.JFrame {
         tab_items.setRightComponent(panel_itemView);
 
         tabs_application.addTab("Items", tab_items);
+
+        tab_locations.setDividerSize(0);
+        tab_locations.setEnabled(false);
 
         panel_locationSearch.setLayout(new java.awt.GridBagLayout());
 
@@ -2147,33 +2178,24 @@ public class View extends javax.swing.JFrame {
 
         scrollPane_locationDetails.setMinimumSize(new java.awt.Dimension(321, 16));
 
+        panel_locationDetails.setMinimumSize(new java.awt.Dimension(310, 78));
         panel_locationDetails.setLayout(new java.awt.GridBagLayout());
 
         label_locationDetailsID.setText("ID:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_locationDetails.add(label_locationDetailsID, gridBagConstraints);
 
         label_locationDetailsName.setText("Name:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        gridBagConstraints.ipady = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_locationDetails.add(label_locationDetailsName, gridBagConstraints);
-
-        field_locationDetailsID.setEditable(false);
-        field_locationDetailsID.setCaretColor(new java.awt.Color(255, 255, 255));
-        field_locationDetailsID.setPreferredSize(new java.awt.Dimension(232, 22));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panel_locationDetails.add(field_locationDetailsID, gridBagConstraints);
 
         field_locationDetailsName.setEditable(false);
         field_locationDetailsName.setCaretColor(new java.awt.Color(255, 255, 255));
@@ -2183,20 +2205,13 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panel_locationDetails.add(field_locationDetailsName, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.weighty = 0.1;
-        panel_locationDetails.add(filler_locationDetails, gridBagConstraints);
 
         label_locationDetailsItemIDs.setText("Item IDs:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         panel_locationDetails.add(label_locationDetailsItemIDs, gridBagConstraints);
 
         list_locationItemsPreview.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -2208,6 +2223,31 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weighty = 0.1;
         panel_locationDetails.add(scrollPane_locationItemPreview, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 100;
+        panel_locationDetails.add(filler_locationDetailsLabels, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 275;
+        panel_locationDetails.add(filler_locationDetailsFields, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        panel_locationDetails.add(filler_locationDetailsExcess, gridBagConstraints);
+
+        field_locationDetailsID.setEditable(false);
+        field_locationDetailsID.setCaretColor(new java.awt.Color(255, 255, 255));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        panel_locationDetails.add(field_locationDetailsID, gridBagConstraints);
 
         scrollPane_locationDetails.setViewportView(panel_locationDetails);
 
@@ -2216,6 +2256,9 @@ public class View extends javax.swing.JFrame {
         tab_locations.setRightComponent(panel_locationView);
 
         tabs_application.addTab("Locations", tab_locations);
+
+        tab_users.setDividerSize(0);
+        tab_users.setEnabled(false);
 
         panel_userSearch.setLayout(new java.awt.GridBagLayout());
 
@@ -2277,10 +2320,12 @@ public class View extends javax.swing.JFrame {
 
         scrollPane_userDetails.setMinimumSize(new java.awt.Dimension(321, 16));
 
+        panel_userDetails.setMinimumSize(new java.awt.Dimension(310, 66));
         panel_userDetails.setLayout(new java.awt.GridBagLayout());
 
         label_userDetailsID.setText("ID:");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_userDetails.add(label_userDetailsID, gridBagConstraints);
 
@@ -2288,6 +2333,7 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_userDetails.add(label_userDetailsName, gridBagConstraints);
 
@@ -2295,12 +2341,12 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipady = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         panel_userDetails.add(label_userDetailsSecurityLevel, gridBagConstraints);
 
         field_userDetailsID.setEditable(false);
         field_userDetailsID.setCaretColor(new java.awt.Color(255, 255, 255));
-        field_userDetailsID.setPreferredSize(new java.awt.Dimension(232, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -2321,12 +2367,24 @@ public class View extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         panel_userDetails.add(field_userDetailsSecurityLevel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 100;
+        panel_userDetails.add(filler_userDetailsLabels, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 275;
+        panel_userDetails.add(filler_userDetailsFields, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
-        panel_userDetails.add(filler_userDetails, gridBagConstraints);
+        panel_userDetails.add(filler_userDetailsExcess, gridBagConstraints);
 
         scrollPane_userDetails.setViewportView(panel_userDetails);
 
@@ -2433,10 +2491,16 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_viewBookingDetailsBookingID;
     private javax.swing.JTextField field_viewBookingDetailsItemID;
     private javax.swing.JTextField field_viewBookingDetailsUserID;
-    private javax.swing.Box.Filler filler_itemDetails;
-    private javax.swing.Box.Filler filler_locationDetails;
+    private javax.swing.Box.Filler filler_itemDetailsExcess;
+    private javax.swing.Box.Filler filler_itemDetailsFields;
+    private javax.swing.Box.Filler filler_itemDetailsLabels;
+    private javax.swing.Box.Filler filler_locationDetailsExcess;
+    private javax.swing.Box.Filler filler_locationDetailsFields;
+    private javax.swing.Box.Filler filler_locationDetailsLabels;
     private javax.swing.Box.Filler filler_logout;
-    private javax.swing.Box.Filler filler_userDetails;
+    private javax.swing.Box.Filler filler_userDetailsExcess;
+    private javax.swing.Box.Filler filler_userDetailsFields;
+    private javax.swing.Box.Filler filler_userDetailsLabels;
     private javax.swing.JLabel label_addItemLocation;
     private javax.swing.JLabel label_addItemName;
     private javax.swing.JLabel label_addItemType;
