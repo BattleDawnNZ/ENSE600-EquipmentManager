@@ -32,8 +32,12 @@ public class Controller {
 	//<editor-fold  defaultstate="collapsed" desc="Login Page">
 	// Login
 	view.login.addListener((ActionEvent e) -> {
-	    view.loginUser(model.login(view.getLoginDetails(model.getNewUser())));
-	    view.secureUI(model.getActiveUser());
+	    if (model.login(view.getLoginDetails(model.getNewUser()))) {
+		view.loginUser(true);
+		view.secureUI(model.getActiveUser());
+	    } else {
+		view.showInvalidEntry("Invalid Login Details", "Invalid Username or Password");
+	    }
 	});
 	// Logout
 	view.logout.addListener((ActionEvent e) -> {

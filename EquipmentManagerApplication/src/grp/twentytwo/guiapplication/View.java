@@ -33,30 +33,36 @@ import javax.swing.event.ListSelectionListener;
 public class View extends javax.swing.JFrame {
 
     // <editor-fold  defaultstate="collapsed" desc="Speakers">
+    // Login Speakers
     public Speaker<ActionEvent> login;
     public Speaker<ActionEvent> logout;
+
+    // Item Speakers
     public Speaker<ActionEvent> addItem;
     public Speaker<String> removeItem;
-    public Speaker<String> bookItem;
-    public Speaker<String> returnItem;
     public Speaker<String> searchForItem;
     public Speaker<String> viewItem;
     public Speaker<String> getEditItemDetails;
     public Speaker<String> editItem;
-    public Speaker<String> viewBooking;
-    public Speaker<String> viewBookingDetails;
     public Speaker<String> addNote;
     public Speaker<String> flagItem;
     public Speaker<String> calibrateItem;
     public Speaker<String> viewHistory;
 
+    // Booking Speakers
+    public Speaker<String> bookItem;
+    public Speaker<String> returnItem;
+    public Speaker<String> viewBooking;
+    public Speaker<String> viewBookingDetails;
+
+    // User Speakers
     public Speaker<ActionEvent> addUser;
     public Speaker<String> getEditUserDetails;
     public Speaker<String> editUser;
     public Speaker<String> removeUser;
     public Speaker<String> searchForUser;
     public Speaker<String> viewUser;
-
+    // Location Speakers
     public Speaker<ActionEvent> addLocation;
     public Speaker<String> removeLocation;
     public Speaker<String> searchForLocation;
@@ -79,13 +85,7 @@ public class View extends javax.swing.JFrame {
 		    break;
 		}
 	    }
-	} catch (ClassNotFoundException ex) {
-	    java.util.logging.Logger.getLogger(View.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (InstantiationException ex) {
-	    java.util.logging.Logger.getLogger(View.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (IllegalAccessException ex) {
-	    java.util.logging.Logger.getLogger(View.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-	} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+	} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
 	    java.util.logging.Logger.getLogger(View.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 	}
 	initComponents();
@@ -428,11 +428,11 @@ public class View extends javax.swing.JFrame {
     }
 
     public void initialSearch() {
-	field_itemDetailsID.setText("");
+	field_searchItem.setText("");
 	refreshItemSearch();
-	field_userDetailsID.setText("");
+	field_searchUser.setText("");
 	refreshUserSearch();
-	field_locationDetailsName.setText("");
+	field_searchLocation.setText("");
 	refreshLocationSearch();
     }
 
@@ -450,7 +450,7 @@ public class View extends javax.swing.JFrame {
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Login">
+    // <editor-fold defaultstate="collapsed" desc="Login Functions">
     public User getLoginDetails(User user) {
 	user.setID(field_loginUserID.getText());
 	String password = "";
@@ -1140,6 +1140,8 @@ public class View extends javax.swing.JFrame {
         label_password = new javax.swing.JLabel();
         field_loginUserID = new javax.swing.JTextField();
         label_username = new javax.swing.JLabel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(100, 100), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(100, 100), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         panel_main = new javax.swing.JPanel();
         layeredPane_main = new javax.swing.JLayeredPane();
         panel_logout = new javax.swing.JPanel();
@@ -1240,7 +1242,6 @@ public class View extends javax.swing.JFrame {
 
         dialog_addItem.setTitle("Add Item");
         dialog_addItem.setLocation(new java.awt.Point(400, 400));
-        dialog_addItem.setLocationByPlatform(true);
         dialog_addItem.setMinimumSize(new java.awt.Dimension(300, 200));
         dialog_addItem.setModal(true);
         dialog_addItem.setResizable(false);
@@ -1321,7 +1322,6 @@ public class View extends javax.swing.JFrame {
         dialog_addItem.getContentPane().add(panel_addItemBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_editItem.setTitle("Edit Item");
-        dialog_editItem.setLocationByPlatform(true);
         dialog_editItem.setMinimumSize(new java.awt.Dimension(400, 300));
         dialog_editItem.setModal(true);
 
@@ -1423,7 +1423,6 @@ public class View extends javax.swing.JFrame {
         dialog_editItem.getContentPane().add(panel_editItemBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_bookItem.setTitle("Book Item");
-        dialog_bookItem.setLocationByPlatform(true);
         dialog_bookItem.setMinimumSize(new java.awt.Dimension(400, 200));
         dialog_bookItem.setModal(true);
         dialog_bookItem.setResizable(false);
@@ -1469,7 +1468,6 @@ public class View extends javax.swing.JFrame {
         dialog_bookItem.getContentPane().add(panel_bookItemBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_addNote.setTitle("Add Note");
-        dialog_addNote.setLocationByPlatform(true);
         dialog_addNote.setMinimumSize(new java.awt.Dimension(400, 300));
         dialog_addNote.setModal(true);
 
@@ -1505,7 +1503,6 @@ public class View extends javax.swing.JFrame {
         dialog_addNote.getContentPane().add(panel_addNoteBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_viewHistory.setTitle("Item History");
-        dialog_viewHistory.setLocationByPlatform(true);
         dialog_viewHistory.setMinimumSize(new java.awt.Dimension(400, 200));
         dialog_viewHistory.setModal(true);
 
@@ -1531,8 +1528,7 @@ public class View extends javax.swing.JFrame {
 
         dialog_viewHistory.getContentPane().add(panel_viewHistoryBottom, java.awt.BorderLayout.PAGE_END);
 
-        dialog_addUser.setTitle("Add Item");
-        dialog_addUser.setLocationByPlatform(true);
+        dialog_addUser.setTitle("Add User");
         dialog_addUser.setMinimumSize(new java.awt.Dimension(350, 250));
         dialog_addUser.setModal(true);
         dialog_addUser.setResizable(false);
@@ -1626,8 +1622,7 @@ public class View extends javax.swing.JFrame {
 
         dialog_addUser.getContentPane().add(panel_addUserBottom, java.awt.BorderLayout.PAGE_END);
 
-        dialog_addLocation.setTitle("Add Item");
-        dialog_addLocation.setLocationByPlatform(true);
+        dialog_addLocation.setTitle("Add Location");
         dialog_addLocation.setMinimumSize(new java.awt.Dimension(300, 200));
         dialog_addLocation.setModal(true);
         dialog_addLocation.setResizable(false);
@@ -1665,7 +1660,6 @@ public class View extends javax.swing.JFrame {
         dialog_addLocation.getContentPane().add(panel_addLocationBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_editUser.setTitle("Add Item");
-        dialog_editUser.setLocationByPlatform(true);
         dialog_editUser.setMinimumSize(new java.awt.Dimension(350, 250));
         dialog_editUser.setModal(true);
         dialog_editUser.setResizable(false);
@@ -1718,7 +1712,6 @@ public class View extends javax.swing.JFrame {
         dialog_editUser.getContentPane().add(panel_editUserBottom, java.awt.BorderLayout.PAGE_END);
 
         dialog_viewBookingDetails.setTitle("Booking Details");
-        dialog_viewBookingDetails.setLocationByPlatform(true);
         dialog_viewBookingDetails.setMinimumSize(new java.awt.Dimension(400, 250));
         dialog_viewBookingDetails.setResizable(false);
 
@@ -1813,14 +1806,13 @@ public class View extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(950, 600));
         setName("applicationFrame"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(1280, 750));
         getContentPane().setLayout(new java.awt.CardLayout());
 
         panel_login.setLayout(new java.awt.GridBagLayout());
-
-        field_loginPassword.setText("123123");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 100;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
@@ -1828,24 +1820,21 @@ public class View extends javax.swing.JFrame {
 
         button_login.setText("Login");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(13, 13, 13, 13);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(13, 0, 13, 0);
         panel_login.add(button_login, gridBagConstraints);
 
         label_password.setText("Password");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
         panel_login.add(label_password, gridBagConstraints);
-
-        field_loginUserID.setText("111");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.ipadx = 100;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
@@ -1853,12 +1842,25 @@ public class View extends javax.swing.JFrame {
 
         label_username.setText("User ID");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
         panel_login.add(label_username, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        panel_login.add(filler1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.1;
+        panel_login.add(filler2, gridBagConstraints);
 
         getContentPane().add(panel_login, "card3");
 
@@ -2554,6 +2556,8 @@ public class View extends javax.swing.JFrame {
     private javax.swing.JTextField field_viewBookingDetailsBookingID;
     private javax.swing.JTextField field_viewBookingDetailsItemID;
     private javax.swing.JTextField field_viewBookingDetailsUserID;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler_itemDetailsExcess;
     private javax.swing.Box.Filler filler_itemDetailsFields;
     private javax.swing.Box.Filler filler_itemDetailsLabels;

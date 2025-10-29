@@ -13,14 +13,13 @@ public class TestData {
 
     private static ModelManager model = new ModelManager();
 
-    public static void main(String[] args) {
-	TestData.model.setupManagers();
-	TestData.dropTables();
-	TestData.model.setupManagers();
-	TestData.generate();
-	TestData.printAll();
-    }
-
+//    public static void main(String[] args) {
+//	TestData.model.setupManagers();
+//	TestData.dropTables();
+//	TestData.model.setupManagers();
+//	TestData.generate();
+//	TestData.printAll();
+//    }
     public static void generate() {
 	try {
 
