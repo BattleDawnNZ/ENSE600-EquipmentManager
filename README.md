@@ -20,7 +20,8 @@ The following User IDs have been saved for testing purposes:
 
 
 
-Attribution:
+## Attribution
+
 https://github.com/LGoodDatePicker/LGoodDatePicker
 The MIT License (MIT)
 
